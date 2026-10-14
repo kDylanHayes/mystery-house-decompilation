@@ -7,7 +7,7 @@ Everything is python3 with the standard library only. Each script's docstring ha
 | `asm6502.py` | build | the 6502 assembler for `src/`; also writes a listing and the symbol table |
 | `msgfile.py` | build | builds the `MESSAGES` file and the message index from `src/messages.txt` (`extract` made the source) |
 | `picfile.py` | build | builds `BLOCK1`-`BLOCK19` and the picture directory from `src/pictures/` (`extract` made the source) |
-| `diskfiles.py` | build | collects the rebuilt files, cuts the two table copies from `ADVENTURE`, compares everything with the originals |
+| `diskfiles.py` | build | collects the rebuilt files, cuts the two table copies from `ADVENTURE`, builds `STARTUP` (the "play again" state) with `ADVENTURE`'s object and room tables, compares everything with the originals |
 | `dos33.py` | build | extracts a DOS 3.3 disk (lists BASIC as text), and `put` writes binary and text files back into one (keeping each file's sectors, as DOS does) |
 | `gamedata.py` | build | decodes the game database (vocabulary, rooms, objects, messages, rules) into `assets/text/` |
 | `pictures.py` | build | renders the pictures, shapes, rooms and title screens into `assets/` |

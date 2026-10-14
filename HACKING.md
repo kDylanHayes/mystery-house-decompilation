@@ -16,15 +16,17 @@ Needs only python3. The build:
    picture files from `src/pictures/` (`tools/picfile.py`), with the tables `ADVENTURE` includes
    for them (`build/gen/messages.inc`, `pictures.inc`);
 3. assembles `src/adventure.s` and `src/autoload.s` into `build/` with `tools/asm6502.py`;
-4. checks all 24 rebuilt files against the originals (`tools/diskfiles.py`; this includes
-   `BLOCK DIRECTORY` and `MESSAGE OBJECT`, the disk's copies of two `ADVENTURE` tables) and
+4. checks all 25 rebuilt files against the originals (`tools/diskfiles.py`; this includes
+   `BLOCK DIRECTORY` and `MESSAGE OBJECT`, the disk's copies of two `ADVENTURE` tables, and
+   `STARTUP`, the starting state "play again" loads, which takes `ADVENTURE`'s object and room
+   tables) and
    writes them into a copy of the disk, `build/mystery_house.do`, which boots in any Apple II
    emulator, then reports whether the disk is identical to the original;
 5. regenerates `assets/` (text, pictures, rooms) from the built files, so edits show up there,
    and `original_source/` from the original binary;
 6. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
 
-With unmodified source it must say "all 24 rebuilt files match the original" and "identical to
+With unmodified source it must say "all 25 rebuilt files match the original" and "identical to
 the original disk". Keep it that way for any change that is meant to be a cleanup (renames, comments,
 constants): those never change the bytes.
 
@@ -73,7 +75,8 @@ condition and action counts need updating. The opcodes and their operands are li
 rule in plain words after a build.
 
 **An object or room.** One `.byte` line per record in `OBJBASE` / `ROOMBASE`; the field order is
-in the comment above each table and in `src/game.inc`.
+in the comment above each table and in `src/game.inc`. The build copies both tables into
+`STARTUP` too, which is what "play again" reloads.
 
 **A word.** The verb and noun tables are groups of a head word and its synonyms, 8 characters
 each, high-bit text. A group's position is its id, so add new groups at the end of a table

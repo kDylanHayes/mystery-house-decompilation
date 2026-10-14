@@ -9,6 +9,8 @@ Expects in <build dir>: ADVENTURE.bin and AUTO_LOAD_OBJ.bin (assembled), gen/MES
 
   files/            a copy of <extracted dir> with every rebuilt file in place, for the
                     asset tools (gamedata.py, pictures.py)
+  STARTUP.bin       the starting state for "play again": the original's variables, then
+                    ADVENTURE's object and room tables
   BLOCK_DIRECTORY.bin, MESSAGE_OBJECT.bin
                     the disk's copies of ADVENTURE's picture directory ($5300, 304 bytes in the
                     original) and message index ($5500, 336 bytes), cut from the assembled
@@ -28,6 +30,7 @@ FILES = [
     ('MESSAGES', 'gen/MESSAGES.bin', None, 'MESSAGES.txt.bin'),
     ('BLOCK DIRECTORY', 'BLOCK_DIRECTORY.bin', 0x4000, 'BLOCK_DIRECTORY.bin'),
     ('MESSAGE OBJECT', 'MESSAGE_OBJECT.bin', 0x5000, 'MESSAGE_OBJECT.bin'),
+    ('STARTUP', 'STARTUP.bin', 0x0830, 'STARTUP.bin'),
 ] + [('BLOCK%d' % n, 'gen/BLOCK%d.bin' % n, 0x4400, 'BLOCK%d.bin' % n) for n in range(1, 20)]
 
 
@@ -41,6 +44,12 @@ def main():
     idx_len = max(0x150, 2 * entries('messages.inc', '.word'))
     open(os.path.join(b, 'BLOCK_DIRECTORY.bin'), 'wb').write(adv[0x5300 - 0x800:0x5300 - 0x800 + dir_len])
     open(os.path.join(b, 'MESSAGE_OBJECT.bin'), 'wb').write(adv[0x5500 - 0x800:0x5500 - 0x800 + idx_len])
+    # STARTUP is the state "play again" BLOADs ($0830-$10FE): the original's variables
+    # ($0830-$08FF, saved mid-game; init_game resets them), then the starting objects, rooms and
+    # what follows from the assembled ADVENTURE, so edits to those tables reach a new game too
+    st = open(os.path.join(ext, 'STARTUP.bin'), 'rb').read()
+    open(os.path.join(b, 'STARTUP.bin'), 'wb').write(
+        st[:0x0900 - 0x0830] + adv[0x0900 - 0x0800:0x0830 + len(st) - 0x0800])
     files = os.path.join(b, 'files')
     shutil.rmtree(files, ignore_errors=True)
     shutil.copytree(ext, files)
