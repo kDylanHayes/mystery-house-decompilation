@@ -3,7 +3,9 @@
 compare a built disk's files with the original's.
 
 usage: diskfiles.py make <build dir> <src dir>
-       diskfiles.py compare <built files dir> <original extracted dir>
+       diskfiles.py verify <extracted dir> <FILES.sha256>     check against recorded hashes
+       diskfiles.py compare <extracted dir> <other extracted dir>
+       diskfiles.py hashes <extracted dir> <out FILES.sha256> (used once, on the original disk)
 
 make expects in <build dir>: ADVENTURE.bin and AUTO_LOAD_OBJ.bin (assembled), gen/MESSAGES.bin
 (tools/msgfile.py), gen/BLOCK1-19.bin (tools/picfile.py) and gen/HELLO.bin, MYSTERY.HELLO.bin,
@@ -19,7 +21,8 @@ PIC_SIZES.bin, APPLESOFT.bin (tools/basic.py), and the assembler's adventure.sym
   put.txt           NAME=path lines for mkdisk.py / dos33.py put (a .load file next to each
                     binary holds its load address)
 
-compare prints whether each of the rebuilt files matches the original disk's.
+verify checks each file of a built disk (as extracted by dos33.py) against disk/FILES.sha256,
+the hashes of the original disk's 30 files; compare checks against another extracted disk.
 """
 import os
 import sys
@@ -68,6 +71,36 @@ def make(b, src):
             put.write('%s=%s\n' % (disk_name, os.path.abspath(full)))
 
 
+def content(path, name):
+    """A file's contents as extracted: a text file up to and including its $00 (the extracted
+    copy is whole sectors), anything else as it is."""
+    data = open(path, 'rb').read()
+    return data[:data.index(b'\x00') + 1] if name.endswith('.txt.bin') else data
+
+
+def hashes(files_dir, out):
+    """Write the SHA-256 of each of the 30 files (as extracted) to out."""
+    import hashlib
+    with open(out, 'w') as f:
+        for disk_name, _, _, name in FILES:
+            f.write('%s  %s\n' % (hashlib.sha256(content(os.path.join(files_dir, name), name)).hexdigest(), disk_name))
+
+
+def verify(files_dir, sums):
+    """Check each file of a built disk against the recorded hashes."""
+    import hashlib
+    want = {}
+    for line in open(sums):
+        h, name = line.rstrip('\n').split('  ', 1)
+        want[name] = h
+    changed = [disk_name for disk_name, _, _, name in FILES
+               if hashlib.sha256(content(os.path.join(files_dir, name), name)).hexdigest() != want.get(disk_name)]
+    if changed:
+        print('changed from the original: %s' % ', '.join(changed))
+    else:
+        print('all %d files match the original' % len(FILES))
+
+
 def compare(built, orig):
     changed = []
     for disk_name, _, load, name in FILES:
@@ -92,6 +125,10 @@ def main():
         make(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == 'compare':
         compare(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == 'hashes':
+        hashes(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == 'verify':
+        verify(sys.argv[2], sys.argv[3])
     else:
         raise SystemExit(__doc__)
 

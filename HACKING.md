@@ -22,14 +22,15 @@ Needs only python3. The build:
    (`tools/savefile.py`);
 4. builds the disk image `build/mystery_house.do` around all 30 files from `src/disk/`
    (`tools/mkdisk.py`: the catalog, the free-space map, each file's sectors, and DOS 3.3 on
-   tracks 0-2); it boots in any Apple II emulator;
-5. if the original disk image is in `disk/`, checks every file and the whole image against it,
-   and recovers `original_source/` from it (without it, the build still works);
+   tracks 0-2), and extracts it into `extracted/`; everything DOS reads is as on the original,
+   so it boots like the original in an Apple II emulator;
+5. checks each file against the original disk's (`disk/FILES.sha256`) and the image against
+   `disk/SHA256`, the hash of the clean disk (see `disk/README.md`);
 6. regenerates `assets/` (text, pictures, rooms) from the built disk, so edits show up there;
 7. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
 
-With unmodified source it must say "all 30 files match the original" and "identical to the
-original disk". Keep it that way for any change that is meant to be a cleanup (renames, comments,
+With unmodified source it must say "all 30 files match the original" and
+"build/mystery_house.do: matches disk/SHA256". Keep it that way for any change that is meant to be a cleanup (renames, comments,
 constants): those never change the bytes.
 
 ## The source
@@ -145,14 +146,14 @@ grow or shrink, but adding or removing a file, or a new `BLOCK` file, is not sup
 | Path | What | Made by |
 |---|---|---|
 | `src/` | the source: programs, `messages.txt`, `pictures/`, `basic/`, `startup.txt`, `saved_game.txt`, `disk/` (`src/data/README.md` and `src/disk/README.md` describe the binary pieces) | hand |
-| `disk/` | the original disk image and its SHA-256, used only to check the build | reference |
+| `disk/` | the hashes the build checks: each original file, and the clean disk image | reference |
 | `build.sh` | the build | hand |
 | `tools/` | the build tools (see `tools/README.md`) | hand |
 | `ghidra_scripts/` | the Ghidra post-script for the optional pseudocode | hand |
 | `programs/` | code-tracing settings for the Ghidra step (see `programs/README.md`) | hand |
 | `symbols/` | Ghidra data types and register parameters (see `symbols/README.md`) | hand |
-| `original_source/` | the 1980 source fragments found in the binary | build |
-| `extracted/` | every file from the original disk, to compare with | build |
+| `original_source/` | the 1980 source fragments found in the binary (an archive) | once |
+| `extracted/` | every file from the built disk; BASIC listed as text | build |
 | `assets/` | game text, pictures, rooms, shapes, title screens | build |
 | `decomp/` | C pseudocode (see `decomp/README.md`) | build, with Ghidra |
 | `build/` | built binaries, listings, symbol tables, the disk image (not committed) | build |
@@ -160,8 +161,9 @@ grow or shrink, but adding or removing a file, or a new `BLOCK` file, is not sup
 ## What is public domain
 
 Mystery House, its loader and the BASIC programs were released into the public domain in 1987,
-and that is what this project decompiles. Two things in it are not: DOS 3.3 (Apple's operating
-system, on tracks 0-2 of the disk and in `src/disk/dos33.bin`), which is kept as an untouched
-binary only so the built disk boots, and `src/disk/residue.bin`, the stale fragments of other
-software left in the disk's free sectors, kept only so the image is identical to the original.
-Neither is decompiled. An empty `residue.bin` gives a clean disk that plays the same.
+and that is all this project holds. The one exception is DOS 3.3, Apple's operating system on
+tracks 0-2 (`src/disk/dos33.bin`), kept as an untouched binary only so the built disk boots; it
+is not decompiled. The original disk image also held stale fragments of other, copyrighted
+software in its unused sectors; they were dropped, so the build makes a clean disk with its own
+hash, and the original image is no longer in the repository. `disk/README.md` explains the
+change and records the original's hash.

@@ -1,7 +1,7 @@
 ; The disk's structure (see tools/mkdisk.py): DOS 3.3, 35 tracks x 16 sectors.
 ; Files are listed in catalog order with the sectors they occupy.
 volume 254
-vtoc catalog=17,15 version=3 max_pairs=122 last_track=22 direction=1
+vtoc byte0=4 catalog=17,15 version=3 max_pairs=122 last_track=22 direction=1
 catalog 17,15 17,14 17,13 17,12 17,11 17,10 17,9 17,8 17,7 17,6 17,5 17,4 17,3 17,2 17,1
 file "HELLO" A tslist=33,15 data=33,14 33,13
 file "MYSTERY.HELLO" A tslist=33,12 data=33,11 33,10 33,9 33,8

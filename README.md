@@ -13,9 +13,9 @@ whole game database (rooms, objects, words, messages, rules and pictures) decode
 
 Needs only python3. It builds every file of the game from source (the programs, the messages,
 the pictures, the BASIC programs and the saved states) and the disk image around them
-(`build/mystery_house.do`, bootable), checks the result against the original disk if it is in
-`disk/`, and regenerates the assets. Only DOS 3.3 itself, Apple's code on tracks 0-2, is kept
-as a binary.
+(`build/mystery_house.do`, bootable), checks every file against the original's hash and the
+disk against its recorded hash, and regenerates the assets. Only DOS 3.3 itself, Apple's code
+on tracks 0-2, is kept as a binary.
 
 ## Documentation
 
@@ -46,7 +46,7 @@ as a binary.
 | `assets/rooms/` | each of the 41 rooms as first seen, with its objects |
 | `assets/shapes/`, `assets/screens/` | the 6 shapes; the 1980 and 1987 title screens |
 | `decomp/` | C pseudocode from Ghidra, for reading (optional build step) |
-| `extracted/` | every file from the original disk, for the check; BASIC programs listed as text |
+| `extracted/` | every file from the built disk; BASIC programs listed as text |
 
 <p>
 <img src="assets/screens/title_1980.png" width="45%"> <img src="assets/screens/title_1987.png" width="45%">
@@ -57,9 +57,10 @@ as a binary.
 
 ## Source and licence
 
-The disk image is the TOSEC dump
-*Hi-Res Adventure 1 - Mystery House (1980)(On-Line Systems)(PD).do*. Sierra On-Line released
-the game into the public domain in 1987, and the game is all this project decompiles. DOS 3.3
-(Apple's) and the stale fragments of other software left in the disk's free sectors are kept
-only as untouched binaries, so that the built disk boots and matches the original; see
-HACKING.md ("What is public domain").
+Built from the TOSEC dump *Hi-Res Adventure 1 - Mystery House (1980)(On-Line Systems)(PD).do*.
+Sierra On-Line released the game into the public domain in 1987, and the game is all this
+project holds: every one of its 30 files is rebuilt from source and checked byte for byte
+against the original. DOS 3.3 (Apple's) is kept as an untouched binary so the disk boots. The
+original image also carried stale fragments of other, copyrighted software in unused sectors;
+those were dropped, so the built disk is a clean copy with its own hash
+(`disk/README.md` explains why and records the original's).

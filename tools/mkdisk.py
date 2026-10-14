@@ -9,8 +9,10 @@ src/disk/ holds:
                 catalog order with its type and the sectors it occupies (its track/sector list
                 sectors and its data sectors, in order)
   dos33.bin     tracks 0-2: Apple DOS 3.3 as it was on the disk (12 KB, not decompiled)
-  residue.bin   bytes no structure accounts for: stale data in free sectors and in the unused
-                ends of sectors (left by whatever was on the disk before; see README.md there)
+  residue.bin   optional: bytes no structure accounts for (stale data in free sectors and in
+                the unused ends of sectors). The project no longer has one: without it the
+                disk is clean, with zeros there (see src/disk/README.md). `extract` writes one
+                from a disk, which reproduces that disk exactly.
 
 The build starts from an empty disk, lays down the residue, DOS, the VTOC (with a bitmap
 computed from the layout), the catalog and the track/sector lists, then writes each file's
@@ -78,6 +80,7 @@ def skeleton(lay, dos, residue):
     v = lay['vtoc']
     vt = off(17, 0)
     cat = ts(v['catalog'])
+    img[vt] = int(v.get('byte0', '0'))    # DOS 3.3's INIT writes $04 here; DOS never reads it
     img[vt + 1], img[vt + 2] = cat
     img[vt + 3] = int(v['version'])
     img[vt + 6] = lay['volume']
@@ -137,7 +140,8 @@ def put_files(img, args):
 def build(srcdir, out, args):
     lay = parse_layout(os.path.join(srcdir, 'layout.txt'))
     dos = open(os.path.join(srcdir, 'dos33.bin'), 'rb').read()
-    residue = open(os.path.join(srcdir, 'residue.bin'), 'rb').read()
+    rp = os.path.join(srcdir, 'residue.bin')
+    residue = open(rp, 'rb').read() if os.path.exists(rp) else b''
     img = skeleton(lay, dos, residue)
     put_files(img, args)
     open(out, 'wb').write(img)
@@ -151,8 +155,8 @@ def extract(disk_path, out):
     lines = ['; The disk\'s structure (see tools/mkdisk.py): DOS 3.3, 35 tracks x 16 sectors.',
              '; Files are listed in catalog order with the sectors they occupy.',
              'volume %d' % vt[6],
-             'vtoc catalog=%d,%d version=%d max_pairs=%d last_track=%d direction=%d' % (
-                 vt[1], vt[2], vt[3], vt[0x27], vt[0x30], vt[0x31] if vt[0x31] < 128 else vt[0x31] - 256)]
+             'vtoc byte0=%d catalog=%d,%d version=%d max_pairs=%d last_track=%d direction=%d' % (
+                 vt[0], vt[1], vt[2], vt[3], vt[0x27], vt[0x30], vt[0x31] if vt[0x31] < 128 else vt[0x31] - 256)]
     cat = []
     t, s = vt[1], vt[2]
     while t:

@@ -12,5 +12,6 @@ The text between fragments was overwritten before the file was saved. The tokeni
 the opcode token table are described in `tools/source_fragments.py` and NOTES.md ("Original
 source").
 
-`build.sh` regenerates both from the original `ADVENTURE` on the disk image, so the copy does not
-depend on `src/` (where those bytes are "leftover memory" that may be deleted to make room).
+This is an archive: `build.sh` does not touch it. It was recovered from the original `ADVENTURE`
+with `tools/source_fragments.py`, which works on any copy of the file that still has those bytes
+(the built one does, as long as the "leftover memory" in `src/` has not been deleted).
