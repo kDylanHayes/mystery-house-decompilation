@@ -1,4 +1,7 @@
 address,name,type,comment
+# Ghidra extras for the pseudocode: data types (byte/word/ptr[n]) and register parameters
+# (func:X). Names and function comments come from src/autoload.s; the name column here is only
+# a reminder of what the address is, and build.sh ignores it where src/ defines one.
 # AUTO LOAD OBJ: the 1987 public-domain loader. It shows the Sierra title, offers the
 # instructions, then BRUNs ADVENTURE. It carries its own copy of the macro library at $1C00.
 0FFD,start,func,menu: G = game, I = instructions

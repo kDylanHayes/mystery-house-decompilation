@@ -15,13 +15,13 @@ void dead_init_tail(void)
   var_hcolor._0_1_ = 0x7f;
   hgr_shape_table._0_1_ = 0;
   hgr_shape_table._1_1_ = 0x6d;
-  old_rt_copy(8, &DAT_56a8, &mul_dest);
-  old_rt_copy(8, &DAT_56b0, &blank_word);
+  rule_4A00(8, &dead_blank_word, &mul_dest);
+  rule_4A00(8, &dead_done_word, &blank_word);
   applesoft_errflg = 0x80;
   prompt_char = 0;
   picture_ptr._1_1_ = 0;
   dos_language_flag = 0x40;
-  old_rt_copy(2, &DAT_56cc, &dos_error_vector);
+  rule_4A00(2, &dead_disk_error_ptr, &dos_error_vector);
   old_rt_print("\x04OPEN MESSAGES\r\x04\r");
   return;
 }
@@ -30,7 +30,7 @@ void dead_init_tail(void)
 // 5912
 
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
-/* unreachable older message reader; its variables at $5A01-$5A0B are now engine code */
+/* Unreachable older version of print_message's file path. */
 
 void dead_read_message(void)
 
@@ -44,7 +44,7 @@ void dead_read_message(void)
   run_command_rules = *_DAT_0014;
   uRAM5a0b = _DAT_0014[1];
   dead_offset_to_hex();
-  old_rt_copy(4, &DAT_5a02, &DAT_596b);
+  rule_4A00(4, &old_hex_out, &old_read_digits);
   dead_read_message_cmd();
   _DAT_0014 = (undefined1 *)0x200;
   bVar2 = 0;
@@ -122,7 +122,7 @@ void dead_nibbles_to_ascii(void)
 
 // 5a00
 
-/* after a command: command rules, then turn rules */
+/* Run the game logic for the command just parsed: the command rules first, then the turn rules. */
 
 void run_rules(void)
 
@@ -136,7 +136,9 @@ void run_rules(void)
 
 // 5a07
 
-/* first matching command rule runs; none -> "I DONT UNDERSTAND" */
+/* Try each command rule in order. The first one whose header and conditions match runs its actions
+and ends the search (test_rule leaves cmp_result = 1). If the table ends with no match, say "I
+DONT UNDERSTAND WHAT YOU MEAN". */
 
 void run_command_rules(void)
 
@@ -160,7 +162,8 @@ void run_command_rules(void)
 
 // 5a34
 
-/* every matching turn rule runs */
+/* Run every matching turn rule (match timers, darkness, the winning check), whatever happened to
+the command. */
 
 void run_turn_rules(void)
 
@@ -180,7 +183,10 @@ void run_turn_rules(void)
 
 // 5a55
 
-/* match room/verb/noun ($FE = any) and conditions; run actions if all pass */
+/* Test the rule at rule_ptr: room, verb and noun must match (ANY matches everything). If they do,
+AWORK steps through the conditions; each condition handler continues at cond_pass or cond_fail,
+and when all have passed rule_done runs the actions. cmp_result: 0 = header did not match, 1 =
+header matched (and conditions passed unless a condition reset it to 0). */
 
 void test_rule(void)
 
@@ -219,7 +225,8 @@ void test_rule(void)
 
 // 5a9c
 
-/* dispatch the next condition or run the actions when none are left */
+/* Dispatch the condition at AWORK through tbl_conditions, or run the actions when counter
+(conditions left) reaches 0. Condition handlers read their operands at (AWORK),Y. */
 
 void next_condition(void)
 
@@ -241,7 +248,7 @@ void next_condition(void)
 
 // 5acd
 
-/* condition 3: object X is in room Y */
+/* Condition 3: object ARG_X is in room ARG_Y. */
 
 void cond_obj_in_room(void)
 
@@ -260,7 +267,8 @@ void cond_obj_in_room(void)
 
 // 5aea
 
-/* condition 5: turn counter > X */
+/* Condition 5: turns > ARG_X. Fails whenever the turn counter's high byte is set, so from turn 256
+on it is never true. */
 
 void cond_turns_gt(void)
 
@@ -280,7 +288,7 @@ void cond_turns_gt(void)
 
 // 5aff
 
-/* condition 6: SWITCH[X] == Y */
+/* Condition 6: SWITCH[ARG_X] == ARG_Y. */
 
 void cond_switch_eq(void)
 
@@ -297,7 +305,7 @@ void cond_switch_eq(void)
 
 // 5b18
 
-/* condition 9: shown_picture == X */
+/* Condition 9: the picture on screen is ARG_X (close-up views). */
 
 void cond_view_is(void)
 
@@ -313,7 +321,7 @@ void cond_view_is(void)
 
 // 5b26
 
-/* condition 10: object X is drawn as picture Y */
+/* Condition 10: object ARG_X is drawn as picture ARG_Y. */
 
 void cond_obj_pic_is(void)
 
@@ -332,7 +340,7 @@ void cond_obj_pic_is(void)
 
 // 5b43
 
-/* condition true: skip its X operand bytes and test the next */
+/* Condition true: step AWORK past it (opcode + X operand bytes) and test the next one. */
 
 void cond_pass(char param_1)
 
@@ -347,7 +355,7 @@ void cond_pass(char param_1)
 
 // 5b51
 
-/* condition false */
+/* Condition false: the rule does not run. */
 
 void cond_fail(void)
 
@@ -360,7 +368,7 @@ void cond_fail(void)
 
 // 5b59
 
-/* run the actions if every condition passed */
+/* All conditions passed (cmp_result still 1): run the rule's actions. */
 
 void rule_done(void)
 
@@ -376,7 +384,7 @@ void rule_done(void)
 
 // 5b65
 
-/* advance rule_ptr by the rule's length; cmp_result = $FF at the end of the table */
+/* Advance rule_ptr (and AWORK) by RULE_LEN. cmp_result = HV at the end of the table, else 0. */
 
 void next_rule(void)
 
@@ -397,7 +405,8 @@ void next_rule(void)
 
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 /* WARNING: Unknown calling convention */
-/* found_obj = record of object X (BRK if missing) */
+/* found_obj = the record of object X. Walks OBJBASE by ONEXT; hitting HV is a BRK (the source
+comments it ";UH-OH, KABOOM!"). */
 
 void find_object(byte x)
 
@@ -421,7 +430,8 @@ void find_object(byte x)
 
 // 5e00
 
-/* game loop: draw room, read command, run rules, count the turn */
+/* The game loop. Draw first, then read and act: a change made by an action shows on the next turn's
+redraw. */
 
 void main(void)
 
@@ -440,7 +450,9 @@ void main(void)
 
 // 6100
 
-/* reset room, turns, switches, cache, graphics; OPEN MESSAGES */
+/* Start (or restart) a game: room 1, turn 1, switches and picture cache cleared, CUROOM at room 1,
+HPLOT colour white, the custom DOS error handler installed, MESSAGES opened (once), hi-res page 1
+with four lines of text. */
 
 void init_game(void)
 
@@ -495,7 +507,8 @@ void init_game(void)
 // 6215
 
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
-/* installed as the DOS error handler: prints "A DISK ERROR HAS OCCURED" */
+/* Installed in dos_error_vector by init_game. Prints the message, then falls into messages_open
+(see there). */
 
 void disk_error_handler(void)
 
@@ -511,7 +524,10 @@ void disk_error_handler(void)
 
 // 6300
 
-/* prompt; parse "VERB NOUN" into verb/noun; complain about unknown words */
+/* Prompt, read a line and parse it into verb and noun numbers. The first word must be a verb and
+the second a noun; an unknown word prints "I DONT KNOW HOW TO <word> SOMETHING" (or "... <verb> A
+<noun>") by copying the words into the message text, and asks again. A blank second word looks up
+as N_NONE (eight spaces is in the noun table). */
 
 void read_command(void)
 
@@ -547,6 +563,8 @@ void read_command(void)
 
 // 63b9
 
+/* Print the separator and ENTER COMMAND. */
+
 void print_prompt(void)
 
 {
@@ -558,7 +576,9 @@ void print_prompt(void)
 
 // 63db
 
-/* read a line; RETURN alone toggles between the picture and full-screen text */
+/* Read a line into input_buffer with the Monitor's GETLN (no prompt character). RETURN on its own
+toggles between the picture (mixed mode) and a full text page, so earlier messages can be reread.
+*/
 
 void get_line(byte param_1)
 
@@ -590,7 +610,9 @@ void get_line(byte param_1)
 
 // 6418
 
-/* copy the next blank-separated word of the input (8 chars) into word_buf */
+/* Copy the next word of input_buffer, from parse_pos, into word_buf (blank-padded, first WORDLEN
+characters kept; the rest of a longer word is skipped). The end of the line is marked with
+INPUT_END first. */
 
 void next_word(void)
 
@@ -628,7 +650,10 @@ void next_word(void)
 
 // 6458
 
-/* find word_buf in the word table given inline; word_id = group number or $FF */
+/* Called as  JSR lookup_word / .word table. Looks word_buf up in a word table: word[WORDLEN]  count
+synonym[WORDLEN] * count     count 0 = none; HV ends the table word_id = the group's number (1 =
+first group), or NOT_FOUND. Uses the inline-operand convention itself: rt_args fetches the table
+address, rt_return skips it. */
 
 void lookup_word(void)
 
@@ -641,14 +666,14 @@ void lookup_word(void)
     word_id = word_id + 1;
     rt_compare(8, &word_buf);
     if (cmp_result == 0) {
-LAB_64c6:
+lookup_word.done:
                     /* WARNING: Subroutine does not return */
       rt_return(2);
     }
     rt_add8(8, &AWORK);
     if (*AWORK == 0xff) {
       word_id = 0xff;
-      goto LAB_64c6;
+      goto lookup_word.done;
     }
     if (*AWORK == 0) {
       rt_inc16(&AWORK);
@@ -658,7 +683,7 @@ LAB_64c6:
       rt_inc16(&AWORK);
       for (; counter != 0; counter = counter - 1) {
         rt_compare(8, &word_buf);
-        if (cmp_result == 0) goto LAB_64c6;
+        if (cmp_result == 0) goto lookup_word.done;
         rt_add8(8, &AWORK);
       }
     }
@@ -668,7 +693,9 @@ LAB_64c6:
 
 // 6500
 
-/* run actions_left actions starting at action_ptr */
+/* Run the rule's actions: action_ptr = AWORK (just past the conditions), actions_left = RULE_NACT.
+Each action handler (ACnn00) leaves through AC9000, which steps action_ptr past it and dispatches
+the next one through tbl_actions. */
 
 void run_actions(void)
 
@@ -693,6 +720,8 @@ void run_actions(void)
 
 // 6511
 
+/* Dispatch the action at action_ptr, or return when none are left. */
+
 void next_action(void)
 
 {
@@ -712,6 +741,9 @@ void next_action(void)
 
 
 // 6534
+
+/* Ends the action list early: the movement actions (ACNEWROM) and the game-ending ones leave
+through here. */
 
 void stop_actions(void)
 
@@ -768,7 +800,7 @@ void AC1300(void)
 void AC1400(void)
 
 {
-  ZAWORK = &OBJBASE;
+  ZAWORK = &obj_01;
   while (*ZAWORK != 0xff) {
     if (ZAWORK[2] == 0xfe) {
       print_message(ZAWORK[8]);
@@ -788,7 +820,7 @@ void AC1400(void)
 void AC1500(void)
 
 {
-  ZAWORK = &OBJBASE;
+  ZAWORK = &obj_01;
   act_temp = ZWORK[1];
   act_word1._0_1_ = ZWORK[2];
   while( true ) {
@@ -962,7 +994,10 @@ void AC2500(void)
 
 // 66d9
 
-/* action 16: restore game */
+/* Action 16: restore game. BLOADs the save file over $0830-$10FE (variables, objects, rooms),
+empties the picture cache so blocks are reloaded, then puts back the action pointer saved before
+the load. Bug: both bytes are stored into action_ptr's low byte; the high byte keeps the value
+from the save file. */
 
 void AC2600(void)
 
@@ -986,7 +1021,8 @@ void AC2600(void)
 
 // 671b
 
-/* action 17: game over: play again? */
+/* Action 17: game over. "WOULD YOU LIKE TO PLAY AGAIN": N quits (AC2300), anything else BLOADs
+STARTUP (the initial objects and rooms), clears the screen and restarts at main. */
 
 void AC2700(void)
 
@@ -1019,7 +1055,7 @@ void AC2800(void)
   act_arg2 = ZWORK[2];
   act_arg3 = ZWORK[3];
   act_arg4 = ZWORK[4];
-  ZAWORK = &OBJBASE;
+  ZAWORK = &obj_01;
   while (*ZAWORK != act_arg1) {
     rt_add8(ZAWORK[9], &ZAWORK);
   }
@@ -1041,7 +1077,7 @@ void AC2900(void)
 {
   act_arg1 = ZWORK[1];
   act_arg2 = ZWORK[2];
-  ZAWORK = &OBJBASE;
+  ZAWORK = &obj_01;
   while( true ) {
     if (*ZAWORK == 0xff) {
                     /* WARNING: Could not recover jumptable at 0x67fb. Too many branches */
@@ -1151,7 +1187,10 @@ void AC3600(void)
 
 // 6863
 
-/* move through the exit in act_arg1 (0 = "I CANT GO IN THAT DIRECTION"); ends the action list */
+/* Move through exit act_arg1 of the current room (0 = "I CANT GO IN THAT DIRECTION"). The room left
+reverts to its permanent view. Bug: act_word1's low byte is never set to the new room number
+before the multiply, so CUROOM is wrong until draw_room rebuilds it from room_no at the start of
+the next turn; nothing reads it in between. Ends the action list. */
 
 void ACNEWROM(void)
 
@@ -1177,7 +1216,9 @@ void ACNEWROM(void)
 
 // 68ac
 
-/* action 27: take the named object */
+/* Action 27: take the object named by the command's noun. Only an object in this room counts.
+OFIXED -> "IT DOESNT MOVE". OMOVED objects can always be taken; an OMOVABLE one only when the
+picture on screen is one it appears in (ORPICSTA). Otherwise "I DONT SEE IT HERE". */
 
 void AC3700(void)
 
@@ -1185,30 +1226,30 @@ void AC3700(void)
   byte bVar1;
   
   act_arg1 = noun;
-  ZAWORK = &OBJBASE;
+  ZAWORK = &obj_01;
   do {
     if (*ZAWORK == 0xff) {
       print_message(0x98);
-LAB_6934:
+AC3700.done:
       AC9000(0);
       return;
     }
     if ((ZAWORK[1] == act_arg1) && (ZAWORK[2] == room_no)) {
       if (ZAWORK[7] == 2) {
         print_message(0x97);
-        goto LAB_6934;
+        goto AC3700.done;
       }
       if (ZAWORK[7] == 1) {
-LAB_6920:
+AC3700.take:
         ZAWORK[2] = 0xfe;
         ZAWORK[7] = 1;
-        goto LAB_6934;
+        goto AC3700.done;
       }
       act_word1._0_1_ = CUROOM[9];
       bVar1 = 0xb;
       for (act_word2._0_1_ = ZAWORK[10]; (byte)act_word2 != 0; act_word2._0_1_ = (byte)act_word2 - 1
           ) {
-        if (ZAWORK[bVar1] == (byte)act_word1) goto LAB_6920;
+        if (ZAWORK[bVar1] == (byte)act_word1) goto AC3700.take;
         bVar1 = bVar1 + 1;
       }
     }
@@ -1219,23 +1260,24 @@ LAB_6920:
 
 // 6939
 
-/* action 28: drop the named object */
+/* Action 28: drop the object named by the command's noun into this room, as OMOVED (drawn in the
+next floor slot). Not carried -> "I DONT UNDERSTAND WHAT YOU MEAN". */
 
 void AC3800(void)
 
 {
-  ZAWORK = &OBJBASE;
+  ZAWORK = &obj_01;
   do {
     if (*ZAWORK == 0xff) {
       print_message(0x25);
-LAB_697c:
+AC3800.done:
       AC9000(0);
       return;
     }
     if ((ZAWORK[1] == noun) && (ZAWORK[2] == 0xfe)) {
       ZAWORK[2] = room_no;
       ZAWORK[7] = 1;
-      goto LAB_697c;
+      goto AC3800.done;
     }
     rt_add8(ZAWORK[9], &ZAWORK);
   } while( true );
@@ -1267,7 +1309,8 @@ void AC3900(void)
 
 // 69ba
 
-/* step action_ptr past the opcode and X operand bytes; next action */
+/* Common exit of every action handler: action_ptr += 1 + X (the opcode and X operand bytes), one
+fewer action left, next one. */
 
 void AC9000(char param_1)
 
@@ -1282,7 +1325,11 @@ void AC9000(char param_1)
 
 // 6a00
 
-/* Applesoft HGR: page 1, mixed text, clear */
+/* ---- relocated Applesoft hi-res routines ($6A00-$6DB8) --------------------------------- A copy
+of the Applesoft ROM's HGR/HPOSN/HPLOT/HGLIN/DRAW code, moved here and changed to use $0320-$032A
+for Applesoft's HGR.* variables ($E0-$EA) and the engine's applesoft_vars for the HPLOT/DRAW
+arguments. Labels inside follow the ROM's structure; the Lxxxx ones are left unnamed. HGR: show
+hi-res page 1 in mixed mode and clear it. */
 
 void hgr(void)
 
@@ -1355,14 +1402,14 @@ void hposn(byte param_1,byte param_2,char param_3)
   bVar3 = true;
   hgr_horiz = 0;
   bVar2 = param_2;
-  if (param_3 == '\0') goto LAB_6a63;
+  if (param_3 == '\0') goto L6A63;
   hgr_horiz = 0x23;
   bVar3 = 0xfb < param_2;
   bVar1 = param_2 + 5;
   do {
     hgr_horiz = hgr_horiz + 1;
     bVar2 = bVar1;
-LAB_6a63:
+L6A63:
     bVar1 = (bVar2 - 7) - !bVar3;
     bVar3 = true;
   } while ((bVar1 & ~bVar2 & 0x80) != 0);
@@ -1450,7 +1497,7 @@ void move_left_or_right(char param_1)
       bVar3 = 0x27;
     }
     bVar2 = 0xc0;
-LAB_6a9b:
+L6A9B:
     hmask = bVar2;
     hgr_horiz = bVar3;
     if ((char)(hgr_bits * '\x02' + '@') < '\0') {
@@ -1466,7 +1513,7 @@ LAB_6a9b:
   bVar3 = param_1 + 1;
   bVar4 = 0x27 < bVar3;
   bVar2 = 0x81;
-  if ((!bVar4) || (bVar3 = 0, bVar2 = 0x81, bVar4)) goto LAB_6a9b;
+  if ((!bVar4) || (bVar3 = 0, bVar2 = 0x81, bVar4)) goto L6A9B;
   if ((hgr_dx._1_1_ & 4) != 0) {
     bVar3 = hmask & 0x7f & *(byte *)hbasl;
     if (bVar3 == 0) {
@@ -1482,12 +1529,12 @@ LAB_6a9b:
   }
   if (1 < bVar3) {
     bVar3 = hbasl._1_1_ + 4;
-    if ((bVar3 & hgr_mask_table_m1) != 0) goto LAB_6b27;
+    if ((bVar3 & hgr_mask_table_m1) != 0) goto L6B27;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-LAB_6b51:
+L6B51:
       bVar4 = 0x1f < bVar3;
       bVar3 = (bVar3 - 0x20) + cVar8;
     }
@@ -1504,11 +1551,11 @@ LAB_6b51:
         bVar4 = false;
         cVar8 = '\x01';
         bVar3 = hgr_page;
-        if (bVar5) goto LAB_6b51;
+        if (bVar5) goto L6B51;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto LAB_6b27;
+    goto L6B27;
   }
   bVar3 = 0;
   bVar2 = hbasl._1_1_;
@@ -1516,7 +1563,7 @@ LAB_6b51:
     bVar3 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-LAB_6b21:
+L6B21:
       hbasl._0_1_ = bVar3;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1534,7 +1581,7 @@ LAB_6b21:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar3 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar1) goto LAB_6b21;
+      if (!bVar5 && 0xf >= bVar1) goto L6B21;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -1545,7 +1592,7 @@ LAB_6b21:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar3 = (bVar2 - 4) + bVar3;
-LAB_6b27:
+L6B27:
   hbasl = CONCAT11(bVar3,(byte)hbasl);
   return;
 }
@@ -1610,12 +1657,12 @@ void draw_move_ud_plot(byte param_1)
   }
   if (1 < bVar1) {
     bVar1 = hbasl._1_1_ + 4;
-    if ((bVar1 & hgr_mask_table_m1) != 0) goto LAB_6b27;
+    if ((bVar1 & hgr_mask_table_m1) != 0) goto L6B27;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-LAB_6b51:
+L6B51:
       bVar4 = 0x1f < bVar1;
       bVar1 = (bVar1 - 0x20) + cVar8;
     }
@@ -1632,11 +1679,11 @@ LAB_6b51:
         bVar4 = false;
         cVar8 = '\x01';
         bVar1 = hgr_page;
-        if (bVar5) goto LAB_6b51;
+        if (bVar5) goto L6B51;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto LAB_6b27;
+    goto L6B27;
   }
   bVar1 = 0;
   bVar3 = hbasl._1_1_;
@@ -1644,7 +1691,7 @@ LAB_6b51:
     bVar1 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-LAB_6b21:
+L6B21:
       hbasl._0_1_ = bVar1;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar3 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1662,7 +1709,7 @@ LAB_6b21:
       bVar3 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar1 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar2) goto LAB_6b21;
+      if (!bVar5 && 0xf >= bVar2) goto L6B21;
     }
     else {
       bVar3 = hbasl._1_1_ + 0x1f;
@@ -1673,7 +1720,7 @@ LAB_6b21:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar1 = (bVar3 - 4) + bVar1;
-LAB_6b27:
+L6B27:
   hbasl = CONCAT11(bVar1,(byte)hbasl);
   return;
 }
@@ -1726,12 +1773,12 @@ void draw_move_ud(byte param_1)
   }
   if (1 < bVar2) {
     bVar1 = hbasl._1_1_ + 4;
-    if ((bVar1 & hgr_mask_table_m1) != 0) goto LAB_6b27;
+    if ((bVar1 & hgr_mask_table_m1) != 0) goto L6B27;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-LAB_6b51:
+L6B51:
       bVar4 = 0x1f < bVar1;
       bVar1 = (bVar1 - 0x20) + cVar8;
     }
@@ -1748,11 +1795,11 @@ LAB_6b51:
         bVar4 = false;
         cVar8 = '\x01';
         bVar1 = hgr_page;
-        if (bVar5) goto LAB_6b51;
+        if (bVar5) goto L6B51;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto LAB_6b27;
+    goto L6B27;
   }
   bVar1 = 0;
   bVar2 = hbasl._1_1_;
@@ -1760,7 +1807,7 @@ LAB_6b51:
     bVar1 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-LAB_6b21:
+L6B21:
       hbasl._0_1_ = bVar1;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1778,7 +1825,7 @@ LAB_6b21:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar1 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar3) goto LAB_6b21;
+      if (!bVar5 && 0xf >= bVar3) goto L6B21;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -1789,7 +1836,7 @@ LAB_6b21:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar1 = (bVar2 - 4) + bVar1;
-LAB_6b27:
+L6B27:
   hbasl = CONCAT11(bVar1,(byte)hbasl);
   return;
 }
@@ -1830,12 +1877,12 @@ void move_down(void)
   
   if (in_N) {
     bVar3 = hbasl._1_1_ + 4 + in_C;
-    if ((bVar3 & hgr_mask_table_m1) != 0) goto LAB_6b27;
+    if ((bVar3 & hgr_mask_table_m1) != 0) goto L6B27;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-LAB_6b51:
+L6B51:
       bVar4 = 0x1f < bVar3;
       bVar3 = (bVar3 - 0x20) + cVar8;
     }
@@ -1852,11 +1899,11 @@ LAB_6b51:
         bVar4 = false;
         cVar8 = '\x01';
         bVar3 = hgr_page;
-        if (bVar5) goto LAB_6b51;
+        if (bVar5) goto L6B51;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto LAB_6b27;
+    goto L6B27;
   }
   bVar3 = 0;
   bVar2 = hbasl._1_1_;
@@ -1864,7 +1911,7 @@ LAB_6b51:
     bVar3 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-LAB_6b21:
+L6B21:
       hbasl._0_1_ = bVar3;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1882,7 +1929,7 @@ LAB_6b21:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar3 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar1) goto LAB_6b21;
+      if (!bVar5 && 0xf >= bVar1) goto L6B21;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -1893,7 +1940,7 @@ LAB_6b21:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar3 = (bVar2 - 4) + bVar3;
-LAB_6b27:
+L6B27:
   hbasl = CONCAT11(bVar3,(byte)hbasl);
   return;
 }
@@ -1937,10 +1984,10 @@ void hglin(byte param_1,byte param_2,byte param_3)
   hgr_x._0_1_ = param_1;
   hgr_x._1_1_ = param_2;
   hgr_y = param_3;
-  if ((hgr_dx._1_1_ & hgr_count_hi & 0x80) != 0) goto LAB_6bb2;
+  if ((hgr_dx._1_1_ & hgr_count_hi & 0x80) != 0) goto L6BB2;
   do {
     move_left_or_right(bVar1 << 1);
-LAB_6bb2:
+L6BB2:
     bVar4 = CARRY1((byte)hgr_err,hgr_dy);
     hgr_err._0_1_ = (byte)hgr_err + hgr_dy + 1;
     bVar1 = hgr_err._1_1_ - !bVar4;
@@ -2030,7 +2077,7 @@ void draw0(byte param_1,undefined1 param_2,undefined1 param_3)
 
 // 6cf9
 
-/* read var_x/var_y into HGR.X/HGR.Y (Applesoft HFNS) */
+/* HFNS: read var_x / var_y and position the pen there (HPOSN). */
 
 void hfns(void)
 
@@ -2096,6 +2143,8 @@ void draw_shape(void)
 
 // 6d51
 
+/* Look up var_shape in the shape table (1..count) for DRAW0. */
+
 undefined1 find_shape(byte param_1)
 
 {
@@ -2125,6 +2174,8 @@ undefined1 find_shape(byte param_1)
 
 // 6d90
 
+/* Read HCOLOR from var_hcolor (must be < 256). */
+
 byte get_hcolor(void)
 
 {
@@ -2139,6 +2190,8 @@ byte get_hcolor(void)
 
 
 // 6d92
+
+/* Read the variable at applesoft_vars + Y; a high byte other than 0 is an error. */
 
 byte get_var(byte param_1)
 
@@ -2156,6 +2209,7 @@ byte get_var(byte param_1)
 // 6d9a
 
 /* WARNING: Control flow encountered bad instruction data */
+/* X coordinate: must be < 280. */
 
 byte get_var_x(byte param_1)
 
@@ -2175,6 +2229,7 @@ byte get_var_x(byte param_1)
 // 6dac
 
 /* WARNING: Control flow encountered bad instruction data */
+/* Bad coordinate: Applesoft's error routine. */
 
 void quantity_error(void)
 
@@ -2185,6 +2240,8 @@ void quantity_error(void)
 
 
 // 6daf
+
+/* Y coordinate: must be < 192. */
 
 void get_var_y(void)
 
@@ -2202,7 +2259,7 @@ void get_var_y(void)
 
 // 6e00
 
-/* empty hook called every turn */
+/* Called every turn from main; does nothing. */
 
 void nothing(void)
 
@@ -2213,14 +2270,17 @@ void nothing(void)
 
 // 7000
 
-/* draw the objects visible in the current room and picture */
+/* Draw the objects in the current room. An OMOVED object (taken and dropped) goes in the next floor
+slot, and only in the room's permanent view. Any other object is drawn at its own position when
+the picture on screen is in its ORPICSTA list. OFIXED objects (the people) are drawn that way
+too. */
 
 void draw_objects(void)
 
 {
   
   floor_slot = 0;
-  ZWORK = &OBJBASE;
+  ZWORK = &obj_01;
   do {
     if (*ZWORK == 0xff) {
       return;
@@ -2246,6 +2306,8 @@ void draw_objects(void)
 
 
 // 706d
+
+/* Draw the object at ZWORK at its OXCOORD/OYCOORD. */
 
 void draw_object_in_place(void)
 
@@ -2281,7 +2343,9 @@ void draw_object_on_floor(void)
 // 70b6
 
 /* WARNING: Unknown calling convention */
-/* draw picture or shape X at draw_dx/draw_dy */
+/* Draw picture or shape X offset by draw_dx/draw_dy: a shape (OSHAPE = 1) with the relocated DRAW,
+otherwise the vector picture through draw_picture. shown_picture is saved and restored around it,
+because draw_picture draws shown_picture. */
 
 void draw_object(byte x)
 
@@ -2308,7 +2372,8 @@ void draw_object(byte x)
 // 7200
 
 /* WARNING: Unknown calling convention */
-/* picture_ptr = picture X, loading its BLOCK into the cache if needed */
+/* picture_ptr = the start of picture X: look up its (block, offset) in picture_directory (PICDIR +
+3 * X) and make sure the block is in the cache. */
 
 void load_picture(byte x)
 
@@ -2330,6 +2395,8 @@ void load_picture(byte x)
 
 // 723b
 
+/* Cache lookup, then picture_ptr = slot buffer + pic_offset. */
+
 void find_cached_block(void)
 
 {
@@ -2343,6 +2410,9 @@ void find_cached_block(void)
 
 
 // 724e
+
+/* Find pic_block in the five cache slots. A hit records the current turn in the slot; a miss evicts
+the least recently used slot and loads the block into it. */
 
 void cache_lookup(void)
 
@@ -2371,7 +2441,7 @@ void cache_lookup(void)
 
 // 72a1
 
-/* least recently used of the 5 slots */
+/* Pick the slot with the oldest turn (cache_victim, ZWORK = its buffer). */
 
 void cache_choose_victim(void)
 
@@ -2401,7 +2471,8 @@ void cache_choose_victim(void)
 
 // 72fd
 
-/* BLOAD BLOCKn,A$xxxx into the chosen slot */
+/* Load BLOCKn into the victim slot by patching the digits of the DOS command below and printing it,
+then record the block and the turn in the slot. */
 
 void cache_load_block(void)
 
@@ -2427,7 +2498,10 @@ void cache_load_block(void)
 // 7400
 
 /* WARNING: Unknown calling convention */
-/* print message X (four are built in; others are read from MESSAGES) */
+/* Print message X. Four short ones are built in; the rest are read from the MESSAGES file:
+message_index gives the byte offset, read_message_line READs that line into input_buffer,
+word_wrap breaks it at 39 columns. Afterwards a short pause unless msg_no_delay is $FF (room
+descriptions). */
 
 void print_message(byte x)
 
@@ -2485,6 +2559,10 @@ void print_message(byte x)
 
 // 7504
 
+/* READ MESSAGES,B$xxxx (offset patched in by print_message) and let DOS read one line into
+input_buffer via GETLN1. The first two bytes of the line are saved around the CTRL-D that ends
+the READ, because printing it disturbs them. */
+
 void read_message_line(void)
 
 {
@@ -2501,6 +2579,8 @@ void read_message_line(void)
 
 
 // 7540
+
+/* msg_offset -> four ASCII hex digits in hex_out. */
 
 void offset_to_hex(void)
 
@@ -2521,6 +2601,8 @@ void offset_to_hex(void)
 
 // 756e
 
+/* hex_in -> hex_hi (high nibble), hex_lo (low nibble). */
+
 void split_nibbles(void)
 
 {
@@ -2531,6 +2613,8 @@ void split_nibbles(void)
 
 
 // 758c
+
+/* Map the four nibbles in hex_out to ASCII digits. */
 
 void nibbles_to_ascii(void)
 
@@ -2548,7 +2632,8 @@ void nibbles_to_ascii(void)
 
 // 759e
 
-/* wrap the line in input_buffer at 39 columns */
+/* Break the $8D-terminated line at ZWORK into lines of at most 39 columns at spaces, and replace
+the final $8D with $00. */
 
 void word_wrap(void)
 
@@ -2576,7 +2661,8 @@ void word_wrap(void)
 // 7600
 
 /* WARNING: Unknown calling convention */
-/* copy X bytes: .word src, dst */
+/* ---- the macro library --------------------------------------------------------------------- A
+jump table; each entry takes its operands inline after the JSR (see NOTES.md). */
 
 void rt_copy(byte x)
 
@@ -2688,6 +2774,9 @@ void rt_mul8(byte x)
 
 // 762c
 
+/* rt_args: the routine that called it was itself called with inline operands; point rt_operands at
+them (its caller's return address + 1). */
+
 void rt_args_body(void)
 
 {
@@ -2707,6 +2796,8 @@ void rt_args_body(void)
 // 7650
 
 /* WARNING: Unknown calling convention */
+/* rt_return: return from the routine that called it to that routine's caller, skipping X inline
+operand bytes. Never returns to its own caller. */
 
 void rt_return_body(byte x)
 
@@ -2721,6 +2812,8 @@ void rt_return_body(byte x)
 
 
 // 7666
+
+/* rt_print: print the inline text up to $00 with COUT, then skip it. */
 
 void rt_print_body(void)
 
@@ -2744,6 +2837,7 @@ void rt_print_body(void)
 // 767d
 
 /* WARNING: Unknown calling convention */
+/* rt_copy: copy X bytes from src to dst (copies from the end down). */
 
 void rt_copy_body(byte x)
 
@@ -2767,6 +2861,7 @@ void rt_copy_body(byte x)
 // 76a8
 
 /* WARNING: Unknown calling convention */
+/* rt_add8: add X to the word at addr. */
 
 void rt_add8_body(byte x)
 
@@ -2786,6 +2881,8 @@ void rt_add8_body(byte x)
 
 // 76cd
 
+/* rt_inc16: add 1 to the word at addr. */
+
 void rt_inc16_body(void)
 
 {
@@ -2804,6 +2901,7 @@ void rt_inc16_body(void)
 // 76f0
 
 /* WARNING: Unknown calling convention */
+/* rt_compare: compare X bytes at (AWORK) with addr; cmp_result = 0 if equal, 1 if not. */
 
 void rt_compare_body(byte x)
 
@@ -2818,19 +2916,21 @@ void rt_compare_body(byte x)
   do {
     if (rt_ptr1[bVar1] != rt_ptr2[bVar1]) {
       cmp_result = 1;
-      goto LAB_7725;
+      goto rt_compare_body.done;
     }
     bVar1 = bVar1 + 1;
     x = x - 1;
   } while (x != 0);
   cmp_result = 0;
-LAB_7725:
+rt_compare_body.done:
                     /* WARNING: Subroutine does not return */
   rt_return(2);
 }
 
 
 // 772a
+
+/* rt_add16: word at dst += word at src. */
 
 void rt_add16_body(void)
 
@@ -2853,6 +2953,7 @@ void rt_add16_body(void)
 // 7757
 
 /* WARNING: Unknown calling convention */
+/* rt_mul8: the word at addr *= X (8-step shift and add through mul_result). */
 
 void rt_mul8_body(byte x)
 
@@ -2894,7 +2995,8 @@ void rt_mul8_body(byte x)
 
 // 7900
 
-/* set up CUROOM; draw its current picture and objects (if lit); print its description */
+/* Redraw the room: CUROOM from room_no, clear the screen, and if the room is lit (LAMPSTAT = ON)
+draw its current picture and the objects. Then print the description without the usual pause. */
 
 void draw_room(void)
 
@@ -2916,7 +3018,7 @@ void draw_room(void)
 
 // 792d
 
-/* CUROOM = ROOMBASE + room_no * 10 */
+/* CUROOM = ROOMBASE + room_no * RTBLSIZ. */
 
 void set_curoom(void)
 
@@ -2934,7 +3036,9 @@ void set_curoom(void)
 
 // 7a00
 
-/* draw shown_picture from its cached block */
+/* Draw shown_picture: a stream of (x, y) pairs, each a line from the previous point, except that 00
+00 makes the next point start a new line and FF FF ends the picture. Points are offset by
+draw_dx/draw_dy and clamped to MAX_X / MAX_Y. */
 
 void draw_picture(void)
 
@@ -2942,7 +3046,7 @@ void draw_picture(void)
   byte bVar1;
   
   load_picture(shown_picture);
-LAB_7a06:
+draw_picture.next_point:
   do {
     bVar1 = *picture_ptr;
     if (bVar1 == 0xff) {
@@ -2955,7 +3059,7 @@ LAB_7a06:
       if (picture_ptr[1] == 0) {
         pen_up = 1;
         rt_add8(2, &picture_ptr);
-        goto LAB_7a06;
+        goto draw_picture.next_point;
       }
       bVar1 = *picture_ptr;
     }

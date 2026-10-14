@@ -16,3 +16,6 @@ WAIT         = $FCA8    ; Monitor: delay
 GETLN        = $FD6A    ; Monitor: read a line into $0200 with the prompt in $33
 GETLN1       = $FD6F    ; Monitor: read a line into $0200 without a prompt
 COUT         = $FDED    ; Monitor: print character A (DOS intercepts CTRL-D commands)
+
+HI_SPACE     = $A0    ; Apple II text is high-bit ASCII
+HI_CR        = $8D

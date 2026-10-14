@@ -180,3 +180,70 @@ N_D              = 86    ; D, DOWN
 N_BOOKS          = 87    ; BOOKS, BOOK
 N_GAME           = 88    ; GAME, ADVENTUR
 N_DONE           = 89    ; DONE
+
+; ---- record layouts (names in CAPITALS without a note are the original author's) ----
+; room record, RTBLSIZ bytes at ROOMBASE + room * RTBLSIZ
+RROOMNO  = 0
+RMSG     = 1      ; description message
+RN       = 2      ; exits: room number or 0
+RS       = 3
+RE       = 4
+RW       = 5
+RU       = 6
+RD       = 7
+RBASEPIC = 8      ; the room's permanent view
+RCURPIC  = 9      ; the view shown now
+RTBLSIZ  = 10
+; object record at OBJBASE, variable length (ONEXT), table ends with HV
+OBJECTNO = 0
+ONOUN    = 1      ; noun number (name not in the surviving source)
+OROOM    = 2      ; room, CARRYING or NOWHERE
+OPIC     = 3      ; picture or shape number
+OSHAPE   = 4      ; 1 = OPIC is a shape-table shape (name not in the surviving source)
+OXCOORD  = 5
+OYCOORD  = 6
+OSTATUS  = 7      ; OMOVABLE, OMOVED or OFIXED
+OMSG     = 8      ; inventory text
+ONEXT    = 9      ; record length
+ORPICKT  = 10     ; number of pictures the object appears in
+ORPICSTA = 11     ; first of those picture numbers
+HV       = $FF    ; end of the object table (and of the rule and word tables)
+CARRYING = $FE    ; OROOM: in the inventory (CARRIED in the data tables)
+; rule header (names not in the surviving source)
+RULE_ROOM  = 0
+RULE_VERB  = 1
+RULE_NOUN  = 2
+RULE_LEN   = 3
+RULE_NCOND = 4
+RULE_NACT  = 5
+RULE_BODY  = 6    ; conditions, then actions
+; operands of the current condition or action, as offsets from its opcode byte. The original
+; source calls the first two X and Y (LDY #X / LDA (ZWORK),Y).
+ARG_X    = 1
+ARG_Y    = 2
+ARG_3    = 3
+ARG_4    = 4
+; LAMPSTAT values (the source writes LDY #ON / LDY #OFF)
+ON       = 0
+OFF      = 1
+
+; messages print_message handles itself
+MSG_GETTING_DARK     = $07
+MSG_DONT_UNDERSTAND  = $25
+MSG_NOT_CARRYING     = $7F
+MSG_CANT_GO          = $89
+; messages from the MESSAGES file the engine prints directly
+MSG_GOODBYE          = $8C
+MSG_DOESNT_MOVE      = $97
+MSG_DONT_SEE_IT      = $98
+
+WORDLEN    = 8    ; only the first 8 letters of a word count
+NSWITCH    = 20   ; size of SWITCH
+NOT_FOUND  = $FF  ; word_id when a word is not in the dictionary
+INPUT_END  = $FF  ; next_word: marker written after the typed line
+; picture streams
+PIC_NEWLINE = $00 ; 00 00: the next point starts a new line
+PIC_END     = $FF ; FF FF: end of the picture
+MAX_X       = $FF ; points are clamped to the 256 x 161 picture area
+MAX_Y       = $A0
+CACHE_SLOTS = 5   ; picture cache: slots of 4 bytes in pic_cache

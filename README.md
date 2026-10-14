@@ -54,7 +54,8 @@ grows into the next table the assembler stops with ".org goes backwards" - delet
 "leftover memory" just before it to make room.
 
 Optional: with `GHIDRA_INSTALL_DIR` set to Ghidra 12.1.x the build also regenerates the C
-pseudocode in `decomp/` (from `symbols/*.csv`, which carry the same names as `src/`).
+pseudocode in `decomp/`. Its names and function comments come from `src/` (the assembler's symbol
+table); `symbols/*.csv` only adds Ghidra data types and register parameters.
 `tools/gen_source.py` is the one-time generator that produced `src/` from the original binary.
 
 ## Source

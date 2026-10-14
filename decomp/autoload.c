@@ -3,7 +3,7 @@
 
 // 0ffd
 
-/* menu: G = game, I = instructions */
+/* Show the title picture with four lines of text and ask for G (game) or I (instructions). */
 
 void start(void)
 
@@ -33,7 +33,8 @@ void start(void)
 
 // 105a
 
-/* eight pages of instructions and the cast of characters */
+/* Full-screen text: six pages of instructions ending with the cast of characters, each page waiting
+for RETURN (GETLN1), then on to the game. */
 
 void show_instructions(void)
 
@@ -96,7 +97,8 @@ void show_instructions(void)
 
 // 1b7b
 
-/* PRINT CHR$(4)"BRUN ADVENTURE" */
+/* Print CTRL-D BRUN ADVENTURE: DOS takes it as a command and loads the game over this program, so
+the RTS is only reached if the BRUN fails. */
 
 void run_adventure(void)
 
@@ -110,7 +112,7 @@ void run_adventure(void)
 // 1c00
 
 /* WARNING: Unknown calling convention */
-/* copy X bytes: .word src, dst */
+/* ---- the macro library (see src/adventure.s and NOTES.md) ---- copy X bytes: .word src, dst */
 
 void rt_copy(byte x)
 
@@ -352,13 +354,13 @@ void rt_compare_body(byte x)
   do {
     if (rt_ptr1[bVar1] != rt_ptr2[bVar1]) {
       cmp_result = 1;
-      goto LAB_1d25;
+      goto rt_compare_body.done;
     }
     bVar1 = bVar1 + 1;
     x = x - 1;
   } while (x != 0);
   cmp_result = 0;
-LAB_1d25:
+rt_compare_body.done:
                     /* WARNING: Subroutine does not return */
   rt_return(2);
 }

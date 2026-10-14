@@ -1,5 +1,8 @@
 address,name,type,comment
-# Names in CAPITALS come from the original source (fragments in decomp/source_fragments.s and the
+# Ghidra extras for the pseudocode: data types (byte/word/ptr[n]) and register parameters
+# (func:X). Names and function comments come from src/adventure.s; the name column here is only
+# a reminder of what the address is, and build.sh ignores it where src/ defines one.
+# Names in CAPITALS come from the original source (fragments in original_source/ and the
 # stale assembler symbol table at $6232). Everything else is named from behaviour.
 # type: func, func:<regs> (register parameters), byte/word/ptr[/n], or empty for a label.
 #
@@ -128,9 +131,9 @@ address,name,type,comment
 793B,roombase_addr,word,
 #
 # ---- code ----
-0800,start,func,BRUN entry: set up the stack and fake_vartab then enter the game
+0800,applesoft_vars,func,BRUN entry: set up the stack and fake_vartab then enter the game
 5A00,run_rules,func,after a command: command rules, then turn rules
-5A07,run_command_rules,func,first matching command rule runs; none -> "I DONT UNDERSTAND"
+5A07,old_hex_lo,func,first matching command rule runs; none -> "I DONT UNDERSTAND"
 5A34,run_turn_rules,func,every matching turn rule runs
 5A55,test_rule,func,match room/verb/noun ($FE = any) and conditions; run actions if all pass
 5A9C,next_condition,func,dispatch the next condition or run the actions when none are left

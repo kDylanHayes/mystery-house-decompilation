@@ -243,8 +243,10 @@ with the assembled code.
 * `AC2600` also zeroes the picture cache table, so every block is loaded again after a restore.
 * `disk_error_handler` (`$6215`) prints its message and then "returns" into `$6232`, the
   OPEN-once flag, because the text's terminator is the byte before it. After `init_game` that
-  byte is `$FF`, an undocumented 3-byte opcode on the 6502, followed by the leftover symbol
-  table; a disk error does not come back cleanly.
+  byte is `$FF`, an undocumented 3-byte opcode on the 6502 that swallows the `RTS`, followed by
+  the leftover symbol table; a disk error does not come back cleanly. The older handler kept in
+  the dead code (`dead_disk_error`, `$56CE`) has its `RTS` straight after the text, so the bug
+  came in when the flag byte was added.
 * Verb 33 is `UNLIGHT` with the synonym `OFF`, but `OFF` is verb 32 and is matched first, so
   the synonym can never be reached. `SCORE` (40) and `DONE` (43) are in the dictionary but no
   rule uses them. Verb 39 is a group of four profanities; its only rule prints one line and

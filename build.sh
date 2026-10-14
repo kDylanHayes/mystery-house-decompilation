@@ -16,8 +16,8 @@ mkdir -p "$B"
 
 python3 -I "$HERE/tools/dos33.py" "$DISK" "$HERE/extracted" > /dev/null
 
-python3 -I "$HERE/tools/asm6502.py" "$HERE/src/adventure.s" "$B/ADVENTURE.bin" "$B/adventure.lst"
-python3 -I "$HERE/tools/asm6502.py" "$HERE/src/autoload.s" "$B/AUTO_LOAD_OBJ.bin" "$B/autoload.lst"
+python3 -I "$HERE/tools/asm6502.py" "$HERE/src/adventure.s" "$B/ADVENTURE.bin" "$B/adventure.lst" "$B/adventure.syms.csv"
+python3 -I "$HERE/tools/asm6502.py" "$HERE/src/autoload.s" "$B/AUTO_LOAD_OBJ.bin" "$B/autoload.lst" "$B/autoload.syms.csv"
 printf 0800 > "$B/ADVENTURE.bin.load"
 printf 0FFD > "$B/AUTO_LOAD_OBJ.bin.load"
 for f in ADVENTURE AUTO_LOAD_OBJ; do
@@ -45,7 +45,9 @@ mkdir -p "$W"
 for prog in adventure autoload; do
 	file=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['file'])" "$HERE/programs/$prog.json")
 	load=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['load'])" "$HERE/programs/$prog.json")
-	cat "$HERE/symbols/apple2.csv" "$HERE/symbols/$prog.csv" > "$W/$prog.symbols.csv"
+	# names and comments from src/, types and register parameters from symbols/
+	python3 -I "$HERE/tools/ghidra_symbols.py" "$B/$prog.syms.csv" "$HERE/symbols/apple2.csv" \
+		"$HERE/symbols/$prog.csv" "$W/$prog.symbols.csv"
 	python3 -I "$HERE/tools/trace6502.py" "$HERE/programs/$prog.json" "$B/files/$file" "$W/$prog.plan.json"
 	"$GHIDRA_INSTALL_DIR/support/analyzeHeadless" "$W" "$prog" \
 		-import "$B/files/$file" -overwrite \

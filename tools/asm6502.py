@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """A small two-pass 6502 assembler for the sources in src/.
 
-usage: asm6502.py <source.s> <out.bin> [listing.txt]
+usage: asm6502.py <source.s> <out.bin> [listing.txt [symbols.csv]]
+
+symbols.csv lists every label and every constant defined outside game.inc (name,address,kind,file),
+with the comment block written directly above each label; build.sh feeds it to Ghidra.
 
 Syntax (a subset of the common ca65/Merlin conventions):
 
@@ -75,6 +78,8 @@ class Assembler:
     def __init__(self):
         self.symbols = {}
         self.final = False
+        self.defined = {}     # name -> ('label' | 'const', source file)
+        self.notes = {}       # label -> comment block above it
 
     # ---- expressions ----------------------------------------------------------------
     TOKEN = re.compile(r"\s*(\$[0-9A-Fa-f]+|%[01]+|\d+|'.'|[A-Za-z_@.][A-Za-z0-9_@.]*|[-+*/&|()<>])")
@@ -205,8 +210,17 @@ class Assembler:
 
     def read(self, path):
         lines = []
+        block = []
         for n, raw in enumerate(open(path, encoding='ascii'), 1):
             line = raw.rstrip('\n')
+            if line.startswith(';'):
+                block.append(line[1:].strip())
+            else:
+                m = re.match(r'^([A-Za-z_@][A-Za-z0-9_@.]*):', line)
+                if m and block and not block[-1].startswith('----'):
+                    self.notes[m.group(1)] = ' '.join(b for b in block if b and not b.startswith('===='))
+                if line.strip():
+                    block = []
             # strip comments outside strings
             q = False
             for i, c in enumerate(line):
@@ -264,6 +278,7 @@ class Assembler:
                         v, ok = self.value(m.group(2))
                         if ok:
                             self.symbols[m.group(1)] = v
+                            self.defined[m.group(1)] = ('const', src)
                         continue
                     m = re.match(r'^([A-Za-z_@][A-Za-z0-9_@.]*):(.*)$', line.strip())
                     if m:
@@ -272,6 +287,7 @@ class Assembler:
                         if not final and m.group(1) in self.symbols and self.symbols[m.group(1)] != pc:
                             raise AsmError('duplicate label %s' % m.group(1))
                         self.symbols[m.group(1)] = pc
+                        self.defined[m.group(1)] = ('label', src)
                         line = m.group(2)
                         if not line.strip():
                             continue
@@ -368,6 +384,14 @@ def main():
     open(sys.argv[2], 'wb').write(data)
     if len(sys.argv) > 3:
         open(sys.argv[3], 'w').write('\n'.join(listing) + '\n')
+    if len(sys.argv) > 4:
+        with open(sys.argv[4], 'w') as f:
+            f.write('name,address,kind,file,comment\n')
+            for name, (kind, src) in sorted(a.defined.items(), key=lambda x: a.symbols[x[0]]):
+                if os.path.basename(src) == 'game.inc':
+                    continue
+                f.write('%s,%04X,%s,%s,%s\n' % (name, a.symbols[name] & 0xFFFF, kind,
+                                               os.path.basename(src), a.notes.get(name, '')))
     print('%s: $%04X-$%04X, %d bytes' % (os.path.basename(sys.argv[1]), org, org + len(data) - 1, len(data)))
 
 
