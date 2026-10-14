@@ -35,7 +35,9 @@ cp -R "$HERE/extracted" "$B/files"
 cp "$B/ADVENTURE.bin" "$B/AUTO_LOAD_OBJ.bin" "$B/files/"
 python3 -I "$HERE/tools/gamedata.py" "$B/files" "$HERE/assets/text"
 python3 -I "$HERE/tools/pictures.py" "$B/files" "$HERE/assets/text/gamedata.json" "$HERE/assets"
-python3 -I "$HERE/tools/source_fragments.py" "$B/files/ADVENTURE.bin" "$HERE/decomp/source_fragments.s"
+# the original source left in memory: always taken from the original binary, so it is kept even
+# if the leftover memory in src/ is deleted to make room
+python3 -I "$HERE/tools/source_fragments.py" "$HERE/extracted/ADVENTURE.bin" "$HERE/original_source"
 
 [ -n "${GHIDRA_INSTALL_DIR:-}" ] || { echo "GHIDRA_INSTALL_DIR not set: decomp/*.c left as is"; exit 0; }
 W="$B/ghidra"

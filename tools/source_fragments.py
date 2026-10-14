@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Recover the fragments of the original 6502 assembly source left inside ADVENTURE.
 
-usage: source_fragments.py <ADVENTURE.bin> <out.s>
+usage: source_fragments.py <ADVENTURE.bin> <out dir>
+
+Writes <out dir>/fragments.s (decoded) and <out dir>/raw/fragment_XXXX.bin (the tokenized bytes
+exactly as they sit in the binary, XXXX = run-time address).
 
 When ADVENTURE was saved, memory from about $0880 to $2000 still held part of the assembler's
 tokenized source buffer: the action handlers AC1100-AC3000 (the bytecode interpreter's actions)
@@ -14,6 +17,7 @@ with their comments. Each source line is stored as
 characters, ': ', followed by the line's statement. The opcode tokens were identified by
 matching each fragment against the assembled handlers in this binary.
 """
+import os
 import sys
 
 LOAD = 0x0800
@@ -75,7 +79,13 @@ def main():
             p = e
         else:
             p += 1
-    with open(sys.argv[2], 'w') as f:
+    out = sys.argv[2]
+    os.makedirs(os.path.join(out, 'raw'), exist_ok=True)
+    for p, lines in frags:
+        last_p, kind, v = lines[-1]
+        end = last_p + (11 if kind == 'label' else d[last_p] + 1)
+        open(os.path.join(out, 'raw', 'fragment_%04X.bin' % (p + LOAD)), 'wb').write(d[p:end])
+    with open(os.path.join(out, 'fragments.s'), 'w') as f:
         f.write('; Fragments of the original ADVENTURE source, recovered from stale memory saved inside\n'
                 '; the ADVENTURE binary (see tools/source_fragments.py). The text between fragments\n'
                 '; was overwritten. Labels ACnn00 are the action handlers at tbl_actions[nn-10];\n'

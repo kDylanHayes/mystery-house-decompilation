@@ -15,7 +15,7 @@ See [NOTES.md](NOTES.md) for how the engine works.
 | `decomp/adventure.c` | Ghidra pseudocode for the game engine, every function named |
 | `src/adventure.s`, `src/autoload.s` | **reassemblable source**, byte-identical to the originals |
 | `decomp/autoload.c` | the 1987 loader / instructions program (`AUTO LOAD OBJ`) |
-| `decomp/source_fragments.s` | 313 lines of the **original 1980 source**, recovered from stale memory inside the binary |
+| `original_source/` | 313 lines of the **original 1980 source**, recovered from stale memory inside the binary: decoded (`fragments.s`) and the raw tokenized bytes (`raw/`) |
 | `extracted/APPLESOFT.bas` etc. | the disk's BASIC programs listed as text |
 | `assets/text/rules.txt` | the game logic: all 358 rules decompiled to readable pseudocode |
 | `assets/text/rooms.txt`, `objects.txt`, `vocabulary.txt`, `messages.txt` | the game database |

@@ -215,7 +215,7 @@ When `ADVENTURE` was saved, memory still held the author's tools:
   handlers `AC1100`-`AC3000` with comments such as `; MOVE TO ROOM X`,
   `; MULT NEW ROOM # BY ENT SIZE` and `; WOOPEE! WE'VE GOT IT!`. Each line is
   `[len] [opcode token] [mode] operand [$BB comment] $0D`, with labels as a separate 10-byte
-  record. `tools/source_fragments.py` recovers it to `decomp/source_fragments.s`.
+  record. `tools/source_fragments.py` recovers it to `original_source/` (decoded text and the raw tokenized bytes).
 * **Symbol table** pieces (`$4348`, `$6232`): `AC1300`... with their addresses, and the record
   field names `OMOVABLE OMOVED OFIXED OMSG ONEXT ORPICKT ORPICSTA RROOMNO RMSG RN RS RE RW RU
   RD RBASEPIC RCURPIC RTBLSIZ DRBLK DROFFSE(T)`.

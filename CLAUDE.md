@@ -21,6 +21,8 @@ build also regenerates the C pseudocode in `decomp/*.c`.
   `src/`, so a rename needs both.
 - `tools/gen_source.py` produced `src/` once from the original binary; don't rerun it over
   hand edits.
+- `original_source/`: the author's 1980 source fragments found in the binary (decoded + raw
+  tokenized bytes), regenerated from the original disk; keep it.
 - Generated, don't hand-edit: `assets/`, `extracted/`, `decomp/`, `build/` (ignored).
 
 ## Conventions
