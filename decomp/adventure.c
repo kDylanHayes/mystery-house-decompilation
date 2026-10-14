@@ -1325,11 +1325,18 @@ void AC9000(char param_1)
 
 // 6a00
 
-/* ---- relocated Applesoft hi-res routines ($6A00-$6DB8) --------------------------------- A copy
-of the Applesoft ROM's HGR/HPOSN/HPLOT/HGLIN/DRAW code, moved here and changed to use $0320-$032A
-for Applesoft's HGR.* variables ($E0-$EA) and the engine's applesoft_vars for the HPLOT/DRAW
-arguments. Labels inside follow the ROM's structure; the Lxxxx ones are left unnamed. HGR: show
-hi-res page 1 in mixed mode and clear it. */
+/* ---- relocated Applesoft hi-res routines ($6A00-$6DB8) --------------------------------- ----
+relocated Applesoft hi-res routines ($6A00-$6DB8) --------------------------------------- A copy
+of the Applesoft ROM's hi-res graphics code (HGR, HPOSN, HPLOT, HGLIN, DRAW and their helpers),
+moved into the game and changed in three ways: Applesoft's HGR.* zero-page variables ($E0-$EA)
+live at $0320-$032A instead; the HPLOT/DRAW arguments are read from the engine's own
+Applesoft-style variables at applesoft_vars (VAR_* offsets in game.inc) instead of from BASIC;
+and DRAW's scale is fixed at 1. Names follow the Applesoft routines (HPOSN, MOVE.UP.OR.DOWN,
+...). Routines marked "not called by the game" came along with the copy. The hi-res screen: 280 x
+192 pixels, 7 pixels per byte (bit 0 leftmost, bit 7 selects the colour group), 40 bytes per row.
+Rows are interleaved in memory: row y is at $2000 + $400 * (y & 7) + $80 * ((y >> 3) & 7) + $28 *
+(y >> 6) so moving up or down a row means adjusting HBASL/HBASH (hbasl) rather than adding 40.
+HGR: show hi-res page 1 in mixed mode (four text lines at the bottom) and clear it. */
 
 void hgr(void)
 
@@ -1359,6 +1366,8 @@ void hgr(void)
 
 // 6a0e
 
+/* HCLR: clear the page to black (hgr_bits = 0), via BKGND. */
+
 void hclr(void)
 
 {
@@ -1383,7 +1392,9 @@ void hclr(void)
 
 // 6a2e
 
-/* Applesoft HPOSN */
+/* Applesoft HPOSN: put the pen at (X + 256 * Y-register, A): hbasl = the row's address, hgr_horiz =
+the byte column (x / 7) and hmask = the pixel's bit (x mod 7), and hgr_bits = the colour pattern
+for that column. */
 
 void hposn(byte param_1,byte param_2,char param_3)
 
@@ -1402,14 +1413,14 @@ void hposn(byte param_1,byte param_2,char param_3)
   bVar3 = true;
   hgr_horiz = 0;
   bVar2 = param_2;
-  if (param_3 == '\0') goto L6A63;
+  if (param_3 == '\0') goto hposn.div7;
   hgr_horiz = 0x23;
   bVar3 = 0xfb < param_2;
   bVar1 = param_2 + 5;
   do {
     hgr_horiz = hgr_horiz + 1;
     bVar2 = bVar1;
-L6A63:
+hposn.div7:
     bVar1 = (bVar2 - 7) - !bVar3;
     bVar3 = true;
   } while ((bVar1 & ~bVar2 & 0x80) != 0);
@@ -1426,6 +1437,8 @@ L6A63:
 
 // 6a75
 
+/* Set hgr_bits from the colour in A, shifted for an odd byte column. */
+
 void hgr_set_bits(byte param_1)
 
 {
@@ -1436,6 +1449,21 @@ void hgr_set_bits(byte param_1)
     color_shift();
     return;
   }
+  return;
+}
+
+
+// 6a7a
+
+/* Applesoft HPLOT0: HPOSN then plot the point. */
+
+void hplot0(byte param_1)
+
+{
+  
+  hposn();
+  *(byte *)(hbasl + param_1) =
+      (hgr_bits ^ *(byte *)(hbasl + param_1)) & hmask ^ *(byte *)(hbasl + param_1);
   return;
 }
 
@@ -1472,7 +1500,8 @@ void hplot_here(byte param_1)
 /* WARNING: Removing unreachable block (RAM,0x6bd3) */
 /* WARNING: Removing unreachable block (RAM,0x6be3) */
 /* WARNING: Removing unreachable block (RAM,0x6be9) */
-/* Applesoft MOVE_LEFT_OR_RIGHT */
+/* Applesoft MOVE.LEFT.OR.RIGHT: move the pen one pixel; N set = right, clear = left. Shifts hmask
+and steps hgr_horiz to the next byte (wrapping from column 0 to 39 and back). */
 
 void move_left_or_right(char param_1)
 
@@ -1497,7 +1526,7 @@ void move_left_or_right(char param_1)
       bVar3 = 0x27;
     }
     bVar2 = 0xc0;
-L6A9B:
+move_left_or_right.new_byte:
     hmask = bVar2;
     hgr_horiz = bVar3;
     if ((char)(hgr_bits * '\x02' + '@') < '\0') {
@@ -1513,7 +1542,7 @@ L6A9B:
   bVar3 = param_1 + 1;
   bVar4 = 0x27 < bVar3;
   bVar2 = 0x81;
-  if ((!bVar4) || (bVar3 = 0, bVar2 = 0x81, bVar4)) goto L6A9B;
+  if ((!bVar4) || (bVar3 = 0, bVar2 = 0x81, bVar4)) goto move_left_or_right.new_byte;
   if ((hgr_dx._1_1_ & 4) != 0) {
     bVar3 = hmask & 0x7f & *(byte *)hbasl;
     if (bVar3 == 0) {
@@ -1529,12 +1558,12 @@ L6A9B:
   }
   if (1 < bVar3) {
     bVar3 = hbasl._1_1_ + 4;
-    if ((bVar3 & hgr_mask_table_m1) != 0) goto L6B27;
+    if ((bVar3 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-L6B51:
+move_down.next_third:
       bVar4 = 0x1f < bVar3;
       bVar3 = (bVar3 - 0x20) + cVar8;
     }
@@ -1551,19 +1580,19 @@ L6B51:
         bVar4 = false;
         cVar8 = '\x01';
         bVar3 = hgr_page;
-        if (bVar5) goto L6B51;
+        if (bVar5) goto move_down.next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto L6B27;
+    goto move_up_or_down.store_hbash;
   }
   bVar3 = 0;
   bVar2 = hbasl._1_1_;
-  if ((hbasl._1_1_ & hgr_mask_table_m1) == 0) {
+  if ((hbasl._1_1_ & hgr_con_1c) == 0) {
     bVar3 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-L6B21:
+move_up_or_down.up_third:
       hbasl._0_1_ = bVar3;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1581,7 +1610,7 @@ L6B21:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar3 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar1) goto L6B21;
+      if (!bVar5 && 0xf >= bVar1) goto move_up_or_down.up_third;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -1592,7 +1621,7 @@ L6B21:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar3 = (bVar2 - 4) + bVar3;
-L6B27:
+move_up_or_down.store_hbash:
   hbasl = CONCAT11(bVar3,(byte)hbasl);
   return;
 }
@@ -1600,7 +1629,8 @@ L6B27:
 
 // 6aa2
 
-/* Applesoft COLOR.SHIFT */
+/* Applesoft COLOR.SHIFT: on odd byte columns the green/violet bit patterns swap, so flip hgr_bits
+for colours that need it. */
 
 void color_shift(char param_1)
 
@@ -1608,6 +1638,125 @@ void color_shift(char param_1)
   if ((char)(param_1 * '\x02' + '@') < '\0') {
     hgr_bits = hgr_bits ^ 0x7f;
   }
+  return;
+}
+
+
+// 6ac0
+
+/* WARNING: Control flow encountered bad instruction data */
+/* WARNING: Removing unreachable block (RAM,0x6ad8) */
+/* WARNING: Removing unreachable block (RAM,0x6adf) */
+/* WARNING: Removing unreachable block (RAM,0x6ae7) */
+/* WARNING: Removing unreachable block (RAM,0x6b57) */
+/* WARNING: Removing unreachable block (RAM,0x6b72) */
+/* WARNING: Removing unreachable block (RAM,0x6b7c) */
+/* WARNING: Removing unreachable block (RAM,0x6b89) */
+/* WARNING: Removing unreachable block (RAM,0x6b93) */
+/* WARNING: Removing unreachable block (RAM,0x6b97) */
+/* WARNING: Removing unreachable block (RAM,0x6bad) */
+/* WARNING: Removing unreachable block (RAM,0x6bb2) */
+/* WARNING: Removing unreachable block (RAM,0x6bbc) */
+/* WARNING: Removing unreachable block (RAM,0x6bcb) */
+/* WARNING: Removing unreachable block (RAM,0x6c3a) */
+/* WARNING: Removing unreachable block (RAM,0x6bcf) */
+/* WARNING: Removing unreachable block (RAM,0x6bd3) */
+/* WARNING: Removing unreachable block (RAM,0x6be3) */
+/* WARNING: Removing unreachable block (RAM,0x6be9) */
+/* XDRAW0's plot-and-move step (the XOR version of draw_move_ud_plot). Not called by the game. */
+
+void xdraw_move_ud_plot(byte param_1)
+
+{
+  byte bVar1;
+  byte bVar2;
+  byte bVar3;
+  bool bVar4;
+  bool bVar5;
+  bool bVar6;
+  char cVar7;
+  char cVar8;
+  
+  if ((hgr_dx._1_1_ & 4) != 0) {
+    bVar1 = hmask & 0x7f & *(byte *)(hbasl + param_1);
+    if (bVar1 == 0) {
+      hgr_collisions = hgr_collisions + 1;
+      bVar1 = hmask & 0x7f;
+    }
+    *(byte *)(hbasl + param_1) = bVar1 ^ *(byte *)(hbasl + param_1);
+  }
+  bVar1 = hgr_dx._1_1_ + hgr_quadrant & 3;
+  if ((bool)(hgr_dx._1_1_ + hgr_quadrant & 1)) {
+    move_left_or_right(bVar1 >> 1 | (1 < bVar1) << 7);
+    return;
+  }
+  if (1 < bVar1) {
+    bVar1 = hbasl._1_1_ + 4;
+    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
+    cVar7 = -((char)(byte)hbasl >> 7);
+    hbasl._0_1_ = (byte)hbasl * '\x02';
+    cVar8 = '\0';
+    if (cVar7 == '\0') {
+move_down.next_third:
+      bVar4 = 0x1f < bVar1;
+      bVar1 = (bVar1 - 0x20) + cVar8;
+    }
+    else {
+      bVar1 = (hbasl._1_1_ - 0x1c) + cVar7;
+      bVar4 = false;
+      if ((bVar1 & 4) != 0) {
+        bVar5 = 0xaf < (byte)hbasl;
+        bVar1 = (byte)hbasl + 0x50;
+        hbasl._0_1_ = 0;
+        if (bVar1 != 0xf0) {
+          hbasl._0_1_ = bVar1;
+        }
+        bVar4 = false;
+        cVar8 = '\x01';
+        bVar1 = hgr_page;
+        if (bVar5) goto move_down.next_third;
+      }
+    }
+    hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
+    goto move_up_or_down.store_hbash;
+  }
+  bVar1 = 0;
+  bVar3 = hbasl._1_1_;
+  if ((hbasl._1_1_ & hgr_con_1c) == 0) {
+    bVar1 = (byte)hbasl * '\x02';
+    bVar4 = true;
+    if ((bool)-((char)(byte)hbasl >> 7)) {
+move_up_or_down.up_third:
+      hbasl._0_1_ = bVar1;
+      bVar6 = 0xe0 < hbasl._1_1_;
+      bVar3 = hbasl._1_1_ + 0x1f + bVar4;
+    }
+    else if ((hbasl & 0x300) == 0) {
+      bVar4 = 0xdc < hbasl._1_1_;
+      hbasl._1_1_ = hbasl._1_1_ + 0x23;
+      bVar5 = 0x4f < bVar1;
+      bVar2 = bVar1 + 0xb0 + bVar4;
+      hbasl._0_1_ = bVar2;
+      if (!bVar5) {
+        hbasl._0_1_ = bVar2 - 0x10;
+      }
+      bVar4 = bVar5 || 0xf < bVar2;
+      bVar3 = hbasl._1_1_;
+      bVar6 = bVar4;
+      bVar1 = (byte)hbasl;
+      if (!bVar5 && 0xf >= bVar2) goto move_up_or_down.up_third;
+    }
+    else {
+      bVar3 = hbasl._1_1_ + 0x1f;
+      bVar6 = true;
+      hbasl._0_1_ = bVar1;
+    }
+    bVar1 = (byte)hbasl & 1;
+    hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
+  }
+  bVar1 = (bVar3 - 4) + bVar1;
+move_up_or_down.store_hbash:
+  hbasl = CONCAT11(bVar1,(byte)hbasl);
   return;
 }
 
@@ -1630,6 +1779,8 @@ void color_shift(char param_1)
 /* WARNING: Removing unreachable block (RAM,0x6bd3) */
 /* WARNING: Removing unreachable block (RAM,0x6be3) */
 /* WARNING: Removing unreachable block (RAM,0x6be9) */
+/* DRAW0's step: plot the point if the vector's plot bit (bit 2) is set, then move. Counts a
+collision in hgr_collisions when the pixel was already on. */
 
 void draw_move_ud_plot(byte param_1)
 
@@ -1657,12 +1808,12 @@ void draw_move_ud_plot(byte param_1)
   }
   if (1 < bVar1) {
     bVar1 = hbasl._1_1_ + 4;
-    if ((bVar1 & hgr_mask_table_m1) != 0) goto L6B27;
+    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-L6B51:
+move_down.next_third:
       bVar4 = 0x1f < bVar1;
       bVar1 = (bVar1 - 0x20) + cVar8;
     }
@@ -1679,19 +1830,19 @@ L6B51:
         bVar4 = false;
         cVar8 = '\x01';
         bVar1 = hgr_page;
-        if (bVar5) goto L6B51;
+        if (bVar5) goto move_down.next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto L6B27;
+    goto move_up_or_down.store_hbash;
   }
   bVar1 = 0;
   bVar3 = hbasl._1_1_;
-  if ((hbasl._1_1_ & hgr_mask_table_m1) == 0) {
+  if ((hbasl._1_1_ & hgr_con_1c) == 0) {
     bVar1 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-L6B21:
+move_up_or_down.up_third:
       hbasl._0_1_ = bVar1;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar3 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1709,7 +1860,7 @@ L6B21:
       bVar3 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar1 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar2) goto L6B21;
+      if (!bVar5 && 0xf >= bVar2) goto move_up_or_down.up_third;
     }
     else {
       bVar3 = hbasl._1_1_ + 0x1f;
@@ -1720,7 +1871,7 @@ L6B21:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar1 = (bVar3 - 4) + bVar1;
-L6B27:
+move_up_or_down.store_hbash:
   hbasl = CONCAT11(bVar1,(byte)hbasl);
   return;
 }
@@ -1744,6 +1895,7 @@ L6B27:
 /* WARNING: Removing unreachable block (RAM,0x6bd3) */
 /* WARNING: Removing unreachable block (RAM,0x6be3) */
 /* WARNING: Removing unreachable block (RAM,0x6be9) */
+/* As draw_move_ud_plot, entered for the second axis of a step. */
 
 void draw_move_ud(byte param_1)
 
@@ -1773,12 +1925,12 @@ void draw_move_ud(byte param_1)
   }
   if (1 < bVar2) {
     bVar1 = hbasl._1_1_ + 4;
-    if ((bVar1 & hgr_mask_table_m1) != 0) goto L6B27;
+    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-L6B51:
+move_down.next_third:
       bVar4 = 0x1f < bVar1;
       bVar1 = (bVar1 - 0x20) + cVar8;
     }
@@ -1795,19 +1947,19 @@ L6B51:
         bVar4 = false;
         cVar8 = '\x01';
         bVar1 = hgr_page;
-        if (bVar5) goto L6B51;
+        if (bVar5) goto move_down.next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto L6B27;
+    goto move_up_or_down.store_hbash;
   }
   bVar1 = 0;
   bVar2 = hbasl._1_1_;
-  if ((hbasl._1_1_ & hgr_mask_table_m1) == 0) {
+  if ((hbasl._1_1_ & hgr_con_1c) == 0) {
     bVar1 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-L6B21:
+move_up_or_down.up_third:
       hbasl._0_1_ = bVar1;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1825,7 +1977,7 @@ L6B21:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar1 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar3) goto L6B21;
+      if (!bVar5 && 0xf >= bVar3) goto move_up_or_down.up_third;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -1836,7 +1988,7 @@ L6B21:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar1 = (bVar2 - 4) + bVar1;
-L6B27:
+move_up_or_down.store_hbash:
   hbasl = CONCAT11(bVar1,(byte)hbasl);
   return;
 }
@@ -1860,8 +2012,11 @@ L6B27:
 /* WARNING: Removing unreachable block (RAM,0x6bd3) */
 /* WARNING: Removing unreachable block (RAM,0x6be3) */
 /* WARNING: Removing unreachable block (RAM,0x6be9) */
+/* Applesoft MOVE.UP.OR.DOWN: move the pen one row; N clear = up, N set = down (move_down). Within a
+block of 8 rows a row is $400 bytes from the next; crossing a block or a third of the screen
+changes HBASL as well (the row layout is described at hgr). */
 
-void move_down(void)
+void move_up_or_down(void)
 
 {
   byte bVar1;
@@ -1877,12 +2032,12 @@ void move_down(void)
   
   if (in_N) {
     bVar3 = hbasl._1_1_ + 4 + in_C;
-    if ((bVar3 & hgr_mask_table_m1) != 0) goto L6B27;
+    if ((bVar3 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-L6B51:
+move_down.next_third:
       bVar4 = 0x1f < bVar3;
       bVar3 = (bVar3 - 0x20) + cVar8;
     }
@@ -1899,19 +2054,19 @@ L6B51:
         bVar4 = false;
         cVar8 = '\x01';
         bVar3 = hgr_page;
-        if (bVar5) goto L6B51;
+        if (bVar5) goto move_down.next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto L6B27;
+    goto move_up_or_down.store_hbash;
   }
   bVar3 = 0;
   bVar2 = hbasl._1_1_;
-  if ((hbasl._1_1_ & hgr_mask_table_m1) == 0) {
+  if ((hbasl._1_1_ & hgr_con_1c) == 0) {
     bVar3 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-L6B21:
+move_up_or_down.up_third:
       hbasl._0_1_ = bVar3;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1929,7 +2084,7 @@ L6B21:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar3 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar1) goto L6B21;
+      if (!bVar5 && 0xf >= bVar1) goto move_up_or_down.up_third;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -1940,7 +2095,7 @@ L6B21:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar3 = (bVar2 - 4) + bVar3;
-L6B27:
+move_up_or_down.store_hbash:
   hbasl = CONCAT11(bVar3,(byte)hbasl);
   return;
 }
@@ -1949,7 +2104,9 @@ L6B27:
 // 6b64
 
 /* WARNING: Control flow encountered bad instruction data */
-/* Applesoft HGLIN: line from the current point */
+/* Applesoft HGLIN: draw a line from the current point (HGR.X, HGR.Y) to (A + 256 * X, Y): a
+Bresenham-style walk of |dx| + |dy| steps, each moving one pixel horizontally or vertically and
+plotting it. Leaves the pen at the end point. */
 
 void hglin(byte param_1,byte param_2,byte param_3)
 
@@ -1984,10 +2141,10 @@ void hglin(byte param_1,byte param_2,byte param_3)
   hgr_x._0_1_ = param_1;
   hgr_x._1_1_ = param_2;
   hgr_y = param_3;
-  if ((hgr_dx._1_1_ & hgr_count_hi & 0x80) != 0) goto L6BB2;
+  if ((hgr_dx._1_1_ & hgr_count_hi & 0x80) != 0) goto hglin.step;
   do {
     move_left_or_right(bVar1 << 1);
-L6BB2:
+hglin.step:
     bVar4 = CARRY1((byte)hgr_err,hgr_dy);
     hgr_err._0_1_ = (byte)hgr_err + hgr_dy + 1;
     bVar1 = hgr_err._1_1_ - !bVar4;
@@ -2005,7 +2162,7 @@ L6BB2:
       }
       bVar1 = hgr_quadrant;
       if (bVar4) break;
-      move_down();
+      move_up_or_down();
       bVar4 = CARRY1((byte)hgr_err,(byte)hgr_dx);
       hgr_err._0_1_ = (byte)hgr_err + (byte)hgr_dx;
       bVar1 = hgr_err._1_1_ + hgr_dx._1_1_ + bVar4;
@@ -2021,9 +2178,35 @@ L6BB2:
 }
 
 
+// 6bfc
+
+/* Applesoft HFIND: work out HGR.X / HGR.Y from the screen position (HBASL, HMASK, HGR.HORIZ). Not
+called by the game. */
+
+void hfind(void)
+
+{
+  byte bVar1;
+  byte bVar2;
+  
+  hgr_y = hbasl._1_1_ >> 2 & 7 | ((hbasl._1_1_ & 3) << 1 | (byte)hbasl >> 7 | (byte)hbasl) << 3;
+  bVar2 = (hgr_horiz * '\x03' - ((char)hgr_horiz >> 7)) * '\x02' - 1;
+  bVar1 = hmask & 0x7f;
+  do {
+    bVar2 = bVar2 + 1;
+    bVar1 = bVar1 >> 1;
+  } while (bVar1 != 0);
+  hgr_x._1_1_ = CARRY1(bVar2,hgr_horiz);
+  hgr_x._0_1_ = bVar2 + hgr_horiz;
+  return;
+}
+
+
 // 6c3b
 
-/* Applesoft DRAW0 */
+/* Applesoft DRAW0: draw the shape at (X, Y-register) at the pen with rotation and scale from A
+(here always 0 and 1). Each shape byte holds up to three vectors: 2 bits of direction (up, right,
+down, left) and a plot bit; a 00 byte ends the shape. */
 
 void draw0(byte param_1,undefined1 param_2,undefined1 param_3)
 
@@ -2037,7 +2220,7 @@ void draw0(byte param_1,undefined1 param_2,undefined1 param_3)
   
   hgr_shape_ptr = CONCAT11(param_3,param_2);
   hgr_quadrant = param_1 >> 4;
-  hgr_dx._0_1_ = (&hgr_mask_table)[param_1 & 0xf];
+  hgr_dx._0_1_ = (&hgr_cos_table)[param_1 & 0xf];
   hgr_dy = *(char *)((param_1 & 0xf ^ 0xf) + 0x6bec) + 1;
   hgr_collisions = 0;
   bVar2 = *(byte *)hgr_shape_ptr;
@@ -2075,9 +2258,63 @@ void draw0(byte param_1,undefined1 param_2,undefined1 param_3)
 }
 
 
+// 6c9a
+
+/* Applesoft XDRAW0: DRAW0 with each point XORed onto the screen. Not called by the game. */
+
+void xdraw0(byte param_1,undefined1 param_2,undefined1 param_3)
+
+{
+  bool bVar1;
+  byte bVar2;
+  byte bVar3;
+  byte bVar4;
+  bool bVar5;
+  bool bVar6;
+  
+  hgr_shape_ptr = CONCAT11(param_3,param_2);
+  hgr_quadrant = param_1 >> 4;
+  hgr_dx._0_1_ = (&hgr_cos_table)[param_1 & 0xf];
+  hgr_dy = *(char *)((param_1 & 0xf ^ 0xf) + 0x6bec) + 1;
+  hgr_collisions = 0;
+  bVar2 = *(byte *)hgr_shape_ptr;
+  do {
+    do {
+      hgr_err._0_1_ = 0x80;
+      hgr_err._1_1_ = 0x80;
+      bVar4 = hgr_scale;
+      hgr_dx._1_1_ = bVar2;
+      do {
+        bVar5 = CARRY1((byte)hgr_err,(byte)hgr_dx);
+        hgr_err._0_1_ = (byte)hgr_err + (byte)hgr_dx + 1;
+        bVar1 = !bVar5;
+        bVar3 = bVar4;
+        if (!bVar1) {
+          xdraw_move_ud_plot();
+          bVar3 = bVar4;
+        }
+        bVar6 = CARRY1(hgr_err._1_1_,hgr_dy);
+        hgr_err._1_1_ = hgr_err._1_1_ + hgr_dy + (bVar1 && bVar5);
+        if (bVar6) {
+          draw_move_ud();
+        }
+        bVar4 = bVar3 - 1;
+      } while (bVar4 != 0);
+      bVar2 = hgr_dx._1_1_ >> 3;
+    } while (bVar2 != 0);
+    if ((char)((char)hgr_shape_ptr + '\x01') == '\0') {
+      hgr_shape_ptr._1_1_ = hgr_shape_ptr._1_1_ + '\x01';
+    }
+    hgr_shape_ptr = CONCAT11(hgr_shape_ptr._1_1_,(char)hgr_shape_ptr + '\x01');
+    bVar2 = **(byte **)(ushort)(byte)(bVar3 + 0x19);
+  } while (bVar2 != 0);
+  return;
+}
+
+
 // 6cf9
 
-/* HFNS: read var_x / var_y and position the pen there (HPOSN). */
+/* HFNS: read var_hcolor, var_y and var_x and position the pen there (HPOSN). */
 
 void hfns(void)
 
@@ -2094,7 +2331,7 @@ void hfns(void)
 
 // 6d0e
 
-/* HPLOT var_x,var_y */
+/* HPLOT var_x,var_y: position the pen and plot a point. */
 
 void hplot_xy(void)
 
@@ -2108,7 +2345,7 @@ void hplot_xy(void)
 
 // 6d14
 
-/* HPLOT TO var_x,var_y */
+/* HPLOT TO var_x,var_y: a line from the pen to the point (HGLIN). */
 
 void hplot_to_xy(undefined1 param_1,undefined1 param_2)
 
@@ -2126,9 +2363,35 @@ void hplot_to_xy(undefined1 param_1,undefined1 param_2)
 }
 
 
+// 6d31
+
+/* HCOLOR then BKGND: fill the screen with the colour. Not called by the game. */
+
+void hcolor_bkgnd(void)
+
+{
+  byte bVar1;
+  byte bVar2;
+  
+  hgr_bits = get_hcolor();
+  bVar2 = 0;
+  hgr_shape_ptr = (ushort)hgr_page << 8;
+  do {
+    do {
+      *(byte *)(hgr_shape_ptr + bVar2) = hgr_bits;
+      color_shift();
+      bVar2 = bVar2 + 1;
+    } while (bVar2 != 0);
+    bVar1 = hgr_shape_ptr._1_1_ + 1;
+    hgr_shape_ptr = CONCAT11(bVar1,(undefined1)hgr_shape_ptr);
+  } while ((bVar1 & 0x1f) != 0);
+  return;
+}
+
+
 // 6d37
 
-/* DRAW var_shape AT var_x,var_y */
+/* DRAW var_shape AT var_x,var_y. */
 
 void draw_shape(void)
 
@@ -2141,9 +2404,25 @@ void draw_shape(void)
 }
 
 
+// 6d44
+
+/* XDRAW var_shape AT var_x,var_y. Not called by the game. */
+
+void xdraw_shape(void)
+
+{
+  
+  hfns();
+  find_shape();
+  xdraw0();
+  return;
+}
+
+
 // 6d51
 
-/* Look up var_shape in the shape table (1..count) for DRAW0. */
+/* Point hgr_shape_ptr at shape var_shape (1..count) in the shape table. The Applesoft code read
+SCALE= here; this copy loads 1 instead (LDA #$01 / NOP). */
 
 undefined1 find_shape(byte param_1)
 
@@ -2174,7 +2453,7 @@ undefined1 find_shape(byte param_1)
 
 // 6d90
 
-/* Read HCOLOR from var_hcolor (must be < 256). */
+/* A = var_hcolor (an error unless < 256). */
 
 byte get_hcolor(void)
 
@@ -2191,7 +2470,8 @@ byte get_hcolor(void)
 
 // 6d92
 
-/* Read the variable at applesoft_vars + Y; a high byte other than 0 is an error. */
+/* A = the low byte of the variable whose high byte is at applesoft_vars + Y; a non-zero high byte
+is an error. */
 
 byte get_var(byte param_1)
 
@@ -2209,7 +2489,7 @@ byte get_var(byte param_1)
 // 6d9a
 
 /* WARNING: Control flow encountered bad instruction data */
-/* X coordinate: must be < 280. */
+/* X (low) and Y-register (high) = var_x; an error unless < 280. */
 
 byte get_var_x(byte param_1)
 
@@ -2229,7 +2509,7 @@ byte get_var_x(byte param_1)
 // 6dac
 
 /* WARNING: Control flow encountered bad instruction data */
-/* Bad coordinate: Applesoft's error routine. */
+/* Bad argument: Applesoft's ILLEGAL QUANTITY error in ROM. */
 
 void quantity_error(void)
 
@@ -2241,7 +2521,7 @@ void quantity_error(void)
 
 // 6daf
 
-/* Y coordinate: must be < 192. */
+/* A = var_y; an error unless < 192. */
 
 void get_var_y(void)
 

@@ -190,7 +190,17 @@ FF FF    end
 free). Lines are drawn by a relocated copy of the Applesoft hi-res routines (`$6A00-$6DB8`:
 HGR, HPOSN, HPLOT, HGLIN, DRAW), which read their arguments from Applesoft-style variables the
 engine keeps at `$0800` (`var_x` `$0805`, `var_y` `$080C`, `var_hcolor` `$0815`, `var_shape`
-`$081F`). Applesoft's own hi-res variables (`$E0-$EA`) were moved to `$0320-$032A`.
+`$081F`). Applesoft's own hi-res variables (`$E0-$EA`) were moved to `$0320-$032A`, and the
+copy fixes DRAW's scale at 1: where Applesoft called its variable reader for `SCALE=`, the
+3-byte `JSR` became `LDA #$01 / NOP` (the `LDY #$32` before it is left over).
+
+The copy carries more of Applesoft than the game uses. `HPLOT0`, `HLINRL` (a line relative to
+0,0), `HFIND` (screen position back to X/Y), `XDRAW0` with its plot step, and the `HCOLOR`/
+`BKGND` and `XDRAW` command wrappers are all there and never called; the source names them and
+marks them "not called by the game". The tables after `HGLIN` are Applesoft's `MSKTBL` (the
+pixel bits, `$6BE3`), a `$1C` constant that `MOVE.UP.OR.DOWN` tests with `BIT` (`$6BEA`), and
+the `COS` table `DRAW0` uses (`$6BEB`). `HPOSN` reads `MSKTBL` as `LDA $6AEA,X` with X between
+`$F9` and `$FF`, i.e. through an address that lies inside the code before it.
 
 The 19 `BLOCK` files are not loaded at their BSAVE address (`$4400`). `load_picture` keeps a
 five-slot cache at `$7D00 $8200 $8700 $8C00 $9100`, evicts the least recently used block, and

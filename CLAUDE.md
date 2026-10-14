@@ -20,8 +20,10 @@ build also regenerates the C pseudocode in `decomp/*.c`.
 - Names and routine comments live only in `src/`. Rename or document there; the Ghidra step takes
   them from the assembler's symbol table. `symbols/*.csv` only adds Ghidra data types and register
   parameters (`func:X`); its name column is informational.
-- Local labels are scoped with a dot (`draw_picture.next_point`); the `Lxxxx` labels left are
-  inside the relocated Applesoft graphics code and follow the ROM's structure.
+- Local labels are scoped with a dot (`draw_picture.next_point`). Every label has a name; keep it
+  that way.
+- HACKING.md is the guide to the source, the build and editing the game; each folder has a
+  README.md. Update them when something they describe changes.
 - `tools/gen_source.py` produced `src/` once from the original binary; don't rerun it over
   hand edits.
 - `original_source/`: the author's 1980 source fragments found in the binary (decoded + raw

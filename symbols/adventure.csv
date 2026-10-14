@@ -114,7 +114,7 @@ address,name,type,comment
 5B9B,objbase_addr,word,
 
 6535,tbl_actions,ptr[30],action handlers by opcode (ACnn00 = entry nn-10)
-6BEB,hgr_mask_table,label,Applesoft MSKTBL and COS table
+6BEB,hgr_cos_table,label,Applesoft COS table (DRAW0 step sizes)
 70FF,floor_slots,byte[42],(x, y) positions for dropped objects
 7129,saved_picture,byte,
 7365,cache_addr_text,label,"7D00","8200",... for the BLOAD command
@@ -198,7 +198,7 @@ address,name,type,comment
 6AA2,color_shift,func,Applesoft COLOR.SHIFT
 6AD8,draw_move_ud_plot,func,
 6AD9,draw_move_ud,func,
-6AF9,move_down,func,
+6AF9,move_up_or_down,func,
 6B64,hglin,func,Applesoft HGLIN: line from the current point
 6C3B,draw0,func,Applesoft DRAW0
 6CF9,hfns,func,read var_x/var_y into HGR.X/HGR.Y (Applesoft HFNS)
@@ -263,7 +263,7 @@ address,name,type,comment
 63A1,unknown_noun_verb,byte[8],patched into "I DONT KNOW HOW TO ________ A ________"
 63AC,unknown_noun_text,byte[8],
 64CB,text_mode,byte,$FF while RETURN has switched to full-screen text
-6BEA,hgr_mask_table_m1,label,
+6BEA,hgr_con_1c,label,
 733F,bload_block_digits,byte[2],self-modified: block number in "BLOAD BLOCKnn,A$xxxx"
 7344,bload_addr_digits,byte[4],self-modified: cache slot address in the same command
 7518,read_offset_digits,byte[4],self-modified: byte offset in "READ MESSAGES,B$xxxx"

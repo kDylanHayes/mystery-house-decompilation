@@ -247,3 +247,12 @@ PIC_END     = $FF ; FF FF: end of the picture
 MAX_X       = $FF ; points are clamped to the 256 x 161 picture area
 MAX_Y       = $A0
 CACHE_SLOTS = 5   ; picture cache: slots of 4 bytes in pic_cache
+
+; offsets of the Applesoft-style variables from applesoft_vars, as the relocated HPLOT/DRAW code
+; reads them with LDA (fake_vartab),Y. get_var is given the offset of the high byte (the low
+; byte is the one before it); get_var_x reads var_x low byte first, from VAR_X.
+VAR_X      = $05  ; var_x, low byte
+VAR_Y_HI   = $0D  ; var_y
+VAR_HCOLOR = $16  ; var_hcolor
+VAR_SHAPE  = $20  ; var_shape
+VAR_ROT    = $28  ; var_rot

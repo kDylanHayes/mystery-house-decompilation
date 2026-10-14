@@ -4591,38 +4591,52 @@ stale_basic:
         .byte $38,$32,$2C,$22,$49,$00
 
 ; ---- relocated Applesoft hi-res routines ($6A00-$6DB8) ---------------------------------
-; A copy of the Applesoft ROM's HGR/HPOSN/HPLOT/HGLIN/DRAW code, moved here and changed to use
-; $0320-$032A for Applesoft's HGR.* variables ($E0-$EA) and the engine's applesoft_vars for
-; the HPLOT/DRAW arguments. Labels inside follow the ROM's structure; the Lxxxx ones are left
-; unnamed.
+
+; ---- relocated Applesoft hi-res routines ($6A00-$6DB8) ---------------------------------------
+; A copy of the Applesoft ROM's hi-res graphics code (HGR, HPOSN, HPLOT, HGLIN, DRAW and their
+; helpers), moved into the game and changed in three ways: Applesoft's HGR.* zero-page variables
+; ($E0-$EA) live at $0320-$032A instead; the HPLOT/DRAW arguments are read from the engine's own
+; Applesoft-style variables at applesoft_vars (VAR_* offsets in game.inc) instead of from
+; BASIC; and DRAW's scale is fixed at 1. Names follow the Applesoft routines (HPOSN,
+; MOVE.UP.OR.DOWN, ...). Routines marked "not called by the game" came along with the copy.
 ;
-; HGR: show hi-res page 1 in mixed mode and clear it.
+; The hi-res screen: 280 x 192 pixels, 7 pixels per byte (bit 0 leftmost, bit 7 selects the
+; colour group), 40 bytes per row. Rows are interleaved in memory: row y is at
+;   $2000 + $400 * (y & 7) + $80 * ((y >> 3) & 7) + $28 * (y >> 6)
+; so moving up or down a row means adjusting HBASL/HBASH (hbasl) rather than adding 40.
+;
+; HGR: show hi-res page 1 in mixed mode (four text lines at the bottom) and clear it.
 hgr:
         LDA #$20
         STA hgr_page
         LDA HIRES
         LDA MIXSET
         LDA TXTCLR
+
+; HCLR: clear the page to black (hgr_bits = 0), via BKGND.
 hclr:
         LDA #$00
+bkgnd:                                 ; Applesoft BKGND: fill the page with the colour in A
         STA hgr_bits
         LDA hgr_page
         STA hgr_shape_ptr+1
         LDY #$00
         STY hgr_shape_ptr
-L6A1B:
+hclr.loop:
         LDA hgr_bits
         STA (hgr_shape_ptr),Y
         JSR color_shift
         INY
-        BNE L6A1B
+        BNE hclr.loop
         INC hgr_shape_ptr+1
         LDA hgr_shape_ptr+1
         AND #$1F
-        BNE L6A1B
+        BNE hclr.loop
         RTS
 
-; Applesoft HPOSN
+; Applesoft HPOSN: put the pen at (X + 256 * Y-register, A): hbasl = the row's address,
+; hgr_horiz = the byte column (x / 7) and hmask = the pixel's bit (x mod 7), and hgr_bits = the
+; colour pattern for that column.
 hposn:
         STA hgr_y
         STX hgr_x
@@ -4650,30 +4664,31 @@ hposn:
         STA hbasl+1
         TXA
         CPY #$00
-        BEQ L6A63
+        BEQ hposn.div7
         LDY #$23
         ADC #$04
-L6A62:
+hposn.div7_count:
         INY
-L6A63:
+hposn.div7:
         SBC #$07
-        BCS L6A62
+        BCS hposn.div7_count
         STY hgr_horiz
         TAX
-        LDA L6AEA,X
+        LDA hgr_msktbl-$F9,X        ; X = $F9..$FF here, so this reads hgr_msktbl
         STA hmask
         TYA
         LSR A
         LDA hgr_color
 
+; Set hgr_bits from the colour in A, shifted for an odd byte column.
 hgr_set_bits:
         STA hgr_bits
         BCS color_shift
         RTS
 
-; Applesoft HPLOT0
-hplot0:
-        .byte $20,$2E,$6A
+; Applesoft HPLOT0: HPOSN then plot the point.
+hplot0:                                ; (not called by the game)
+        JSR hposn
 hplot_here:
         LDA hgr_bits
         EOR (hbasl),Y
@@ -4682,77 +4697,85 @@ hplot_here:
         STA (hbasl),Y
         RTS
 
-; Applesoft MOVE_LEFT_OR_RIGHT
+; Applesoft MOVE.LEFT.OR.RIGHT: move the pen one pixel; N set = right, clear = left. Shifts
+; hmask and steps hgr_horiz to the next byte (wrapping from column 0 to 39 and back).
 move_left_or_right:
-        BPL L6AAE
+        BPL move_left_or_right.right
         LDA hmask
         LSR A
-        BCS L6A94
+        BCS move_left_or_right.left_byte
         EOR #$C0
-L6A91:
+move_left_or_right.store_mask:
         STA hmask
         RTS
-L6A94:
+move_left_or_right.left_byte:
         DEY
-        BPL L6A99
+        BPL move_left_or_right.left_edge
         LDY #$27
-L6A99:
+move_left_or_right.left_edge:
         LDA #$C0
-L6A9B:
+move_left_or_right.new_byte:
         STA hmask
         STY hgr_horiz
         LDA hgr_bits
 
-; Applesoft COLOR.SHIFT
+; Applesoft COLOR.SHIFT: on odd byte columns the green/violet bit patterns swap, so flip
+; hgr_bits for colours that need it.
 color_shift:
         ASL A
         CMP #$C0
-        BPL L6AAD
+        BPL color_shift.done
         LDA hgr_bits
         EOR #$7F
         STA hgr_bits
-L6AAD:
+color_shift.done:
         RTS
-L6AAE:
+move_left_or_right.right:
         LDA hmask
         ASL A
         EOR #$80
-        BMI L6A91
+        BMI move_left_or_right.store_mask
         LDA #$81
         INY
         CPY #$28
-        BCC L6A9B
+        BCC move_left_or_right.new_byte
         LDY #$00
-        BCS L6A9B
+        BCS move_left_or_right.new_byte
+
+; XDRAW0's plot-and-move step (the XOR version of draw_move_ud_plot). Not called by the game.
+xdraw_move_ud_plot:
         CLC
         LDA hgr_dx+1
         AND #$04
-        BEQ L6AEE
+        BEQ draw_move_ud.move
         LDA #$7F
         AND hmask
         AND (hbasl),Y
-        BNE L6AEA
+        BNE draw_move_ud.plot
         INC hgr_collisions
         LDA #$7F
         AND hmask
-        BPL L6AEA
+        BPL draw_move_ud.plot
 
+; DRAW0's step: plot the point if the vector's plot bit (bit 2) is set, then move. Counts a
+; collision in hgr_collisions when the pixel was already on.
 draw_move_ud_plot:
         CLC
 
+; As draw_move_ud_plot, entered for the second axis of a step.
 draw_move_ud:
         LDA hgr_dx+1
         AND #$04
-        BEQ L6AEE
+        BEQ draw_move_ud.move
         LDA (hbasl),Y
         EOR hgr_bits
         AND hmask
-        BNE L6AEA
+        BNE draw_move_ud.plot
         INC hgr_collisions
-L6AEA:
+draw_move_ud.plot:
         EOR (hbasl),Y
         STA (hbasl),Y
-L6AEE:
+draw_move_ud.move:
         LDA hgr_dx+1
         ADC hgr_quadrant
         AND #$03
@@ -4760,65 +4783,74 @@ L6AEE:
         ROR A
         BCS move_left_or_right
 
-move_down:
-        BMI L6B2B
+; Applesoft MOVE.UP.OR.DOWN: move the pen one row; N clear = up, N set = down (move_down).
+; Within a block of 8 rows a row is $400 bytes from the next; crossing a block or a third of
+; the screen changes HBASL as well (the row layout is described at hgr).
+move_up_or_down:
+        BMI move_down
         CLC
         LDA hbasl+1
-        BIT hgr_mask_table_m1
-        BNE L6B25
+        BIT hgr_con_1c
+        BNE move_up_or_down.up_line
         ASL hbasl
-        BCS L6B21
-        BIT L6AEE+5                ; BIT on the constant $03 in the AND above (an Applesoft trick)
-        BEQ L6B11
+        BCS move_up_or_down.up_third
+        BIT draw_move_ud.move+5                ; BIT on the constant $03 in the AND above (an Applesoft trick)
+        BEQ move_up_or_down.up_block
         ADC #$1F
         SEC
-        BCS L6B23
-L6B11:
+        BCS move_up_or_down.up_ror
+move_up_or_down.up_block:
         ADC #$23
         PHA
         LDA hbasl
         ADC #$B0
-        BCS L6B1C
+        BCS move_up_or_down.up_lo
         ADC #$F0
-L6B1C:
+move_up_or_down.up_lo:
         STA hbasl
         PLA
-        BCS L6B23
-L6B21:
+        BCS move_up_or_down.up_ror
+move_up_or_down.up_third:
         ADC #$1F
-L6B23:
+move_up_or_down.up_ror:
         ROR hbasl
-L6B25:
+move_up_or_down.up_line:
         ADC #$FC
-L6B27:
+move_up_or_down.store_hbash:
         STA hbasl+1
         RTS
         .byte $18
-L6B2B:
+
+; Move the pen down one row.
+move_down:
         LDA hbasl+1
         ADC #$04
-        BIT hgr_mask_table_m1
-        BNE L6B27
+        BIT hgr_con_1c
+        BNE move_up_or_down.store_hbash
         ASL hbasl
-        BCC L6B51
+        BCC move_down.next_third
         ADC #$E0
         CLC
-        BIT L6B2B+3                ; BIT on the constant $04 in the ADC above (an Applesoft trick)
-        BEQ L6B53
+        BIT move_down+3                ; BIT on the constant $04 in the ADC above (an Applesoft trick)
+        BEQ move_down.ror
         LDA hbasl
         ADC #$50
         EOR #$F0
-        BEQ L6B4A
+        BEQ move_down.store_lo
         EOR #$F0
-L6B4A:
+move_down.store_lo:
         STA hbasl
         LDA hgr_page
-        BCC L6B53
-L6B51:
+        BCC move_down.ror
+move_down.next_third:
         ADC #$E0
-L6B53:
+move_down.ror:
         ROR hbasl
-        BCC L6B27
+        BCC move_up_or_down.store_hbash
+
+; Applesoft HLINRL: a line relative to (0,0): clear the start point and fall into HGLIN.
+; Not called by the game.
+hlinrl:
         PHA
         LDA #$00
         STA hgr_x
@@ -4826,7 +4858,9 @@ L6B53:
         STA hgr_y
         PLA
 
-; Applesoft HGLIN: line from the current point
+; Applesoft HGLIN: draw a line from the current point (HGR.X, HGR.Y) to (A + 256 * X, Y): a
+; Bresenham-style walk of |dx| + |dy| steps, each moving one pixel horizontally or vertically
+; and plotting it. Leaves the pen at the end point.
 hglin:
         PHA
         SEC
@@ -4835,14 +4869,14 @@ hglin:
         TXA
         SBC hgr_x+1
         STA hgr_quadrant
-        BCS L6B7C
+        BCS hglin.dx_positive
         PLA
         EOR #$FF
         ADC #$01
         PHA
         LDA #$00
         SBC hgr_quadrant
-L6B7C:
+hglin.dx_positive:
         STA hgr_dx+1
         STA hgr_err+1
         PLA
@@ -4854,10 +4888,10 @@ L6B7C:
         TYA
         CLC
         SBC hgr_y
-        BCC L6B97
+        BCC hglin.dy_set
         EOR #$FF
         ADC #$FE
-L6B97:
+hglin.dy_set:
         STA hgr_dy
         STY hgr_y
         ROR hgr_quadrant
@@ -4868,18 +4902,18 @@ L6B97:
         SBC hgr_dx+1
         STA hgr_count_hi
         LDY hgr_horiz
-        BCS L6BB2
-L6BAD:
+        BCS hglin.step
+hglin.step_x:
         ASL A
         JSR move_left_or_right
         SEC
-L6BB2:
+hglin.step:
         LDA hgr_err
         ADC hgr_dy
         STA hgr_err
         LDA hgr_err+1
         SBC #$00
-L6BBC:
+hglin.plot:
         STA hgr_err+1
         LDA (hbasl),Y
         EOR hgr_bits
@@ -4887,33 +4921,77 @@ L6BBC:
         EOR (hbasl),Y
         STA (hbasl),Y
         INX
-        BNE L6BCF
+        BNE hglin.next
         INC hgr_count_hi
-        BEQ L6C3A
-L6BCF:
+        BEQ hglin.done
+hglin.next:
         LDA hgr_quadrant
-        BCS L6BAD
-        JSR move_down
+        BCS hglin.step_x
+        JSR move_up_or_down
         CLC
         LDA hgr_err
         ADC hgr_dx
         STA hgr_err
         LDA hgr_err+1
         ADC hgr_dx+1
-        BVC L6BBC                  ; always taken: V is clear here
+        BVC hglin.plot             ; always taken: V is clear here
+
+; Applesoft MSKTBL: the bit for each of the 7 pixels in a hi-res byte (bit 7 is the colour bit)
+hgr_msktbl:
         .byte $81,$82,$84,$88,$90,$A0,$C0
-hgr_mask_table_m1:
+; a $1C constant that MOVE.UP.OR.DOWN tests with BIT (bits 2-4: the row within a block of 8)
+hgr_con_1c:
         .byte $1C
-hgr_mask_table:
+; Applesoft COS table: step sizes for each rotation, indexed by DRAW0
+hgr_cos_table:
         .byte $FF,$FE,$FA,$F4,$EC,$E1,$D4,$C5,$B4,$A1,$8D,$78,$61,$49,$31,$18
-        .byte $FF,$A5,$26,$0A,$A5,$27,$29,$03,$2A,$05,$26,$0A,$0A,$0A,$8D,$22
-        .byte $03,$A5,$27,$4A,$4A,$29,$07,$0D,$22,$03,$8D,$22,$03,$AD,$25,$03
-        .byte $0A,$6D,$25,$03,$0A,$AA,$CA,$A5,$30,$29,$7F,$E8,$4A,$D0,$FC,$8D
-        .byte $21,$03,$8A,$18,$6D,$25,$03,$90,$03,$EE,$21,$03,$8D,$20,$03
-L6C3A:
+        .byte $FF
+
+; Applesoft HFIND: work out HGR.X / HGR.Y from the screen position (HBASL, HMASK, HGR.HORIZ).
+; Not called by the game.
+hfind:
+        LDA hbasl
+        ASL A
+        LDA hbasl+1
+        AND #$03
+        ROL A
+        ORA hbasl
+        ASL A
+        ASL A
+        ASL A
+        STA hgr_y
+        LDA hbasl+1
+        LSR A
+        LSR A
+        AND #$07
+        ORA hgr_y
+        STA hgr_y
+        LDA hgr_horiz
+        ASL A
+        ADC hgr_horiz
+        ASL A
+        TAX
+        DEX
+        LDA hmask
+        AND #$7F
+hfind.count_bits:
+        INX
+        LSR A
+        BNE hfind.count_bits
+        STA hgr_x+1
+        TXA
+        CLC
+        ADC hgr_horiz
+        BCC hfind.no_carry
+        INC hgr_x+1
+hfind.no_carry:
+        STA hgr_x
+hglin.done:                            ; HGLIN's exit, shared with HFIND
         RTS
 
-; Applesoft DRAW0
+; Applesoft DRAW0: draw the shape at (X, Y-register) at the pen with rotation and scale from A
+; (here always 0 and 1). Each shape byte holds up to three vectors: 2 bits of direction (up,
+; right, down, left) and a plot bit; a 00 byte ends the shape.
 draw0:
         STX hgr_shape_ptr
         STY hgr_shape_ptr+1
@@ -4926,61 +5004,114 @@ draw0:
         TXA
         AND #$0F
         TAX
-        LDY hgr_mask_table,X
+        LDY hgr_cos_table,X
         STY hgr_dx
         EOR #$0F
         TAX
-        LDY hgr_mask_table+1,X
+        LDY hgr_cos_table+1,X
         INY
         STY hgr_dy
         LDY hgr_horiz
         LDX #$00
         STX hgr_collisions
         LDA (hgr_shape_ptr,X)
-L6C62:
+draw0.vector:
         STA hgr_dx+1
         LDX #$80
         STX hgr_err
         STX hgr_err+1
         LDX hgr_scale
-L6C6D:
+draw0.scale_loop:
         LDA hgr_err
         SEC
         ADC hgr_dx
         STA hgr_err
-        BCC L6C7A
+        BCC draw0.step_y
         JSR draw_move_ud_plot
         CLC
-L6C7A:
+draw0.step_y:
         LDA hgr_err+1
         ADC hgr_dy
         STA hgr_err+1
-        BCC L6C85
+        BCC draw0.next_step
         JSR draw_move_ud
-L6C85:
+draw0.next_step:
         DEX
-        BNE L6C6D
+        BNE draw0.scale_loop
         LDA hgr_dx+1
         LSR A
         LSR A
         LSR A
-        BNE L6C62
+        BNE draw0.vector
         INC hgr_shape_ptr
-        BNE L6C95
+        BNE draw0.next_byte
         INC hgr_shape_ptr+1
-L6C95:
+draw0.next_byte:
         LDA (hgr_shape_ptr,X)
-        BNE L6C62
+        BNE draw0.vector
         RTS
-; leftover memory, not used: lines here can be deleted to make room
-        .byte $86,$1A,$84,$1B,$AA,$4A,$4A,$4A,$4A,$85,$53,$8A,$29,$0F,$AA,$BC
-        .byte $EB,$6B,$84,$50,$49,$0F,$AA,$BC,$EC,$6B,$C8,$84,$52,$AC,$25,$03
-        .byte $A2,$00,$8E,$2A,$03,$A1,$1A,$85,$51,$A2,$80,$86,$54,$86,$55,$AE
-        .byte $27,$03,$A5,$54,$38,$65,$50,$85,$54,$90,$04,$20,$C0,$6A,$18,$A5
-        .byte $55,$65,$52,$85,$55,$90,$03,$20,$D9,$6A,$CA,$D0,$E5,$A5,$51,$4A
-        .byte $4A,$4A,$D0,$D3,$E6,$1A,$D0,$02,$E6,$1B,$A1,$1A,$D0,$C9,$60
 
-; HFNS: read var_x / var_y and position the pen there (HPOSN).
+; Applesoft XDRAW0: DRAW0 with each point XORed onto the screen. Not called by the game.
+xdraw0:
+        STX hgr_shape_ptr
+        STY hgr_shape_ptr+1
+        TAX
+        LSR A
+        LSR A
+        LSR A
+        LSR A
+        STA hgr_quadrant
+        TXA
+        AND #$0F
+        TAX
+        LDY hgr_cos_table,X
+        STY hgr_dx
+        EOR #$0F
+        TAX
+        LDY hgr_cos_table+1,X
+        INY
+        STY hgr_dy
+        LDY hgr_horiz
+        LDX #$00
+        STX hgr_collisions
+        LDA (hgr_shape_ptr,X)
+xdraw0.vector:
+        STA hgr_dx+1
+        LDX #$80
+        STX hgr_err
+        STX hgr_err+1
+        LDX hgr_scale
+xdraw0.scale_loop:
+        LDA hgr_err
+        SEC
+        ADC hgr_dx
+        STA hgr_err
+        BCC xdraw0.step_y
+        JSR xdraw_move_ud_plot
+        CLC
+xdraw0.step_y:
+        LDA hgr_err+1
+        ADC hgr_dy
+        STA hgr_err+1
+        BCC xdraw0.next_step
+        JSR draw_move_ud
+xdraw0.next_step:
+        DEX
+        BNE xdraw0.scale_loop
+        LDA hgr_dx+1
+        LSR A
+        LSR A
+        LSR A
+        BNE xdraw0.vector
+        INC hgr_shape_ptr
+        BNE xdraw0.next_byte
+        INC hgr_shape_ptr+1
+xdraw0.next_byte:
+        LDA (hgr_shape_ptr,X)
+        BNE xdraw0.vector
+        RTS
+
+; HFNS: read var_hcolor, var_y and var_x and position the pen there (HPOSN).
 hfns:
         JSR get_hcolor
         STA hgr_color
@@ -4992,12 +5123,12 @@ hfns:
         LDX hgr_saved_x
         RTS
 
-; HPLOT var_x,var_y
+; HPLOT var_x,var_y: position the pen and plot a point.
 hplot_xy:
         JSR hfns
         JMP hplot_here
 
-; HPLOT TO var_x,var_y
+; HPLOT TO var_x,var_y: a line from the pen to the point (HGLIN).
 hplot_to_xy:
         LDA hgr_horiz
         LSR A
@@ -5014,44 +5145,56 @@ hplot_to_xy:
         JSR hglin
         LDX hgr_saved_x
         RTS
-        .byte $20,$90,$6D,$4C,$10,$6A
 
-; DRAW var_shape AT var_x,var_y
+; HCOLOR then BKGND: fill the screen with the colour. Not called by the game.
+hcolor_bkgnd:
+        JSR get_hcolor
+        JMP bkgnd
+
+; DRAW var_shape AT var_x,var_y.
 draw_shape:
         JSR hfns
         JSR find_shape
         JSR draw0
         LDX hgr_saved_x
         RTS
-        .byte $20,$F9,$6C,$20,$51,$6D,$20,$9A,$6C,$AE,$23,$03,$60
 
-; Look up var_shape in the shape table (1..count) for DRAW0.
+; XDRAW var_shape AT var_x,var_y. Not called by the game.
+xdraw_shape:
+        JSR hfns
+        JSR find_shape
+        JSR xdraw0
+        LDX hgr_saved_x
+        RTS
+
+; Point hgr_shape_ptr at shape var_shape (1..count) in the shape table. The Applesoft code read
+; SCALE= here; this copy loads 1 instead (LDA #$01 / NOP).
 find_shape:
         STX hgr_saved_x
-        LDY #$32
-        LDA #$01
+        LDY #$32                   ; SCALE's offset, left over: the JSR get_var that used it
+        LDA #$01                   ; became LDA #$01 / NOP, so the scale is always 1
         NOP
         STA hgr_scale
-        LDY #$28
+        LDY #VAR_ROT
         JSR get_var
         PHA
         LDA hgr_shape_table
         STA hgr_shape_ptr
         LDA hgr_shape_table+1
         STA hgr_shape_ptr+1
-        LDY #$20
+        LDY #VAR_SHAPE
         JSR get_var
         BEQ quantity_error
         LDX #0
         CMP (hgr_shape_ptr,X)
-        BEQ L6D7B
+        BEQ find_shape.in_range
         BCS quantity_error
-L6D7B:
+find_shape.in_range:
         ASL A
-        BCC L6D81
+        BCC find_shape.no_carry
         INC hgr_shape_ptr+1
         CLC
-L6D81:
+find_shape.no_carry:
         TAY
         LDA (hgr_shape_ptr),Y
         ADC hgr_shape_ptr
@@ -5064,23 +5207,24 @@ L6D81:
         PLA
         RTS
 
-; Read HCOLOR from var_hcolor (must be < 256).
+; A = var_hcolor (an error unless < 256).
 get_hcolor:
-        LDY #$16
+        LDY #VAR_HCOLOR
 
-; Read the variable at applesoft_vars + Y; a high byte other than 0 is an error.
+; A = the low byte of the variable whose high byte is at applesoft_vars + Y; a non-zero high
+; byte is an error.
 get_var:
         LDA (fake_vartab),Y
         BNE quantity_error
         DEY
         LDA (fake_vartab),Y
-L6D99:
+get_var.done:
         RTS
 
-; X coordinate: must be < 280.
+; X (low) and Y-register (high) = var_x; an error unless < 280.
 get_var_x:
         STX hgr_saved_x
-        LDY #$05
+        LDY #VAR_X
         LDA (fake_vartab),Y
         TAX
         INY
@@ -5088,15 +5232,15 @@ get_var_x:
         TAY
         CPX #$18
         SBC #$01
-        BCC L6D99
+        BCC get_var.done
 
-; Bad coordinate: Applesoft's error routine.
+; Bad argument: Applesoft's ILLEGAL QUANTITY error in ROM.
 quantity_error:
         JMP applesoft_error
 
-; Y coordinate: must be < 192.
+; A = var_y; an error unless < 192.
 get_var_y:
-        LDY #$0D
+        LDY #VAR_Y_HI
         JSR get_var
         CMP #$C0
         BCS quantity_error

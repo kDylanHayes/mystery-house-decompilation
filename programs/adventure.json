@@ -6,19 +6,25 @@
     "0800",
     "6215",
     "5651",
-    "5912"
+    "5912",
+    "6A7A",
+    "6AC0",
+    "6BFC",
+    "6C9A",
+    "6D31",
+    "6D44"
   ],
   "lib": "7600",
   "jump_tables": [
     {
       "addr": "5AB7",
       "count": 11,
-      "name": "tbl_5AB7"
+      "name": "tbl_conditions"
     },
     {
       "addr": "6535",
       "count": 30,
-      "name": "tbl_6535"
+      "name": "tbl_actions"
     }
   ],
   "labels": {},
@@ -38,6 +44,5 @@
     "7330": 23,
     "7504": 23,
     "5957": 23
-  },
-  "_comment": "inline_text_length: rt_print calls whose text has digits patched in at run time ($00 in the file); the length includes the terminator. Shown as # in listings."
+  }
 }
