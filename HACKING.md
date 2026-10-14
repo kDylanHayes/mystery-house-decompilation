@@ -62,6 +62,9 @@ Conventions:
 
 ## Changing the game
 
+After any change, `./build.sh` makes a new `build/mystery_house.do` to boot in an emulator, and
+`assets/` shows the result (`assets/text/rules.txt`, `assets/rooms/`, `assets/pictures/`).
+
 **A rule.** Rules are in `command_rules` (tried in order, first match wins) and `turn_rules`
 (all matches run). Each is
 
@@ -74,12 +77,11 @@ rule_4538:
 
 `ANY` matches any room, verb or noun. The length is computed from the labels, so only the
 condition and action counts need updating. The opcodes and their operands are listed in
-`src/game.inc` and NOTES.md ("Rules: the game logic"); `assets/text/rules.txt` shows every
-rule in plain words after a build.
+`src/game.inc` and NOTES.md ("Rules: the game logic").
 
 **An object or room.** One `.byte` line per record in `OBJBASE` / `ROOMBASE`; the field order is
-in the comment above each table and in `src/game.inc`. The build copies both tables into
-`STARTUP` too, which is what "play again" reloads.
+in the comment above each table and in `src/game.inc`. Both tables also reach `STARTUP`, which
+is what "play again" reloads.
 
 **A word.** The verb and noun tables are groups of a head word and its synonyms, 8 characters
 each, high-bit text. A group's position is its id, so add new groups at the end of a table
@@ -97,13 +99,33 @@ is upper case; quote a message that starts or ends with a space (`167 " "`). Mes
 and 137 are never shown: `print_message` prints built-in text for those numbers. The build
 writes the `MESSAGES` file and the offset table the engine uses (`message_index`) from it.
 
+**A picture.** `src/pictures/blockNN.txt` holds the pictures stored in file `BLOCKNN`, in order;
+pictures are numbered across all the blocks. Each `line` row is one polyline:
+
+```
+picture 1
+  line 14,7 253,7 253,149 13,149 13,7
+  line 14,104 253,104
+```
+
+A `cont` row carries on from the last point without lifting the pen (long rows are wrapped this
+way). The picture area is 255 x 160. Rooms and objects refer to pictures by number
+(`RBASEPIC`, `OPIC`, `ORPICSTA`). Add pictures at the end of `block19.txt`: it uses 264 of the
+1280 bytes a block may have (a block must fit a $500-byte cache slot).
+
+**Room for more.** Adding messages or pictures makes their tables in `ADVENTURE` longer; the
+leftover bytes after them shrink to make room (`.incbin ..., upto`), so no other change is
+needed until that space runs out: about 70 more pictures, and about 10 more messages. For more
+messages, delete the dead code that follows the message index (`dead_init_tail` to
+`dead_disk_error`, about 150 bytes; nothing calls it).
+
 **A BASIC program.** `src/basic/` holds the disk's BASIC programs as listings: `HELLO.bas`
 (the start-up credits), `MYSTERY.HELLO.bas` (loads the title and shows the 1987 notice),
 `PIC_SIZES.bas` (a developer tool) in Applesoft, and `APPLESOFT.int`, a two-line Integer BASIC
 program. Edit them like any BASIC listing; `tools/basic.py` tokenizes them the way Applesoft
-does (spaces outside strings are dropped, keywords are found even inside names). The
-`#extra` line keeps the byte the original SAVE wrote after each program. The Integer BASIC
-builder only knows `PRINT "..."` and `END`.
+does (spaces outside strings are dropped, keywords are found even inside names). The `#extra`
+line keeps the byte the original SAVE wrote after each program. The Integer BASIC builder only
+knows `PRINT "..."` and `END`.
 
 **The starting state and the saved game.** `src/startup.txt` (what "play again" loads) and
 `src/saved_game.txt` (the saved game on the disk) list the bytes that differ from a base: the
@@ -115,34 +137,14 @@ room_no                      = $12
 object 13 OROOM              = $FE
 ```
 
-Edits to the object and room tables in `src/adventure.s` reach both files automatically.
-
-**A picture.** `src/pictures/blockNN.txt` holds the pictures stored in file `BLOCKNN`, in order;
-pictures are numbered across all the blocks. Each `line` row is one polyline:
-
-```
-picture 1
-  line 14,7 253,7 253,149 13,149 13,7
-  line 14,104 253,104
-```
-
-A `cont` row carries on from the last point without lifting the pen (long rows are wrapped this
-way). The picture area is 255 x 160. Add pictures at the end of `block19.txt` (it uses 264 of
-the 1280 bytes a block may have: each block must fit a $500-byte cache slot). New block files
-are not supported: the disk writer only replaces files that are already on the disk. `assets/pictures/` shows every picture after a build. Rooms and
-objects refer to pictures by number (`RBASEPIC`, `OPIC`, `ORPICSTA`).
-
-Adding messages or pictures makes their tables in `ADVENTURE` longer; the leftover bytes after
-them shrink to make room (`.incbin ..., upto`), so no other change is needed until that space
-runs out: about 70 more pictures, and about 10 more messages. For more messages, delete the
-dead code that follows the message index (`dead_init_tail` to `dead_disk_error`, about 150
-bytes; nothing calls it).
+**The disk.** `src/disk/layout.txt` lists the 30 files with the sectors they occupy; files may
+grow or shrink, but adding or removing a file, or a new `BLOCK` file, is not supported.
 
 ## Layout
 
 | Path | What | Made by |
 |---|---|---|
-| `src/` | the source: programs, `messages.txt`, `pictures/`, `basic/`, `startup.txt`, `saved_game.txt`, `disk/` (see `src/data/README.md` and `src/disk/README.md` for the binary pieces) | hand |
+| `src/` | the source: programs, `messages.txt`, `pictures/`, `basic/`, `startup.txt`, `saved_game.txt`, `disk/` (`src/data/README.md` and `src/disk/README.md` describe the binary pieces) | hand |
 | `disk/` | the original disk image and its SHA-256, used only to check the build | reference |
 | `build.sh` | the build | hand |
 | `tools/` | the build tools (see `tools/README.md`) | hand |
@@ -154,3 +156,12 @@ bytes; nothing calls it).
 | `assets/` | game text, pictures, rooms, shapes, title screens | build |
 | `decomp/` | C pseudocode (see `decomp/README.md`) | build, with Ghidra |
 | `build/` | built binaries, listings, symbol tables, the disk image (not committed) | build |
+
+## What is public domain
+
+Mystery House, its loader and the BASIC programs were released into the public domain in 1987,
+and that is what this project decompiles. Two things in it are not: DOS 3.3 (Apple's operating
+system, on tracks 0-2 of the disk and in `src/disk/dos33.bin`), which is kept as an untouched
+binary only so the built disk boots, and `src/disk/residue.bin`, the stale fragments of other
+software left in the disk's free sectors, kept only so the image is identical to the original.
+Neither is decompiled. An empty `residue.bin` gives a clean disk that plays the same.

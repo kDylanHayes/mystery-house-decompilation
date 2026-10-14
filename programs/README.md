@@ -6,7 +6,7 @@ program; addresses are hex strings.
 
 | Field | Meaning |
 |---|---|
-| `name`, `file` | the program's name and its file in `extracted/` |
+| `name`, `file` | the program's name and its file among the built disk's files (`build/files/`) |
 | `load` | load address |
 | `entries` | addresses to trace from: the entry point, plus routines reached only through a vector or never called (dead code, unused Applesoft routines) so they get pseudocode too |
 | `lib` | address of the macro library's jump table; calls to it carry inline operands |

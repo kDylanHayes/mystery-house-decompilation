@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""Generate assembler source for a Mystery House binary. Used once to create src/; after that
-src/ is the source of truth and is edited by hand.
+"""Generate assembler source for a Mystery House binary. Used once to create the first version
+of src/adventure.s and src/autoload.s; after that src/ is the source of truth and is edited by
+hand. Kept to show how the source was made: it does not know about the later hand edits (names,
+comments, the decoded dead code) or the generated message and picture tables, so running it
+again would not reproduce the current source.
 
 usage: gen_source.py <program> <bin> <plan.json> <symbols.csv> <out.s> <data dir>
        program: adventure | autoload
@@ -17,8 +20,6 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gamedata as gd  # noqa: E402
 from trace6502 import OPS, SIZE  # noqa: E402
-
-ROMNAMES = {}
 
 
 def ident(word):

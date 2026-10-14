@@ -25,7 +25,7 @@ as a binary.
 * a README.md in each folder: [`src/data`](src/data/README.md), [`tools`](tools/README.md),
   [`programs`](programs/README.md), [`symbols`](symbols/README.md),
   [`decomp`](decomp/README.md), [`original_source`](original_source/README.md),
-  [`disk`](disk/README.md)
+  [`src/disk`](src/disk/README.md), [`disk`](disk/README.md)
 
 ## What's here
 
@@ -46,7 +46,7 @@ as a binary.
 | `assets/rooms/` | each of the 41 rooms as first seen, with its objects |
 | `assets/shapes/`, `assets/screens/` | the 6 shapes; the 1980 and 1987 title screens |
 | `decomp/` | C pseudocode from Ghidra, for reading (optional build step) |
-| `extracted/` | every file from the disk; BASIC programs listed as text |
+| `extracted/` | every file from the original disk, for the check; BASIC programs listed as text |
 
 <p>
 <img src="assets/screens/title_1980.png" width="45%"> <img src="assets/screens/title_1987.png" width="45%">
@@ -55,8 +55,11 @@ as a binary.
 <img src="assets/rooms/room_03.png" width="45%"> <img src="assets/rooms/room_04.png" width="45%">
 </p>
 
-## Source
+## Source and licence
 
 The disk image is the TOSEC dump
 *Hi-Res Adventure 1 - Mystery House (1980)(On-Line Systems)(PD).do*. Sierra On-Line released
-the game into the public domain in 1987.
+the game into the public domain in 1987, and the game is all this project decompiles. DOS 3.3
+(Apple's) and the stale fragments of other software left in the disk's free sectors are kept
+only as untouched binaries, so that the built disk boots and matches the original; see
+HACKING.md ("What is public domain").

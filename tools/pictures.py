@@ -27,7 +27,6 @@ W, H = 280, 192
 SCALE = 2
 LOAD = 0x0800
 SHAPES = 0x5700
-BLOCK_LOAD = 0x4400   # where the BLOCK files were BSAVEd from; offsets are relative to the file
 
 
 def png(path, width, height, rows):
