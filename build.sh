@@ -5,8 +5,8 @@
 # needs: python3 only. If GHIDRA_INSTALL_DIR points at Ghidra 12.1.x, the C pseudocode in
 #        decomp/ is regenerated as well (optional).
 #
-# Builds every file of the game from src/ (the two programs, the MESSAGES file and the 19 picture
-# files, plus the two table copies), checks them against the originals, writes them into a copy
+# Builds every file of the game from src/ (the two programs, the MESSAGES file, the 19 picture
+# files, the BASIC programs, STARTUP and the two table copies), checks them against the originals, writes them into a copy
 # of the disk image (build/mystery_house.do, bootable) and regenerates the assets from them.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -21,6 +21,10 @@ python3 -I "$HERE/tools/dos33.py" "$DISK" "$HERE/extracted" > /dev/null
 # messages and pictures first: they generate the tables ADVENTURE includes
 python3 -I "$HERE/tools/msgfile.py" build "$HERE/src/messages.txt" "$G/MESSAGES.bin" "$G/messages.inc"
 python3 -I "$HERE/tools/picfile.py" build "$HERE/src/pictures" "$G" "$G/pictures.inc"
+for f in HELLO MYSTERY.HELLO PIC_SIZES; do
+	python3 -I "$HERE/tools/basic.py" build "$HERE/src/basic/$f.bas" "$G/$f.bin"
+done
+python3 -I "$HERE/tools/basic.py" build "$HERE/src/basic/APPLESOFT.int" "$G/APPLESOFT.bin"
 python3 -I "$HERE/tools/asm6502.py" -I "$G" "$HERE/src/adventure.s" "$B/ADVENTURE.bin" "$B/adventure.lst" "$B/adventure.syms.csv"
 python3 -I "$HERE/tools/asm6502.py" "$HERE/src/autoload.s" "$B/AUTO_LOAD_OBJ.bin" "$B/autoload.lst" "$B/autoload.syms.csv"
 

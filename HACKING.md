@@ -16,17 +16,17 @@ Needs only python3. The build:
    picture files from `src/pictures/` (`tools/picfile.py`), with the tables `ADVENTURE` includes
    for them (`build/gen/messages.inc`, `pictures.inc`);
 3. assembles `src/adventure.s` and `src/autoload.s` into `build/` with `tools/asm6502.py`;
-4. checks all 25 rebuilt files against the originals (`tools/diskfiles.py`; this includes
+4. checks all 29 rebuilt files against the originals (`tools/diskfiles.py`; this includes
    `BLOCK DIRECTORY` and `MESSAGE OBJECT`, the disk's copies of two `ADVENTURE` tables, and
    `STARTUP`, the starting state "play again" loads, which takes `ADVENTURE`'s object and room
-   tables) and
+   tables, and the four BASIC programs built from `src/basic/` with `tools/basic.py`) and
    writes them into a copy of the disk, `build/mystery_house.do`, which boots in any Apple II
    emulator, then reports whether the disk is identical to the original;
 5. regenerates `assets/` (text, pictures, rooms) from the built files, so edits show up there,
    and `original_source/` from the original binary;
 6. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
 
-With unmodified source it must say "all 25 rebuilt files match the original" and "identical to
+With unmodified source it must say "all 29 rebuilt files match the original" and "identical to
 the original disk". Keep it that way for any change that is meant to be a cleanup (renames, comments,
 constants): those never change the bytes.
 
@@ -34,7 +34,8 @@ constants): those never change the bytes.
 
 `src/adventure.s` is the program: variables, data tables and engine, in address order, with
 a memory map at the top. `src/messages.txt` and `src/pictures/` are the game's text and
-pictures, which live in separate files on the disk. `src/game.inc` holds the constants for the data (vocabulary ids
+pictures, which live in separate files on the disk, and `src/basic/` the BASIC programs that
+start it. `src/game.inc` holds the constants for the data (vocabulary ids
 `V_*`/`N_*`, rule opcodes `C_*`/`A_*`, record field offsets, message numbers) and
 `src/apple2.inc` the hardware, Monitor and DOS addresses. `src/autoload.s` is the 1987 loader.
 
@@ -93,6 +94,14 @@ Edit the text, or add new numbers at the end and use them from a rule (`A_MESSAG
 is upper case; quote a message that starts or ends with a space (`167 " "`). Messages 7, 37, 127
 and 137 are never shown: `print_message` prints built-in text for those numbers. The build
 writes the `MESSAGES` file and the offset table the engine uses (`message_index`) from it.
+
+**A BASIC program.** `src/basic/` holds the disk's BASIC programs as listings: `HELLO.bas`
+(the start-up credits), `MYSTERY.HELLO.bas` (loads the title and shows the 1987 notice),
+`PIC_SIZES.bas` (a developer tool) in Applesoft, and `APPLESOFT.int`, a two-line Integer BASIC
+program. Edit them like any BASIC listing; `tools/basic.py` tokenizes them the way Applesoft
+does (spaces outside strings are dropped, keywords are found even inside names). The
+`#extra` line keeps the byte the original SAVE wrote after each program. The Integer BASIC
+builder only knows `PRINT "..."` and `END`.
 
 **A picture.** `src/pictures/blockNN.txt` holds the pictures stored in file `BLOCKNN`, in order;
 pictures are numbered across all the blocks. Each `line` row is one polyline:

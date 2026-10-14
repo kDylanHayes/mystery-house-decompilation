@@ -4,29 +4,20 @@
 usage: dos33.py <disk.do> <outdir>                       extract every file
        dos33.py put <disk.do> <out.do> NAME=file ...        replace files' contents
                 (a binary file needs file.load holding its hex load address; a text file's
-                data must end with $00)
+                data must end with $00; a BASIC file is the tokenized program)
 
 Binary (B) files are written without their 4-byte load-address/length header; the header is
 recorded in <outdir>/CATALOG.txt. Applesoft (A) files are written both raw (.bas.bin) and
-detokenized (.bas). Text (T) files have their high bits stripped and CRs turned into newlines.
+listed (.bas, by tools/basic.py, which can also rebuild them). Text (T) files have their high bits stripped and CRs turned into newlines.
 """
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import basic  # noqa: E402
+
 SECTOR = 256
 TYPES = {0x00: 'T', 0x01: 'I', 0x02: 'A', 0x04: 'B', 0x08: 'S', 0x10: 'R', 0x20: 'a', 0x40: 'b'}
-
-APPLESOFT_TOKENS = [
-    'END', 'FOR', 'NEXT', 'DATA', 'INPUT', 'DEL', 'DIM', 'READ', 'GR', 'TEXT', 'PR#', 'IN#',
-    'CALL', 'PLOT', 'HLIN', 'VLIN', 'HGR2', 'HGR', 'HCOLOR=', 'HPLOT', 'DRAW', 'XDRAW', 'HTAB',
-    'HOME', 'ROT=', 'SCALE=', 'SHLOAD', 'TRACE', 'NOTRACE', 'NORMAL', 'INVERSE', 'FLASH',
-    'COLOR=', 'POP', 'VTAB', 'HIMEM:', 'LOMEM:', 'ONERR', 'RESUME', 'RECALL', 'STORE', 'SPEED=',
-    'LET', 'GOTO', 'RUN', 'IF', 'RESTORE', '&', 'GOSUB', 'RETURN', 'REM', 'STOP', 'ON', 'WAIT',
-    'LOAD', 'SAVE', 'DEF', 'POKE', 'PRINT', 'CONT', 'LIST', 'CLEAR', 'GET', 'NEW', 'TAB(', 'TO',
-    'FN', 'SPC(', 'THEN', 'AT', 'NOT', 'STEP', '+', '-', '*', '/', '^', 'AND', 'OR', '>', '=',
-    '<', 'SGN', 'INT', 'ABS', 'USR', 'FRE', 'SCRN(', 'PDL', 'POS', 'SQR', 'RND', 'LOG', 'EXP',
-    'COS', 'SIN', 'TAN', 'ATN', 'PEEK', 'LEN', 'STR$', 'VAL', 'ASC', 'CHR$', 'LEFT$', 'RIGHT$',
-    'MID$']
 
 
 def sector(disk, track, sec):
@@ -62,64 +53,6 @@ def catalog(disk):
             name = bytes(b & 0x7F for b in e[3:33]).decode('ascii').rstrip()
             yield name, TYPES.get(e[2] & 0x7F, '?'), bool(e[2] & 0x80), e[0], e[1], e[33] | e[34] << 8
         track, sec = cat[1], cat[2]
-
-
-def detokenize(prog, base=0x0801):
-    out = []
-    pos = 0
-    while pos + 4 <= len(prog):
-        link = prog[pos] | prog[pos + 1] << 8
-        if link == 0:
-            break
-        line = prog[pos + 2] | prog[pos + 3] << 8
-        pos += 4
-        text = ''
-        in_quote = in_rem = False
-        while prog[pos] != 0:
-            b = prog[pos]
-            pos += 1
-            if b >= 0x80 and not in_quote and not in_rem:
-                tok = APPLESOFT_TOKENS[b - 0x80] if b - 0x80 < len(APPLESOFT_TOKENS) else '?'
-                text += ' ' + tok + ' '
-                if tok == 'REM':
-                    in_rem = True
-            else:
-                c = chr(b & 0x7F)
-                if c == '"':
-                    in_quote = not in_quote
-                text += c if c.isprintable() else '\\x%02X' % b
-        pos += 1
-        out.append('%d %s' % (line, ' '.join(text.split()) if not in_quote else text.strip()))
-    return '\n'.join(out) + '\n'
-
-
-# Integer BASIC tokens seen on this disk (the full table has ~128 entries)
-INTEGER_TOKENS = {0x00: '', 0x01: '', 0x03: ':', 0x51: 'END', 0x61: 'PRINT ', 0x62: 'PRINT ', 0x63: 'PRINT '}
-
-
-def list_integer(prog):
-    """Integer BASIC: [length] [line lo hi] tokens... $01. Strings are $28 text $29 with the
-    text in high-bit ASCII. Only the few tokens this disk uses are named."""
-    out = []
-    pos = 0
-    while pos < len(prog) and prog[pos]:
-        n = prog[pos]
-        line = prog[pos + 1] | prog[pos + 2] << 8
-        body = prog[pos + 3:pos + n]
-        text, i = '', 0
-        while i < len(body):
-            b = body[i]
-            if b == 0x28:
-                j = body.index(0x29, i)
-                text += '"' + ''.join(chr(c & 0x7F) if (c & 0x7F) >= 0x20 else '^' + chr((c & 0x7F) + 64)
-                                      for c in body[i + 1:j]) + '"'
-                i = j + 1
-                continue
-            text += INTEGER_TOKENS.get(b, '<%02X>' % b)
-            i += 1
-        out.append('%d %s' % (line, text.strip()))
-        pos += n
-    return '\n'.join(out) + '\n'
 
 
 def safe(name):
@@ -171,10 +104,14 @@ def put(disk, name, load, payload):
             e = disk[eo:eo + 35]
             if e[0] in (0x00, 0xFF) or bytes(b & 0x7F for b in e[3:33]).decode().rstrip() != name:
                 continue
-            if load is None:
+            kind = e[2] & 0x7F
+            if load is None and kind in (0x01, 0x02):
+                # Integer BASIC / Applesoft program: a length, then the program
+                body = bytes([len(payload) & 0xFF, len(payload) >> 8]) + payload
+            elif load is None:
                 # text file: the raw data, ended by $00 (the payload includes it)
-                if e[2] & 0x7F != 0x00:
-                    raise SystemExit('%s is not a text file; give its load address' % name)
+                if kind != 0x00:
+                    raise SystemExit('%s is a binary file; give its load address' % name)
                 body = payload
             else:
                 if e[2] & 0x7F != 0x04:
@@ -235,10 +172,8 @@ def main():
             length = raw[0] | raw[1] << 8
             body = raw[2:2 + length]
             open(fn + '.bas.bin', 'wb').write(body)
-            if ftype == 'A':
-                open(fn + '.bas', 'w').write(detokenize(body))
-            else:
-                open(fn + '.bas', 'w').write(list_integer(body))
+            lines, extra = (basic.list_applesoft if ftype == 'A' else basic.list_integer)(body)
+            open(fn + '.bas', 'w').write('\n'.join(lines) + '\n')
         elif ftype == 'T':
             end = raw.find(b'\x00')
             body = raw if end < 0 else raw[:end]

@@ -5,7 +5,8 @@ dos33.py put.
 usage: diskfiles.py <build dir> <extracted dir>
 
 Expects in <build dir>: ADVENTURE.bin and AUTO_LOAD_OBJ.bin (assembled), gen/MESSAGES.bin
-(tools/msgfile.py) and gen/BLOCK1-19.bin (tools/picfile.py). Writes:
+(tools/msgfile.py), gen/BLOCK1-19.bin (tools/picfile.py) and the BASIC programs
+gen/HELLO.bin, MYSTERY.HELLO.bin, PIC_SIZES.bin, APPLESOFT.bin (tools/basic.py). Writes:
 
   files/            a copy of <extracted dir> with every rebuilt file in place, for the
                     asset tools (gamedata.py, pictures.py)
@@ -31,6 +32,10 @@ FILES = [
     ('BLOCK DIRECTORY', 'BLOCK_DIRECTORY.bin', 0x4000, 'BLOCK_DIRECTORY.bin'),
     ('MESSAGE OBJECT', 'MESSAGE_OBJECT.bin', 0x5000, 'MESSAGE_OBJECT.bin'),
     ('STARTUP', 'STARTUP.bin', 0x0830, 'STARTUP.bin'),
+    ('HELLO', 'gen/HELLO.bin', None, 'HELLO.bas.bin'),
+    ('MYSTERY.HELLO', 'gen/MYSTERY.HELLO.bin', None, 'MYSTERY.HELLO.bas.bin'),
+    ('PIC SIZES', 'gen/PIC_SIZES.bin', None, 'PIC_SIZES.bas.bin'),
+    ('APPLESOFT', 'gen/APPLESOFT.bin', None, 'APPLESOFT.bas.bin'),
 ] + [('BLOCK%d' % n, 'gen/BLOCK%d.bin' % n, 0x4400, 'BLOCK%d.bin' % n) for n in range(1, 20)]
 
 
@@ -59,9 +64,11 @@ def main():
             full = os.path.join(b, path)
             data = open(full, 'rb').read()
             old = open(os.path.join(ext, orig), 'rb').read()
-            if load is None:
+            if orig.endswith('.txt.bin'):
                 # the extracted text file is whole sectors: the text, its $00, then the rest
                 same = old[:len(data)] == data
+            elif load is None:
+                same = old == data          # BASIC program
             else:
                 same = old == data
                 open(full + '.load', 'w').write('%04X' % load)
