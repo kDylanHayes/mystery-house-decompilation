@@ -98,7 +98,7 @@ address,name,type,comment
 0900,OBJBASE,label,object table: records linked by ONEXT, ended by $FF (see NOTES.md)
 0D00,ROOMBASE,label,room table: RTBLSIZ = 10 bytes per room, indexed by room number
 1700,noun_table,label,noun groups: word[8] count synonyms[8*count]; $FF ends
-2000,hires_page1,label,hi-res page 1 (holds the 1980 title screen in the saved file)
+2000,title_1980,label,hi-res page 1: the 1980 On-Line Systems title screen (shown while ADVENTURE loads)
 4000,verb_table,label,verb groups, same layout as noun_table
 4400,turn_rules,label,rules run after every command
 4500,command_rules,label,rules matched against the command

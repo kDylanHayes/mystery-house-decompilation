@@ -13,8 +13,8 @@ See [NOTES.md](NOTES.md) for how the engine works.
 | Path | Contents |
 |---|---|
 | `decomp/adventure.c` | Ghidra pseudocode for the game engine, every function named |
-| `decomp/adventure.s` | annotated disassembly of `ADVENTURE` (code, inline operands, tables) |
-| `decomp/autoload.c`, `.s` | the 1987 loader / instructions program (`AUTO LOAD OBJ`) |
+| `src/adventure.s`, `src/autoload.s` | **reassemblable source**, byte-identical to the originals |
+| `decomp/autoload.c` | the 1987 loader / instructions program (`AUTO LOAD OBJ`) |
 | `decomp/source_fragments.s` | 313 lines of the **original 1980 source**, recovered from stale memory inside the binary |
 | `extracted/APPLESOFT.bas` etc. | the disk's BASIC programs listed as text |
 | `assets/text/rules.txt` | the game logic: all 358 rules decompiled to readable pseudocode |
@@ -38,27 +38,24 @@ See [NOTES.md](NOTES.md) for how the engine works.
 
 ## Building
 
-Everything under `decomp/`, `assets/` and `extracted/` is generated from the disk image:
-
 ```
-GHIDRA_INSTALL_DIR=/path/to/ghidra_12.1.x ./build.sh [disk/mystery_house.do]
+./build.sh
 ```
 
-It needs python3 (standard library only), a JDK 21+ and Ghidra 12.1.x. The disk image is checked
-against `disk/SHA256`.
+Needs only python3. `src/adventure.s` and `src/autoload.s` are the source of truth: the build
+assembles them with `tools/asm6502.py`, checks the binaries against the originals, writes them
+into a copy of the disk (`build/mystery_house.do`, bootable, identical to the original when the
+source is unmodified) and regenerates `assets/` from the result.
 
-1. `tools/dos33.py` extracts the DOS 3.3 disk and lists the BASIC programs.
-2. `tools/gamedata.py` decodes the game database and the rule scripts.
-3. `tools/pictures.py` renders the pictures, shapes, rooms and title screens.
-4. `tools/source_fragments.py` recovers the original source fragments.
-5. `tools/trace6502.py` finds the code by recursive descent. The engine passes operands inline
-   after `JSR` (see NOTES.md), which ordinary auto-analysis gets wrong, so the tracer works out
-   which bytes are code and writes a plan.
-6. `ghidra_scripts/MysteryHouse.java` disassembles exactly that plan in Ghidra, applies
-   `symbols/`, and exports the pseudocode with the inline operands shown as call arguments
-   (`rt_print("ENTER COMMAND")`, `lookup_word(&verb_table)`).
+Editing: rules, objects, rooms and vocabulary are written out structurally in `src/adventure.s`
+with named constants (`src/game.inc`); rule and object lengths are computed from labels. Tables
+are pinned with `.org` because the engine refers to some of them by immediate address; if an edit
+grows into the next table the assembler stops with ".org goes backwards" - delete lines from the
+"leftover memory" just before it to make room.
 
-To rename something, edit `symbols/*.csv` and rebuild.
+Optional: with `GHIDRA_INSTALL_DIR` set to Ghidra 12.1.x the build also regenerates the C
+pseudocode in `decomp/` (from `symbols/*.csv`, which carry the same names as `src/`).
+`tools/gen_source.py` is the one-time generator that produced `src/` from the original binary.
 
 ## Source
 

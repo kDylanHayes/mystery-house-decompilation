@@ -1,37 +1,55 @@
 #!/bin/sh
-# Rebuild everything from the Mystery House disk image.
+# Build Mystery House from source.
 #
-# usage: ./build.sh [disk.do]      (default: disk/mystery_house.do)
-# needs: python3, a JDK 21+, and Ghidra 12.1.x (GHIDRA_INSTALL_DIR must point at it)
+# usage: ./build.sh [disk.do]      (default: disk/mystery_house.do, the original image)
+# needs: python3 only. If GHIDRA_INSTALL_DIR points at Ghidra 12.1.x, the C pseudocode in
+#        decomp/ is regenerated as well (optional).
+#
+# Assembles src/*.s, checks the binaries against the originals, writes them into a copy of the
+# disk image (build/mystery_house.do, bootable), and regenerates the assets from the result.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 DISK=${1:-"$HERE/disk/mystery_house.do"}
-: "${GHIDRA_INSTALL_DIR:?set GHIDRA_INSTALL_DIR to your Ghidra 12.1.x directory}"
-
-sha=$(shasum -a 256 "$DISK" | cut -d' ' -f1)
-EXPECT=$(cat "$HERE/disk/SHA256")
-[ "$sha" = "$EXPECT" ] || { echo "Unexpected disk image (sha256 $sha)" >&2; exit 1; }
-
-WORK="$HERE/work"
-rm -rf "$WORK" "$HERE/extracted" "$HERE/decomp" "$HERE/assets"
-mkdir -p "$WORK/ghidra" "$HERE/decomp"
+B="$HERE/build"
+rm -rf "$B" "$HERE/extracted" "$HERE/assets"
+mkdir -p "$B"
 
 python3 -I "$HERE/tools/dos33.py" "$DISK" "$HERE/extracted" > /dev/null
-python3 -I "$HERE/tools/gamedata.py" "$HERE/extracted" "$HERE/assets/text"
-python3 -I "$HERE/tools/pictures.py" "$HERE/extracted" "$HERE/assets/text/gamedata.json" "$HERE/assets"
-python3 -I "$HERE/tools/source_fragments.py" "$HERE/extracted/ADVENTURE.bin" "$HERE/decomp/source_fragments.s"
 
+python3 -I "$HERE/tools/asm6502.py" "$HERE/src/adventure.s" "$B/ADVENTURE.bin" "$B/adventure.lst"
+python3 -I "$HERE/tools/asm6502.py" "$HERE/src/autoload.s" "$B/AUTO_LOAD_OBJ.bin" "$B/autoload.lst"
+printf 0800 > "$B/ADVENTURE.bin.load"
+printf 0FFD > "$B/AUTO_LOAD_OBJ.bin.load"
+for f in ADVENTURE AUTO_LOAD_OBJ; do
+	if cmp -s "$B/$f.bin" "$HERE/extracted/$f.bin"; then echo "$f: matches the original"
+	else echo "$f: differs from the original (modified source)"; fi
+done
+python3 -I "$HERE/tools/dos33.py" put "$DISK" "$B/mystery_house.do" \
+	"ADVENTURE=$B/ADVENTURE.bin" "AUTO LOAD OBJ=$B/AUTO_LOAD_OBJ.bin"
+[ "$(shasum -a 256 "$B/mystery_house.do" | cut -d' ' -f1)" = "$(cat "$HERE/disk/SHA256")" ] \
+	&& echo "build/mystery_house.do: identical to the original disk" \
+	|| echo "build/mystery_house.do: modified disk"
+
+# assets come from the built files, so edits to the tables show up in them
+cp -R "$HERE/extracted" "$B/files"
+cp "$B/ADVENTURE.bin" "$B/AUTO_LOAD_OBJ.bin" "$B/files/"
+python3 -I "$HERE/tools/gamedata.py" "$B/files" "$HERE/assets/text"
+python3 -I "$HERE/tools/pictures.py" "$B/files" "$HERE/assets/text/gamedata.json" "$HERE/assets"
+python3 -I "$HERE/tools/source_fragments.py" "$B/files/ADVENTURE.bin" "$HERE/decomp/source_fragments.s"
+
+[ -n "${GHIDRA_INSTALL_DIR:-}" ] || { echo "GHIDRA_INSTALL_DIR not set: decomp/*.c left as is"; exit 0; }
+W="$B/ghidra"
+mkdir -p "$W"
 for prog in adventure autoload; do
 	file=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['file'])" "$HERE/programs/$prog.json")
 	load=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['load'])" "$HERE/programs/$prog.json")
-	cat "$HERE/symbols/apple2.csv" "$HERE/symbols/$prog.csv" > "$WORK/$prog.symbols.csv"
-	python3 -I "$HERE/tools/trace6502.py" "$HERE/programs/$prog.json" "$HERE/extracted/$file" \
-		"$WORK/$prog.plan.json" "$HERE/decomp/$prog.s" "$WORK/$prog.symbols.csv"
-	"$GHIDRA_INSTALL_DIR/support/analyzeHeadless" "$WORK/ghidra" "$prog" \
-		-import "$HERE/extracted/$file" -overwrite \
+	cat "$HERE/symbols/apple2.csv" "$HERE/symbols/$prog.csv" > "$W/$prog.symbols.csv"
+	python3 -I "$HERE/tools/trace6502.py" "$HERE/programs/$prog.json" "$B/files/$file" "$W/$prog.plan.json"
+	"$GHIDRA_INSTALL_DIR/support/analyzeHeadless" "$W" "$prog" \
+		-import "$B/files/$file" -overwrite \
 		-loader BinaryLoader -loader-baseAddr "0x$load" -processor 6502:LE:16:default \
 		-noanalysis -scriptPath "$HERE/ghidra_scripts" \
-		-postScript MysteryHouse.java "$WORK/$prog.plan.json" "$WORK/$prog.symbols.csv" "$HERE/decomp/$prog.c" \
-		-deleteProject > "$WORK/ghidra_$prog.log" 2>&1
-	grep -E "MysteryHouse.java>|ERROR|Exception" "$WORK/ghidra_$prog.log" || true
+		-postScript MysteryHouse.java "$W/$prog.plan.json" "$W/$prog.symbols.csv" "$HERE/decomp/$prog.c" \
+		-deleteProject > "$W/$prog.log" 2>&1
+	grep -E "MysteryHouse.java> .*decompiled|ERROR" "$W/$prog.log" || true
 done

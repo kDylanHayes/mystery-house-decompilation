@@ -4,7 +4,7 @@ address,name,type,comment
 0FFD,start,func,menu: G = game, I = instructions
 105A,show_instructions,func,eight pages of instructions and the cast of characters
 1B7B,run_adventure,func,PRINT CHR$(4)"BRUN ADVENTURE"
-2000,title_screen,label,hi-res page 1: the Sierra title picture
+2000,title_1987,label,hi-res page 1: the 1987 Sierra title screen
 1C00,rt_copy,func:X,copy X bytes: .word src, dst
 1C03,rt_add8,func:X,word at .word addr += X
 1C06,rt_add16,func,word at .word dst += word at .word src
