@@ -92,7 +92,7 @@ class SavedStates(unittest.TestCase):
         b = helpers.build()
         base = read(os.path.join(b, 'STARTUP.bin'))
         syms = savefile.symbols(os.path.join(b, 'adventure.syms.csv'))
-        self.assertEqual(savefile.resolve('room_no', syms, base), 0x0852)
+        self.assertEqual(savefile.resolve('CURONO', syms, base), 0x0852)
         self.assertEqual(savefile.resolve('SWITCH+12', syms, base), 0x083A + 12)
         self.assertEqual(savefile.resolve('room 3 RCURPIC', syms, base), 0x0D00 + 30 + 9)
         self.assertEqual(savefile.resolve('object 1 OROOM', syms, base), 0x0900 + 2)

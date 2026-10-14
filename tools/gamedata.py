@@ -11,11 +11,13 @@ text file, and writes:
   rooms.txt         room descriptions, exits and pictures
   objects.txt       object table with locations, pictures and states
   rules.txt         the turn and command rule scripts, decompiled to pseudocode
+  map.txt, map.dot  every room's exits and the passages rules make (map.dot is Graphviz)
   gamedata.json     all of the above in machine-readable form
 """
 import pathlib
 import json
 import os
+import re
 import sys
 
 LOAD = 0x0800
@@ -48,20 +50,39 @@ BUILTIN_MESSAGES = {
     0x89: 'I CANT GO IN THAT DIRECTION',
 }
 
+def switch_names():
+    """SW_* names from src/game.inc, if it is there: switch number -> name."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src', 'game.inc')
+    names = {}
+    if os.path.exists(path):
+        for line in pathlib.Path(path).read_text().splitlines():
+            m = re.match(r'^(SW_\w+)\s*=\s*(\d+)', line)
+            if m:
+                names[int(m.group(2))] = m.group(1)
+    return names
+
+
+SWITCHES = switch_names()
+
+
+def sw(n):
+    return SWITCHES.get(n, 'switch[%d]' % n)
+
+
 # Condition opcodes (dispatch table at $5AB7). Each entry: (name, operand count, formatter)
 CONDITIONS = {
     3: ('OBJ_IN_ROOM', 2, lambda a, n: '%s is in %s' % (n.obj(a[0]), n.room(a[1]))),
     5: ('TURNS_GT', 1, lambda a, n: 'turn > %d' % a[0]),
-    6: ('SWITCH_EQ', 2, lambda a, n: 'switch[%d] == %d' % (a[0], a[1])),
+    6: ('SWITCH_EQ', 2, lambda a, n: '%s == %d' % (sw(a[0]), a[1])),
     9: ('VIEW_IS', 1, lambda a, n: 'current picture == %d' % a[0]),
     10: ('OBJ_PIC_IS', 2, lambda a, n: '%s picture == %d' % (n.obj(a[0]), a[1])),
 }
 
 # Action opcodes (dispatch table at $6535); handler labels are the original ACnn00 names.
 ACTIONS = {
-    1: ('ADD_SWITCH', 2, lambda a, n: 'switch[%d] += %d' % (a[1], a[0])),
-    2: ('SUB_SWITCH', 2, lambda a, n: 'switch[%d] -= %d' % (a[1], a[0])),
-    3: ('SET_SWITCH', 2, lambda a, n: 'switch[%d] = %d' % (a[0], a[1])),
+    1: ('ADD_SWITCH', 2, lambda a, n: '%s += %d' % (sw(a[1]), a[0])),
+    2: ('SUB_SWITCH', 2, lambda a, n: '%s -= %d' % (sw(a[1]), a[0])),
+    3: ('SET_SWITCH', 2, lambda a, n: '%s = %d' % (sw(a[0]), a[1])),
     4: ('INVENTORY', 0, lambda a, n: 'list objects carried'),
     5: ('PUT_OBJ', 2, lambda a, n: 'put %s in %s' % (n.obj(a[0]), n.room(a[1]))),
     6: ('GOTO_ROOM', 1, lambda a, n: 'go to %s' % n.room(a[0])),
@@ -248,6 +269,45 @@ class Namer:
         return 'msg %d "%s"' % (n, self.msgs.get(n, '?'))
 
 
+def write_map(out, rooms, rules, msgs, nm):
+    """map.txt and map.dot: every room with its compass exits and the passages rules make
+    (GO DOOR, GO HOLE, ...), with the conditions they need."""
+    passages = {}
+    for r in rules:
+        if r['room'] == ANY:
+            continue
+        for op, args in r['actions']:
+            if op == 6:   # GOTO_ROOM
+                need = [CONDITIONS[c][2](a, nm) for c, a in r['conditions']]
+                what = ' '.join(x for x in (nm.verb(r['verb']) if r['verb'] != ANY else '',
+                                            nm.noun(r['noun']) if r['noun'] != ANY else '') if x)
+                passages.setdefault(r['room'], []).append((what, args[0], need))
+    lines = ['# Every room: its compass exits (the room table) and the passages rules make, with',
+             '# what they need. Rooms with no way out on the compass are left by such a passage.', '']
+    dot = ['digraph mystery_house {', '  node [shape=box, fontname="Helvetica", fontsize=10];',
+           '  edge [fontname="Helvetica", fontsize=8];']
+    for r in rooms:
+        n = r['RROOMNO']
+        lines.append('room %d  %s' % (n, short(msgs.get(r['RMSG'], ''), 70)))
+        dot.append('  r%d [label="%d\\n%s"];' % (n, n, short(msgs.get(r['RMSG'], ''), 30).replace('"', "'")))
+        for i, k in enumerate(ROOM_FIELDS[2:8]):
+            if r[k]:
+                lines.append('    %-6s -> %d' % (DIRS[i], r[k]))
+                dot.append('  r%d -> r%d [label="%s"];' % (n, r[k], DIRS[i][0].upper()))
+        seen = set()
+        for what, to, need in passages.get(n, []):
+            key = (what, to, tuple(need))
+            if key in seen:
+                continue
+            seen.add(key)
+            lines.append('    %-6s -> %d%s' % (what, to, ('   (if %s)' % ', '.join(need)) if need else ''))
+            dot.append('  r%d -> r%d [label="%s", style=dashed];' % (n, to, what))
+        lines.append('')
+    dot.append('}')
+    pathlib.Path(os.path.join(out, 'map.txt')).write_text('\n'.join(lines))
+    pathlib.Path(os.path.join(out, 'map.dot')).write_text('\n'.join(dot) + '\n')
+
+
 def short(s, n=40):
     s = s.replace('YOU ARE ', '').split('.')[0]
     return s if len(s) <= n else s[:n - 3] + '...'
@@ -324,9 +384,11 @@ def main():
         f.write('# Game logic. After each command the engine scans the command rules ($4500)\n'
                 '# for the first one whose room/verb/noun and conditions match, runs its actions and\n'
                 '# stops ("I DONT UNDERSTAND WHAT YOU MEAN" if none match). It then runs every\n'
-                '# matching turn rule ($4400). A "switch" is one of the game flags at $083A.\n\n')
+                '# matching turn rule ($4400). SW_* are the game flags at $083A (src/game.inc).\n\n')
         write_rules(f, 'COMMAND RULES ($4500)', cmd_rules)
         write_rules(f, 'TURN RULES ($4400)', turn_rules)
+
+    write_map(out, rooms, cmd_rules, msgs, nm)
 
     def enc(rules):
         return [{**r, 'conditions': [{'op': CONDITIONS[o][0], 'args': a} for o, a in r['conditions']],

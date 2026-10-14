@@ -173,8 +173,8 @@ def main():
             length = raw[0] | raw[1] << 8
             body = raw[2:2 + length]
             pathlib.Path(fn + '.bas.bin').write_bytes(body)
-            lines, extra = (basic.list_applesoft if ftype == 'A' else basic.list_integer)(body)
-            pathlib.Path(fn + '.bas').write_text('\n'.join(lines) + '\n')
+            listing, _ = (basic.list_applesoft if ftype == 'A' else basic.list_integer)(body)
+            pathlib.Path(fn + '.bas').write_text('\n'.join(listing) + '\n')
         elif ftype == 'T':
             end = raw.find(b'\x00')
             body = raw if end < 0 else raw[:end]

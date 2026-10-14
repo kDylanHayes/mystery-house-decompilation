@@ -21,10 +21,10 @@ address,name,type,comment
 0071,rt_operands,ptr,rt_args: pointer to the caller's inline operands
 0073,picdir_index,word,picture number * 3 while looking up the directory
 0075,picture_ptr,ptr,current point in the picture being drawn
-0077,AWORK,ptr,rule/parser cursor (word table walk; current condition)
+0077,WORK,ptr,rule/parser cursor (word table walk; current condition)
 0079,rule_ptr,ptr,start of the rule being tested
 007B,counter,byte,loop counter (conditions left / table slot)
-007C,temp_7c,byte,
+007C,rt_temp,byte,
 007D,rt_ptr1,ptr,library scratch pointer (also dispatch target)
 007F,found_obj,ptr,object record found by find_object
 0081,rt_ptr2,ptr,library scratch pointer
@@ -51,49 +51,49 @@ address,name,type,comment
 0815,var_hcolor,word,HCOLOR for HPLOT ($7F = white)
 081F,var_shape,word,shape number for DRAW
 0827,var_rot,word,ROT for DRAW
-0830,cmd_state,byte,
+0830,cmd_unused,byte,
 0831,input_len,byte,length of the typed command
 0832,parse_pos,byte,next character of input_buffer to parse
 0833,word_id,byte,result of lookup_word: group number or $FF if unknown
 0834,verb,byte,verb number of the command
 0835,noun,byte,noun number of the command
-0836,cond_value,byte,
-0838,find_id,byte,
+0836,cond_actual,byte,
+0838,find_objectno,byte,
 0839,shown_picture,byte,picture currently on screen (tested by condition VIEW_IS)
 083A,SWITCH,byte[20],the game's flags
 084E,draw_dy,byte,picture offset (object y position)
 084F,draw_dx,byte,picture offset (object x position)
 0850,pen_up,byte,next picture point starts a new line
 0851,cmp_result,byte,rt_compare result; also "rule matched" / end-of-table flag
-0852,room_no,byte,current room number (CURONO in the source)
+0852,CURONO,byte,current room number (CURONO in the source)
 0853,turns,word,turn counter
 0855,verb_word,byte[8],first word typed
 085D,noun_word,byte[8],second word typed
 0865,done_word,byte[8],"DONE"
 086D,word_buf,byte[8],word being looked up
 0875,blank_word,byte[8],eight spaces
-087D,msg_scratch,word,
+087D,scratch_word,word,
 087F,mul_multiplicand,word,
 0881,mul_result,word,
 0883,mul_count,byte,
 0884,mul_carry,byte,
 0885,mul_dest,ptr,
-0887,room_index,word,
+0887,room_offset,word,
 0889,pic_block,byte,BLOCK file needed for the picture being drawn
 088A,pic_offset,word,offset of that picture inside its block
 088C,lru_turn,word,oldest turn seen while choosing a cache slot to replace
 088E,floor_slot,byte,next floor position for a dropped object
-0890,action_ptr,ptr,current action within the rule
-0892,act_temp,byte,
-0894,act_word1,word,
-0896,act_word2,word,
+0890,AWORK,ptr,current action within the rule
+0892,AWORK1,byte,
+0894,AWORK2,word,
+0896,AWORK3,word,
 0898,actions_left,byte,
-0899,act_arg1,byte,
-089A,act_arg2,byte,
-089B,act_arg3,byte,
-089C,act_arg4,byte,
+0899,AX,byte,
+089A,AY,byte,
+089B,AX1,byte,
+089C,AY1,byte,
 089D,LAMPSTAT,byte,0 = room is lit and the picture is drawn; 1 = dark
-089E,saved_zwork,ptr,
+089E,saved_object_ptr,ptr,
 08A0,msg_no_delay,byte,$FF while printing a room description: no pause afterwards
 08A1,pic_cache,byte[20],5 cache slots x (turn last used word / block / unused)
 #
@@ -154,7 +154,7 @@ address,name,type,comment
 63DB,get_line,func,read a line; RETURN alone toggles between the picture and full-screen text
 6418,next_word,func,copy the next blank-separated word of the input (8 chars) into word_buf
 6458,lookup_word,func,find word_buf in the word table given inline; word_id = group number or $FF
-6500,run_actions,func,run actions_left actions starting at action_ptr
+6500,run_actions,func,run actions_left actions starting at AWORK
 6511,next_action,func,
 6534,stop_actions,func,
 6571,AC1100,func,action 1: SWITCH[Y] += X
@@ -183,11 +183,11 @@ address,name,type,comment
 6845,AC3400,func,action 24: go west
 684F,AC3500,func,action 25: go up
 6859,AC3600,func,action 26: go down
-6863,ACNEWROM,func,move through the exit in act_arg1 (0 = "I CANT GO IN THAT DIRECTION"); ends the action list
+6863,ACNEWROM,func,move through the exit in AX (0 = "I CANT GO IN THAT DIRECTION"); ends the action list
 68AC,AC3700,func,action 27: take the named object
 6939,AC3800,func,action 28: drop the named object
 6981,AC3900,func,action 29: set room X's views to picture Y
-69BA,AC9000,func,step action_ptr past the opcode and X operand bytes; next action
+69BA,AC9000,func,step AWORK past the opcode and X operand bytes; next action
 6A00,hgr,func,Applesoft HGR: page 1, mixed text, clear
 6A0E,hclr,func,
 6A2E,hposn,func,Applesoft HPOSN
@@ -221,23 +221,23 @@ address,name,type,comment
 724E,cache_lookup,func,
 72A1,cache_choose_victim,func,least recently used of the 5 slots
 72FD,cache_load_block,func,BLOAD BLOCKn,A$xxxx into the chosen slot
-7400,print_message,func:X,print message X (four are built in; others are read from MESSAGES)
+7400,MESSLSTR,func:X,print message X (four are built in; others are read from MESSAGES)
 7504,read_message_line,func,
 7540,offset_to_hex,func,
 756E,split_nibbles,func,
 758C,nibbles_to_ascii,func,
 759E,word_wrap,func,wrap the line in input_buffer at 39 columns
 7600,rt_copy,func:X,copy X bytes: .word src, dst
-7603,rt_add8,func:X,word at .word addr += X
-7606,rt_add16,func,word at .word dst += word at .word src
-7609,rt_compare,func:X,compare X bytes at (AWORK) with .word addr; cmp_result = 0 if equal
+7603,BUMPIT,func:X,word at .word addr += X
+7606,BUMP16,func,word at .word dst += word at .word src
+7609,rt_compare,func:X,compare X bytes at (WORK) with .word addr; cmp_result = 0 if equal
 760C,rt_args,func,rt_operands = the caller's inline operands
 760F,rt_return,func:X,return to the caller's caller skipping X inline operand bytes
 7612,rt_inc16,func,word at .word addr += 1
 7615,rt_print,func,print the inline $00-terminated text
-7618,rt_mul8,func:X,mul_result = word at .word addr * X
+7618,MULTIPLY,func:X,mul_result = word at .word addr * X
 7900,draw_room,func,set up CUROOM; draw its current picture and objects (if lit); print its description
-792D,set_curoom,func,CUROOM = ROOMBASE + room_no * 10
+792D,set_curoom,func,CUROOM = ROOMBASE + CURONO * 10
 7A00,draw_picture,func,draw shown_picture from its cached block
 #
 # ---- macro library bodies (rt_* are the jump table entries) ----
@@ -245,11 +245,11 @@ address,name,type,comment
 7650,rt_return_body,func,
 7666,rt_print_body,func,
 767D,rt_copy_body,func,
-76A8,rt_add8_body,func,
+76A8,BUMPIT_body,func,
 76CD,rt_inc16_body,func,
 76F0,rt_compare_body,func,
-772A,rt_add16_body,func,
-7757,rt_mul8_body,func,
+772A,BUMP16_body,func,
+7757,MULTIPLY_body,func,
 #
 # ---- data inside the code area ----
 61DB,init_blank_word,byte[8],
@@ -272,8 +272,8 @@ address,name,type,comment
 # ---- dead code: an older build's routines, still calling the library at its old address $4A00
 # (which now holds rule bytecode). Nothing reaches them.
 4A00,old_rt_copy,func,the macro library's address in an older build; now inside command_rules
-4A03,old_rt_add8,func,
-4A06,old_rt_add16,func,
+4A03,old_BUMPIT,func,
+4A06,old_BUMP16,func,
 4A15,old_rt_print,func,
 5651,dead_init_tail,func,unreachable older copy of the end of init_game (shape table at $6D00; also sets the DOS language flag)
 5912,dead_read_message,func,unreachable older message reader; its variables at $5A01-$5A0B are now engine code

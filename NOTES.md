@@ -59,14 +59,18 @@ nine-entry jump table:
 | Entry | Name | Operation | Inline operands |
 |---|---|---|---|
 | `$7600` | `rt_copy` | copy X bytes | `.word src, dst` |
-| `$7603` | `rt_add8` | word += X | `.word addr` |
-| `$7606` | `rt_add16` | word += word | `.word src, dst` |
-| `$7609` | `rt_compare` | compare X bytes at `(AWORK)` with addr; `cmp_result` = 0 if equal | `.word addr` |
+| `$7603` | `BUMPIT` | word += X | `.word addr` |
+| `$7606` | `BUMP16` | word += word | `.word src, dst` |
+| `$7609` | `rt_compare` | compare X bytes at `(WORK)` with addr; `cmp_result` = 0 if equal | `.word addr` |
 | `$760C` | `rt_args` | point `rt_operands` at the caller's operands | |
 | `$760F` | `rt_return` | return to the caller's caller, skipping X operand bytes (never returns) | |
 | `$7612` | `rt_inc16` | word += 1 | `.word addr` |
 | `$7615` | `rt_print` | print inline text | `$00`-terminated |
-| `$7618` | `rt_mul8` | `mul_result` = word * X | `.word addr` |
+| `$7618` | `MULTIPLY` | `mul_result` = word * X | `.word addr` |
+
+The names `BUMPIT`, `BUMP16` and `MULTIPLY` are the original ones: the source fragments call
+them (`JSR BUMPIT / .DA ZAWORK`, `JSR MULTIPLY / .DA AWORK3`, `JSR BUMP16 / .DA AWORK3 / .DA AWORK2`).
+The others' original names did not survive.
 
 Engine routines can use the same convention by calling `rt_args` and leaving through
 `LDX #n / JSR rt_return`; `lookup_word` does (`JSR lookup_word / .word verb_table`).
@@ -175,6 +179,41 @@ The 20 `SWITCH` bytes (`$083A`) are the game's flags. A few, from how the rules 
 `SWITCH[3]` is the lit match's remaining turns (`LIGHT MATCHES` sets it to 4), `SWITCH[12]` the front door, `SWITCH[16]` set
 after turn 35 once it is dark.
 
+## Solution
+
+`tests/play/walkthrough.txt` is a complete solution (78 commands); `tests/test_play.py` plays it
+on the emulated game and checks it wins with the recorded text and screens. The puzzle chain, as
+the rules (`assets/text/rules.txt`) define it:
+
+1. Go in by the front door (`GO STAIRS`, `OPEN DOOR`, `GO DOOR`); it locks behind you
+   (`SW_FRONT_DOOR_LOCKED`). The way out needs the key on Tom's body in the basement.
+2. Kitchen: the matches are in the cabinet (`OPEN CABINET`, `LOOK CABINET`), the pitcher in the
+   refrigerator; fill it at the sink (`FAUCET ON`, `GET WATER`).
+3. Dining room: carrying the lit candle you trip on the rug and start a fire (`SW_RUG_FIRE`);
+   `POUR WATER` puts it out (otherwise the next command kills you) and the burnt hole holds the
+   trunk key (`LOOK HOLE`, `GET KEY`).
+4. Attic: the sledgehammer. Storage room: `UNLOCK TRUNK` with that key, `OPEN TRUNK`,
+   `LOOK TRUNK`, `GET GUN`. The gun has one shot (`SW_GUN_FIRED`): fire it anywhere else and it
+   is wasted.
+5. Bathroom (through the study): the towel.
+6. Kitchen: `MOVE CABINET` shows bricks (`SW_CABINET_MOVED`); `BREAK WALL` with the
+   sledgehammer opens a hole to the pantry, the passage and the basement. `WIPE ALGAE` with the
+   towel shows a loose brick; `GET BRICKS` finds the jewels. Tom's body has the front-door key.
+7. The basement's other hole leads to a tunnel and the pine tree; at the top, `LOOK TELESCOPE`
+   sees a trapdoor in the attic ceiling, which puts it in the attic. Back through the forest
+   (`OPEN DOOR` from outside to get into the kitchen).
+8. Attic: `OPEN TRAPDOOR`, `GO TRAPDOOR` to the tower. Daisy is the killer: `SHOOT GUN` (any
+   other weapon, or an empty gun, and she stabs you). `SW_DAISY_DEAD`.
+9. Back down, `UNLOCK DOOR`, `OPEN DOOR`, and out to the front yard with the jewels: the turn
+   rule there wins the game.
+
+It gets dark after turn 36 (`SW_DARK_WARNED`; `LAMPSTAT` off) unless you carry the lit candle;
+the darkness only hides the pictures, and `GET` still works because it depends on the room's
+current picture, not on the light.
+
+`assets/text/map.txt` lists every room's exits and the passages rules make (`map.dot` draws it
+with Graphviz).
+
 ## Pictures
 
 Pictures are line drawings. `picture_directory` (`$5300 + 3n`) gives each picture's `BLOCKn`
@@ -211,11 +250,30 @@ Small objects (the notes, the matches, the welcome mat and a door) use a 6-shape
 
 ## Messages
 
-`print_message` handles four messages itself (`$07`, `$25`, `$7F`, `$89`). For the rest it looks
+`MESSLSTR` handles four messages itself (`$07`, `$25`, `$7F`, `$89`). For the rest it looks
 up the byte offset in `message_index` (`$5500`; the `MESSAGE OBJECT` file is a copy), turns it
 into hex in `READ MESSAGES,B$xxxx` (self-modifying again) and reads one line from the `MESSAGES`
 text file, which `init_game` OPENs. `word_wrap` breaks the line at 39 columns. A room
 description is printed without the short pause that follows other messages.
+
+## Original names
+
+The source fragments name more than the action handlers. Lining their instructions up with the
+shipped code gives the original names of these variables, which `src/adventure.s` uses:
+
+| Name | Address | Use |
+|---|---|---|
+| `WORK` | `$77` | the rule cursor (`run_actions` copies it to `AWORK`) |
+| `AWORK` | `$0890` | the current action |
+| `AWORK1` | `$0892` | an action's X operand, saved |
+| `AWORK2`, `AWORK3` | `$0894`, `$0896` | action scratch words (`AC1600`: `ROOMBASE` and room * `RTBLSIZ`) |
+| `AX`, `AY`, `AX1`, `AY1` | `$0899`-`$089C` | the four operands of `AC2800` / `AC2900` |
+| `CURONO` | `$0852` | the current room number |
+| `CUROOM`, `ZWORK`, `ZAWORK` | `$83`, `$85`, `$87` | the current room record, action and object pointers |
+| `SWITCH`, `LAMPSTAT`, `OBJBASE`, `ROOMBASE` | | flags, light, the two tables |
+| `BUMPIT`, `BUMP16`, `MULTIPLY`, `MESSLSTR` | | the add-X, add-word and multiply macros and the message printer |
+
+The naming is consistent: a `Z` prefix for zero-page pointers, `A` for absolute variables.
 
 ## Original source
 
@@ -241,14 +299,14 @@ with the assembled code.
 * `cond_turns_gt` fails whenever the turn counter's high byte is non-zero, so every
   "turn > N" condition (darkness, `IT IS GETTING DARK`) stops being true from turn 256.
 * `AC2600` (restore game) means to put back the action pointer it saved before the BLOAD, but
-  stores both bytes into the low byte (`STA action_ptr` at `$670E` and `$6713`); the high byte
+  stores both bytes into the low byte (`STA AWORK` at `$670E` and `$6713`); the high byte
   keeps the value just loaded from the save file.
 * Actions 12 and 14 are a bare `BRK`; so are "object not found" in `find_object`, `AC1500`
   and `AC2900` (the source comments it `;UH-OH, KABOOM!`).
 * The `ACNEWROM` exit (`go` actions) returns through `stop_actions`, so a movement action
-  ends its rule's action list. It also builds the new `CUROOM` from `act_word1` after clearing
+  ends its rule's action list. It also builds the new `CUROOM` from `AWORK2` after clearing
   only its high byte: the low byte is never loaded with the room number, so `CUROOM` is wrong
-  until `draw_room` rebuilds it from `room_no` at the start of the next turn. The turn rules run
+  until `draw_room` rebuilds it from `CURONO` at the start of the next turn. The turn rules run
   in between, but none of them reads `CUROOM` after a move.
 * `AC2600` also zeroes the picture cache table, so every block is loaded again after a restore.
 * `disk_error_handler` (`$6215`) prints its message and then "returns" into `$6232`, the

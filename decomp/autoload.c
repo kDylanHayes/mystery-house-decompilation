@@ -127,10 +127,10 @@ void rt_copy(byte x)
 /* WARNING: Unknown calling convention */
 /* word at .word addr += X */
 
-void rt_add8(byte x)
+void BUMPIT(byte x)
 
 {
-  rt_add8_body(x);
+  BUMPIT_body(x);
   return;
 }
 
@@ -139,10 +139,10 @@ void rt_add8(byte x)
 
 /* word at .word dst += word at .word src */
 
-void rt_add16(void)
+void BUMP16(void)
 
 {
-  rt_add16_body();
+  BUMP16_body();
   return;
 }
 
@@ -150,7 +150,7 @@ void rt_add16(void)
 // 1c09
 
 /* WARNING: Unknown calling convention */
-/* compare X bytes at (AWORK) with .word addr; cmp_result = 0 if equal */
+/* compare X bytes at (WORK) with .word addr; cmp_result = 0 if equal */
 
 void rt_compare(byte x)
 
@@ -214,10 +214,10 @@ void rt_print(void)
 /* WARNING: Unknown calling convention */
 /* mul_result = word at .word addr * X */
 
-void rt_mul8(byte x)
+void MULTIPLY(byte x)
 
 {
-  rt_mul8_body(x);
+  MULTIPLY_body(x);
   return;
 }
 
@@ -304,16 +304,16 @@ void rt_copy_body(byte x)
 
 /* WARNING: Unknown calling convention */
 
-void rt_add8_body(byte x)
+void BUMPIT_body(byte x)
 
 {
   bool bVar1;
   
-  temp_7c = x;
+  rt_temp = x;
   rt_args();
   rt_ptr2 = *(byte **)rt_operands;
-  bVar1 = CARRY1(*rt_ptr2,temp_7c);
-  *rt_ptr2 = *rt_ptr2 + temp_7c;
+  bVar1 = CARRY1(*rt_ptr2,rt_temp);
+  *rt_ptr2 = *rt_ptr2 + rt_temp;
   rt_ptr2[1] = rt_ptr2[1] + bVar1;
                     /* WARNING: Subroutine does not return */
   rt_return(2);
@@ -346,10 +346,10 @@ void rt_compare_body(byte x)
 {
   byte bVar1;
   
-  temp_7c = x;
+  rt_temp = x;
   rt_args();
   rt_ptr2 = *(byte **)rt_operands;
-  rt_ptr1 = (byte *)CONCAT11(AWORK._1_1_,AWORK._0_1_);
+  rt_ptr1 = (byte *)CONCAT11(WORK._1_1_,WORK._0_1_);
   bVar1 = 0;
   do {
     if (rt_ptr1[bVar1] != rt_ptr2[bVar1]) {
@@ -368,7 +368,7 @@ rt_compare_body.done:
 
 // 1d2a
 
-void rt_add16_body(void)
+void BUMP16_body(void)
 
 {
   byte bVar1;
@@ -390,7 +390,7 @@ void rt_add16_body(void)
 
 /* WARNING: Unknown calling convention */
 
-void rt_mul8_body(byte x)
+void MULTIPLY_body(byte x)
 
 {
   char cVar1;
@@ -407,18 +407,18 @@ void rt_mul8_body(byte x)
   mul_carry = 0;
   mul_result._0_1_ = 0;
   mul_result._1_1_ = 0;
-  msg_scratch._0_1_ = '\b';
-  while ((char)msg_scratch != '\0') {
+  scratch_word._0_1_ = '\b';
+  while ((char)scratch_word != '\0') {
     bVar2 = mul_count & 1;
     mul_count = mul_count >> 1;
     if (bVar2 != 0) {
-      rt_add16(cVar1, &mul_multiplicand, &mul_result);
+      BUMP16(cVar1, &mul_multiplicand, &mul_result);
     }
     bVar2 = (byte)mul_multiplicand >> 7;
     mul_multiplicand._0_1_ = (byte)mul_multiplicand << 1;
     mul_multiplicand._1_1_ = mul_multiplicand._1_1_ << 1 | bVar2;
-    cVar1 = (char)msg_scratch + -1;
-    msg_scratch._0_1_ = cVar1;
+    cVar1 = (char)scratch_word + -1;
+    scratch_word._0_1_ = cVar1;
   }
   rt_ptr1 = (byte *)CONCAT11(mul_dest._1_1_,(byte)mul_dest);
   *rt_ptr1 = (byte)mul_result;

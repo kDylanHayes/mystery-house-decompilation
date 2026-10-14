@@ -1,0 +1,220 @@
+# Every room: its compass exits (the room table) and the passages rules make, with
+# what they need. Rooms with no way out on the compass are left by such a passage.
+
+room 1  IN THE FRONT YARD OF A LARGE ABANDONED VICTORIAN HOUSE
+    up     -> 2
+    GO STAIRS -> 2
+    UP STAIRS -> 2
+    GO TREE -> 5
+
+room 2  ON THE PORCH
+    down   -> 1
+    GO DOOR -> 3   (if SW_PORCH_DOOR_OPEN == 1)
+    GO STAIRS -> 1
+
+room 3  IN AN ENTRY HALL
+    north  -> 2
+    south  -> 16
+    east   -> 14
+    west   -> 4
+    up     -> 24
+    GO STAIRS -> 24   (if current picture == 53)
+    GO STAIRS -> 24
+    NORTH  -> 2   (if current picture == 5)
+    EAST   -> 14   (if current picture == 53)
+    EAST   -> 14
+    WEST   -> 4   (if current picture == 53)
+    WEST   -> 4
+    SOUTH  -> 16   (if current picture == 53)
+    SOUTH  -> 16
+    UP STAIRS -> 24
+    UP     -> 24
+
+room 4  IN THE KITCHEN
+    east   -> 3
+    west   -> 5
+    GO HOLE -> 19   (if object 12 (HOLE) is in room 4 (IN THE KITCHEN))
+    WEST   -> 5   (if current picture == 14)
+
+room 5  IN A FOREST
+    north  -> 12
+    south  -> 10
+    east   -> 6
+    west   -> 8
+    up     -> 4
+    UP     -> 4
+
+room 6  IN A FOREST
+    north  -> 5
+    south  -> 8
+    east   -> 7
+    west   -> 9
+
+room 7  IN A FOREST
+    north  -> 6
+    south  -> 7
+    east   -> 8
+    west   -> 10
+
+room 8  IN A FOREST
+    north  -> 7
+    south  -> 5
+    east   -> 9
+    west   -> 6
+
+room 9  IN A FOREST
+    north  -> 8
+    east   -> 10
+    west   -> 6
+
+room 10  IN A FOREST
+    north  -> 9
+    south  -> 7
+    east   -> 11
+    west   -> 5
+
+room 11  IN A FOREST
+    north  -> 10
+    east   -> 12
+
+room 12  IN A FOREST
+    north  -> 11
+    east   -> 5
+
+room 13  THERE IS A VERY TALL PINE TREE IN FRONT OF YOU
+    up     -> 23
+    down   -> 9
+    UP TREE -> 23
+
+room 14  IN THE OLD, DUSTY LIBRARY
+    east   -> 15
+    west   -> 3
+    EAST   -> 15   (if current picture == 7)
+    WEST   -> 3
+
+room 15  IN THE SIDE YARD
+    south  -> 17
+    west   -> 14
+    GO DOOR -> 14   (if current picture == 8)
+
+room 16  IN THE DINING ROOM
+    north  -> 3
+    south  -> 17
+    NORTH  -> 3
+    SOUTH  -> 17   (if current picture == 29)
+
+room 17  IN THE FENCED BACK YARD
+    north  -> 15
+    GO DOOR -> 16   (if current picture == 16)
+    GO DOOR -> 16   (if current picture == 17)
+    GO GATE -> 18   (if current picture == 18)
+    GO GATE -> 18   (if current picture == 17)
+
+room 18  IN A SMALL FENCED CEMETARY
+    GO GATE -> 17   (if current picture == 27)
+
+room 19  IN A SMALL PANTRY
+    down   -> 20
+    UP STAIRS -> 20
+    GO STAIRS -> 20
+    GO HOLE -> 4   (if object 12 (HOLE) is in room 4 (IN THE KITCHEN))
+
+room 20  AT THE NORTH END OF A NARROW NORTH/SOUTH PASSAGEWAY
+    south  -> 21
+    up     -> 19
+    UP STAIRS -> 19
+    GO STAIRS -> 19
+
+room 21  IN A MOIST BASEMENT
+    north  -> 20
+    up     -> 37
+    GO HOLE -> 22
+    UP STAIRS -> 37
+    GO STAIRS -> 37
+    GO DOOR -> 20
+
+room 22  AT THE SOUTH END OF A NORTH/SOUTH TUNNEL
+    north  -> 13
+    GO HOLE -> 21
+
+room 23  AT THE TOP OF A VERY TALL PINE TREE
+    down   -> 13
+    UP TREE -> 13
+
+room 24  AT THE JUNCTION OF AN EAST/WEST HALLWAY AND A NORTH/SOUTH HALLWAY
+    north  -> 33
+    east   -> 25
+    west   -> 29
+    down   -> 3
+    GO STAIRS -> 3
+
+room 25  THERE IS A DOORWAY HERE
+    east   -> 27
+    west   -> 24
+    GO DOOR -> 26   (if object 54 (LINE) is in room 26 (IN A LARGE BEDROOM))
+    GO DOOR -> 26
+
+room 26  IN A LARGE BEDROOM
+    GO DOOR -> 25
+
+room 27  THERE IS A DOORWAY HERE
+    west   -> 25
+    GO DOOR -> 28
+
+room 28  IN A SMALL BEDROOM
+    GO DOOR -> 27
+
+room 29  THERE IS A DOORWAY HERE
+    east   -> 24
+    west   -> 31
+    GO DOOR -> 30
+
+room 30  IN AN OLD NURSERY
+    GO DOOR -> 29
+
+room 31  THERE IS A DOORWAY HERE
+    east   -> 29
+    GO DOOR -> 32
+
+room 32  IN A BOYS BEDROOM
+    GO DOOR -> 31
+
+room 33  AT A STAIRWAY
+    north  -> 34
+    south  -> 24
+    up     -> 39
+    UP STAIRS -> 39
+    GO STAIRS -> 39
+
+room 34  THERE IS A DOORWAY HERE
+    south  -> 33
+    GO DOOR -> 35
+
+room 35  IN THE STUDY
+    north  -> 34
+    east   -> 38
+    GO WALL -> 36   (if current picture == 41)
+
+room 36  IN A MUSTY CRAWLSPACE
+    down   -> 37
+    GO STAIRS -> 37
+
+room 37  ON A STAIRWAY
+    up     -> 36
+    down   -> 21
+
+room 38  IN THE BATHROOM
+    GO DOOR -> 35
+
+room 39  IN THE ATTIC
+    down   -> 33
+    GO STAIRS -> 33
+    GO TRAPDOOR -> 41   (if object 41 (TRAPDOOR) is in room 39 (IN THE ATTIC))
+    UP LADDER -> 41   (if object 41 (TRAPDOOR) is in room 39 (IN THE ATTIC))
+    GO DOOR -> 40
+
+room 40  IN A STORAGE ROOM
+    GO DOOR -> 39
+
+room 41  IN THE TOWER
+    GO TRAPDOOR -> 39

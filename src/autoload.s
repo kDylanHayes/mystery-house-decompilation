@@ -8,13 +8,13 @@
 
 ; ---- addresses outside the image or inside other items ----
 rt_operands              = $0071    ; rt_args: pointer to the caller's inline operands
-AWORK                    = $0077    ; rt_compare operand pointer
-temp_7c                  = $007C
+WORK                    = $0077    ; rt_compare operand pointer
+rt_temp                  = $007C
 rt_ptr1                  = $007D    ; library scratch pointer (also dispatch target)
 rt_ptr2                  = $0081    ; library scratch pointer
 input_buffer             = $0200    ; monitor GETLN input line
 cmp_result               = $0851    ; rt_compare result; also "rule matched" / end-of-table flag
-msg_scratch              = $087D
+scratch_word              = $087D
 mul_multiplicand         = $087F
 mul_result               = $0881
 mul_count                = $0883
@@ -191,14 +191,14 @@ rt_copy:
         JMP rt_copy_body
 
 ; word at .word addr += X
-rt_add8:
-        JMP rt_add8_body
+BUMPIT:
+        JMP BUMPIT_body
 
 ; word at .word dst += word at .word src
-rt_add16:
-        JMP rt_add16_body
+BUMP16:
+        JMP BUMP16_body
 
-; compare X bytes at (AWORK) with .word addr; cmp_result = 0 if equal
+; compare X bytes at (WORK) with .word addr; cmp_result = 0 if equal
 rt_compare:
         JMP rt_compare_body
 
@@ -219,8 +219,8 @@ rt_print:
         JMP rt_print_body
 
 ; mul_result = word at .word addr * X
-rt_mul8:
-        JMP rt_mul8_body
+MULTIPLY:
+        JMP MULTIPLY_body
 ; leftover memory, not used: lines here can be deleted to make room
         .byte $C1,$C1,$C1,$C1,$C1,$C1,$C1,$C1,$A0,$A0,$A0,$A0,$A0,$A0,$A0,$A0
         .byte $A0
@@ -304,8 +304,8 @@ rt_copy_body.loop:
         STA (rt_ptr2),Y
         LDX #$04
         JSR rt_return
-rt_add8_body:
-        STX temp_7c
+BUMPIT_body:
+        STX rt_temp
         JSR rt_args
         LDY #$00
         LDA (rt_operands),Y
@@ -316,7 +316,7 @@ rt_add8_body:
         LDY #$00
         LDA (rt_ptr2),Y
         CLC
-        ADC temp_7c
+        ADC rt_temp
         STA (rt_ptr2),Y
         INY
         LDA (rt_ptr2),Y
@@ -344,7 +344,7 @@ rt_inc16_body:
         LDX #$02
         JSR rt_return
 rt_compare_body:
-        STX temp_7c
+        STX rt_temp
         JSR rt_args
         LDY #$00
         LDA (rt_operands),Y
@@ -352,9 +352,9 @@ rt_compare_body:
         INY
         LDA (rt_operands),Y
         STA rt_ptr2+1
-        LDA AWORK
+        LDA WORK
         STA rt_ptr1
-        LDA AWORK+1
+        LDA WORK+1
         STA rt_ptr1+1
         LDY #$00
 rt_compare_body.loop:
@@ -376,7 +376,7 @@ rt_compare_body.equal:
 rt_compare_body.done:
         LDX #$02
         JSR rt_return
-rt_add16_body:
+BUMP16_body:
         JSR rt_args
         LDY #$00
         LDA (rt_operands),Y
@@ -401,7 +401,7 @@ rt_add16_body:
         STA (rt_ptr2),Y
         LDX #$04
         JSR rt_return
-rt_mul8_body:
+MULTIPLY_body:
         STX mul_count
         JSR rt_args
         LDY #$00
@@ -422,26 +422,26 @@ rt_mul8_body:
         LDA #$00
         STA mul_carry
         LDX #$08
-        STX msg_scratch
+        STX scratch_word
         LDA #$00
         STA mul_result
         STA mul_result+1
-rt_mul8_body.loop:
-        LDA msg_scratch
-        BEQ rt_mul8_body.done
+MULTIPLY_body.loop:
+        LDA scratch_word
+        BEQ MULTIPLY_body.done
         LSR mul_count
-        BCC rt_mul8_body.no_add
-        JSR rt_add16
+        BCC MULTIPLY_body.no_add
+        JSR BUMP16
         .word mul_multiplicand
         .word mul_result
-rt_mul8_body.no_add:
+MULTIPLY_body.no_add:
         ASL mul_multiplicand
         ROL mul_multiplicand+1
-        LDY msg_scratch
+        LDY scratch_word
         DEY
-        STY msg_scratch
-        JMP rt_mul8_body.loop
-rt_mul8_body.done:
+        STY scratch_word
+        JMP MULTIPLY_body.loop
+MULTIPLY_body.done:
         LDA mul_dest
         STA rt_ptr1
         LDA mul_dest+1

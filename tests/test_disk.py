@@ -27,6 +27,12 @@ class FullBuild(unittest.TestCase):
                            os.path.join(helpers.ROOT, 'disk', 'FILES.sha256'))
         self.assertIn('all %d files match' % len(diskfiles.FILES), out)
 
+    def test_extracted_catalog_lists_all_files(self):
+        with open(os.path.join(helpers.build(), 'files', 'CATALOG.txt')) as f:
+            text = f.read()
+        for name, *_ in diskfiles.FILES:
+            self.assertIn(' %s ' % name, text)
+
     def test_catalog_lists_all_files(self):
         disk = read(os.path.join(helpers.build(), 'mystery_house.do'))
         names = [name for name, *_ in dos33.catalog(disk)]

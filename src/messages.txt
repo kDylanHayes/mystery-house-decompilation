@@ -1,7 +1,7 @@
 ; The game's messages, by number (see tools/msgfile.py for the format).
-; The engine prints message n with print_message (LDX #n); rules use A_MESSAGE, n.
-; Messages 7, 37, 127 and 137 are never shown: print_message prints its own
-; built-in text for those numbers (see print_message in src/adventure.s).
+; The engine prints message n with MESSLSTR (LDX #n); rules use A_MESSAGE, n.
+; Messages 7, 37, 127 and 137 are never shown: MESSLSTR prints its own
+; built-in text for those numbers (see MESSLSTR in src/adventure.s).
 1 IT IS TOO HIGH
 2 OK
 3 IT IS SAM, THE MECHANIC.  HE HAS BEEN HIT IN THE HEAD BY A BLUNT OBJECT

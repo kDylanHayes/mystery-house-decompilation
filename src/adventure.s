@@ -4,7 +4,7 @@
 ; tools/asm6502.py; build.sh checks the result against the original byte for byte.
 ;
 ; Memory map (all inside this file unless noted)
-;   $0800  start, then the engine's variables (applesoft_vars, room_no, SWITCH, ...)
+;   $0800  start, then the engine's variables (applesoft_vars, CURONO, SWITCH, ...)
 ;   $0900  OBJBASE           object table
 ;   $0D00  ROOMBASE          room table
 ;   $1700  noun_table
@@ -42,10 +42,10 @@ hgr_err                  = $0054
 rt_operands              = $0071    ; rt_args: pointer to the caller's inline operands
 picdir_index             = $0073    ; picture number * 3 while looking up the directory
 picture_ptr              = $0075    ; current point in the picture being drawn
-AWORK                    = $0077    ; rule/parser cursor (word table walk; current condition)
+WORK                    = $0077    ; rule/parser cursor (word table walk; current condition)
 rule_ptr                 = $0079    ; start of the rule being tested
 counter                  = $007B    ; loop counter (conditions left / table slot)
-temp_7c                  = $007C
+rt_temp                  = $007C
 rt_ptr1                  = $007D    ; library scratch pointer (also dispatch target)
 found_obj                = $007F    ; object record found by find_object
 rt_ptr2                  = $0081    ; library scratch pointer
@@ -68,8 +68,8 @@ dos_warm_start           = $03D0    ; DOS 3.3 warm start
 var_x                    = $0805    ; X for HPLOT/DRAW (inside start, which it overwrites)
 var_y                    = $080C    ; Y for HPLOT/DRAW
 old_rt_copy              = $4A00
-old_rt_add8              = $4A03
-old_rt_add16             = $4A06
+old_BUMPIT              = $4A03
+old_BUMP16             = $4A06
 old_rt_print             = $4A15
 unknown_verb_text        = $6362    ; patched into "I DONT KNOW HOW TO ________ SOMETHING"
 unknown_noun_verb        = $63A1    ; patched into "I DONT KNOW HOW TO ________ A ________"
@@ -105,7 +105,7 @@ var_shape:
 var_rot:
         .byte $00,$00
         .byte $4F,$4E,$20,$54,$48,$45,$20
-cmd_state:
+cmd_unused:
         .byte $00
 input_len:
         .byte $01
@@ -117,10 +117,10 @@ verb:
         .byte $01
 noun:
         .byte $19
-cond_value:
+cond_actual:
         .byte $26
         .byte $0D
-find_id:
+find_objectno:
         .byte $27
 shown_picture:
         .byte $35
@@ -135,7 +135,7 @@ pen_up:
         .byte $00
 cmp_result:
         .byte $FF
-room_no:
+CURONO:
         .byte $01
 turns:
         .byte $01,$00
@@ -149,7 +149,7 @@ word_buf:
         .byte $C4,$CF,$CF,$D2,$A0,$A0,$A0,$A0
 blank_word:
         .byte $A0,$A0,$A0,$A0,$A0,$A0,$A0,$A0
-msg_scratch:
+scratch_word:
         .byte $D9,$CF
 mul_multiplicand:
         .byte $00,$03
@@ -161,7 +161,7 @@ mul_carry:
         .byte $00
 mul_dest:
         .byte $73,$00
-room_index:
+room_offset:
         .byte $1E,$00
 pic_block:
         .byte $0E
@@ -172,28 +172,28 @@ lru_turn:
 floor_slot:
         .byte $00
         .byte $01
-action_ptr:
+AWORK:
         .byte $14,$44
-act_temp:
+AWORK1:
         .byte $01
         .byte $4B
-act_word1:
+AWORK2:
         .byte $1E,$0D
-act_word2:
+AWORK3:
         .byte $1E,$00
 actions_left:
         .byte $00
-act_arg1:
+AX:
         .byte $20
-act_arg2:
+AY:
         .byte $31
-act_arg3:
+AX1:
         .byte $53
-act_arg4:
+AY1:
         .byte $54
 LAMPSTAT:
         .byte $00
-saved_zwork:
+saved_object_ptr:
         .byte $48,$09
 msg_no_delay:
         .byte $54
@@ -737,32 +737,32 @@ turn_rules:
 ; always
 rule_4400:
         .byte ANY, ANY, ANY, rule_440B-rule_4400, 1, 1
-        .byte C_SWITCH_EQ, 3, 1     ; if switch[3] == 1
+        .byte C_SWITCH_EQ, SW_MATCH_BURNING, 1     ; if SW_MATCH_BURNING == 1
         .byte A_MESSAGE, 130     ; say msg 130 "THE MATCH WENT OUT"
 
 ; always
 rule_440B:
         .byte ANY, ANY, ANY, rule_4417-rule_440B, 1, 1
-        .byte C_SWITCH_EQ, 3, 0     ; if switch[3] == 0
-        .byte A_SET_SWITCH, 3, 1     ; switch[3] = 1
+        .byte C_SWITCH_EQ, SW_MATCH_BURNING, 0     ; if SW_MATCH_BURNING == 0
+        .byte A_SET_SWITCH, SW_MATCH_BURNING, 1     ; SW_MATCH_BURNING = 1
 
 ; always
 rule_4417:
         .byte ANY, ANY, ANY, rule_4420-rule_4417, 0, 1
-        .byte A_SUB_SWITCH, 1, 3     ; switch[3] -= 1
+        .byte A_SUB_SWITCH, 1, SW_MATCH_BURNING     ; SW_MATCH_BURNING -= 1
 
 ; always
 rule_4420:
         .byte ANY, ANY, ANY, rule_442C-rule_4420, 2, 1
         .byte C_TURNS_GT, 36     ; if turn > 36
-        .byte C_SWITCH_EQ, 3, 0     ; if switch[3] == 0
+        .byte C_SWITCH_EQ, SW_MATCH_BURNING, 0     ; if SW_MATCH_BURNING == 0
         .byte A_LAMP_OFF     ; light off
 
 ; always
 rule_442C:
         .byte ANY, ANY, ANY, rule_443C-rule_442C, 3, 1
         .byte C_OBJ_IN_ROOM, 18, 253     ; if object 18 (CANDLE) is in nowhere
-        .byte C_SWITCH_EQ, 3, 0     ; if switch[3] == 0
+        .byte C_SWITCH_EQ, SW_MATCH_BURNING, 0     ; if SW_MATCH_BURNING == 0
         .byte C_TURNS_GT, 36     ; if turn > 36
         .byte A_MESSAGE, 42     ; say msg 42 "IT IS DARK, YOU CAN'T SEE"
 
@@ -781,20 +781,20 @@ rule_4446:
 rule_444D:
         .byte ANY, ANY, ANY, rule_445A-rule_444D, 2, 1
         .byte C_TURNS_GT, 20     ; if turn > 20
-        .byte C_SWITCH_EQ, 16, 0     ; if switch[16] == 0
+        .byte C_SWITCH_EQ, SW_DARK_WARNED, 0     ; if SW_DARK_WARNED == 0
         .byte A_MESSAGE, 7     ; say msg 7 "IT IS GETTING DARK"
 
 ; always
 rule_445A:
         .byte ANY, ANY, ANY, rule_4465-rule_445A, 1, 1
         .byte C_TURNS_GT, 35     ; if turn > 35
-        .byte A_SET_SWITCH, 16, 1     ; switch[16] = 1
+        .byte A_SET_SWITCH, SW_DARK_WARNED, 1     ; SW_DARK_WARNED = 1
 
 ; room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...)
 rule_4465:
         .byte 1, ANY, ANY, turn_rules_end-rule_4465, 2, 2
         .byte C_OBJ_IN_ROOM, 32, 254     ; if object 32 (JEWELS) is in inventory
-        .byte C_SWITCH_EQ, 11, 1     ; if switch[11] == 1
+        .byte C_SWITCH_EQ, SW_DAISY_DEAD, 1     ; if SW_DAISY_DEAD == 1
         .byte A_MESSAGE, 164     ; say msg 164 "CONGRATULATIONS YOU HAVE BEATEN ADVENTURE AND ARE DECLARED A GURU WIZARD"
         .byte A_GAME_OVER     ; ask to play again
 turn_rules_end:
@@ -845,34 +845,34 @@ rule_4530:
 ; room 2 (ON THE PORCH), OPEN, DOOR
 rule_4538:
         .byte 2, V_OPEN, N_DOOR, rule_4543-rule_4538, 1, 1
-        .byte C_SWITCH_EQ, 12, 1     ; if switch[12] == 1
+        .byte C_SWITCH_EQ, SW_PORCH_DOOR_OPEN, 1     ; if SW_PORCH_DOOR_OPEN == 1
         .byte A_MESSAGE, 129     ; say msg 129 "IT IS OPEN"
 
 ; room 2 (ON THE PORCH), OPEN, DOOR
 rule_4543:
         .byte 2, V_OPEN, N_DOOR, rule_454E-rule_4543, 0, 2
         .byte A_SET_BASE_VIEW, 2     ; make picture 2 the room view
-        .byte A_SET_SWITCH, 12, 1     ; switch[12] = 1
+        .byte A_SET_SWITCH, SW_PORCH_DOOR_OPEN, 1     ; SW_PORCH_DOOR_OPEN = 1
 
 ; room 2 (ON THE PORCH), CLOSE, DOOR
 rule_454E:
         .byte 2, V_CLOSE, N_DOOR, rule_455C-rule_454E, 1, 2
-        .byte C_SWITCH_EQ, 12, 1     ; if switch[12] == 1
+        .byte C_SWITCH_EQ, SW_PORCH_DOOR_OPEN, 1     ; if SW_PORCH_DOOR_OPEN == 1
         .byte A_SET_BASE_VIEW, 1     ; make picture 1 the room view
-        .byte A_SET_SWITCH, 12, 0     ; switch[12] = 0
+        .byte A_SET_SWITCH, SW_PORCH_DOOR_OPEN, 0     ; SW_PORCH_DOOR_OPEN = 0
 
 ; room 2 (ON THE PORCH), CLOSE, DOOR
 rule_455C:
         .byte 2, V_CLOSE, N_DOOR, rule_4567-rule_455C, 1, 1
-        .byte C_SWITCH_EQ, 12, 0     ; if switch[12] == 0
+        .byte C_SWITCH_EQ, SW_PORCH_DOOR_OPEN, 0     ; if SW_PORCH_DOOR_OPEN == 0
         .byte A_MESSAGE, 128     ; say msg 128 "THE DOOR IS CLOSED"
 
 ; room 2 (ON THE PORCH), GO, DOOR
 rule_4567:
         .byte 2, V_GO, N_DOOR, rule_4577-rule_4567, 1, 3
-        .byte C_SWITCH_EQ, 12, 1     ; if switch[12] == 1
+        .byte C_SWITCH_EQ, SW_PORCH_DOOR_OPEN, 1     ; if SW_PORCH_DOOR_OPEN == 1
         .byte A_GOTO_ROOM, 3     ; go to room 3 (IN AN ENTRY HALL)
-        .byte A_SET_SWITCH, 1, 1     ; switch[1] = 1
+        .byte A_SET_SWITCH, SW_FRONT_DOOR_LOCKED, 1     ; SW_FRONT_DOOR_LOCKED = 1
         .byte A_MESSAGE, 142     ; say msg 142 "THE DOOR HAS BEEN CLOSED AND LOCKED"
 
 ; room 2 (ON THE PORCH), GO, DOOR
@@ -911,20 +911,20 @@ rule_45A5:
 ; room 3 (IN AN ENTRY HALL), OPEN, DOOR
 rule_45AD:
         .byte 3, V_OPEN, N_DOOR, rule_45B8-rule_45AD, 1, 1
-        .byte C_SWITCH_EQ, 1, 1     ; if switch[1] == 1
+        .byte C_SWITCH_EQ, SW_FRONT_DOOR_LOCKED, 1     ; if SW_FRONT_DOOR_LOCKED == 1
         .byte A_MESSAGE, 82     ; say msg 82 "IT IS LOCKED"
 
 ; room 3 (IN AN ENTRY HALL), OPEN, DOOR
 rule_45B8:
         .byte 3, V_OPEN, N_DOOR, rule_45C3-rule_45B8, 1, 1
-        .byte C_SWITCH_EQ, 1, 0     ; if switch[1] == 0
+        .byte C_SWITCH_EQ, SW_FRONT_DOOR_LOCKED, 0     ; if SW_FRONT_DOOR_LOCKED == 0
         .byte A_SET_BASE_VIEW, 5     ; make picture 5 the room view
 
 ; room 3 (IN AN ENTRY HALL), UNLOCK, DOOR
 rule_45C3:
         .byte 3, V_UNLOCK, N_DOOR, rule_45D1-rule_45C3, 1, 2
         .byte C_OBJ_IN_ROOM, 30, 254     ; if object 30 (KEY) is in inventory
-        .byte A_SET_SWITCH, 1, 0     ; switch[1] = 0
+        .byte A_SET_SWITCH, SW_FRONT_DOOR_LOCKED, 0     ; SW_FRONT_DOOR_LOCKED = 0
         .byte A_MESSAGE, 2     ; say msg 2 "OK"
 
 ; room 3 (IN AN ENTRY HALL), UNLOCK, DOOR
@@ -1011,7 +1011,7 @@ rule_464F:
 ; room 4 (IN THE KITCHEN), MOVE, CABINET
 rule_4657:
         .byte 4, V_MOVE, N_CABINET, rule_4662-rule_4657, 1, 1
-        .byte C_SWITCH_EQ, 13, 1     ; if switch[13] == 1
+        .byte C_SWITCH_EQ, SW_CABINET_MOVED, 1     ; if SW_CABINET_MOVED == 1
         .byte A_MESSAGE, 139     ; say msg 139 "IT WON'T MOVE ANY FARTHER"
 
 ; room 4 (IN THE KITCHEN), MOVE, CABINET
@@ -1019,7 +1019,7 @@ rule_4662:
         .byte 4, V_MOVE, N_CABINET, rule_4675-rule_4662, 0, 4
         .byte A_PLACE_OBJ, 10, 4, 65, 20     ; put object 10 (CABINET) in room 4 (IN THE KITCHEN) at (65,20)
         .byte A_PUT_OBJ, 11, 4     ; put object 11 (BRICKS) in room 4 (IN THE KITCHEN)
-        .byte A_SET_SWITCH, 13, 1     ; switch[13] = 1
+        .byte A_SET_SWITCH, SW_CABINET_MOVED, 1     ; SW_CABINET_MOVED = 1
         .byte A_MESSAGE, 10     ; say msg 10 "THE WALL IS BRICKED UP BEHIND IT"
 
 ; room 4 (IN THE KITCHEN), OPEN, CABINET
@@ -1109,12 +1109,12 @@ rule_470A:
 rule_4715:
         .byte 4, V_FAUCET, N_ON, rule_4720-rule_4715, 0, 2
         .byte A_MESSAGE, 13     ; say msg 13 "WATER IS RUNNING INTO THE SINK"
-        .byte A_SET_SWITCH, 4, 1     ; switch[4] = 1
+        .byte A_SET_SWITCH, SW_KITCHEN_WATER, 1     ; SW_KITCHEN_WATER = 1
 
 ; room 4 (IN THE KITCHEN), GET, WATER
 rule_4720:
         .byte 4, V_GET, N_WATER, rule_4734-rule_4720, 2, 3
-        .byte C_SWITCH_EQ, 4, 1     ; if switch[4] == 1
+        .byte C_SWITCH_EQ, SW_KITCHEN_WATER, 1     ; if SW_KITCHEN_WATER == 1
         .byte C_OBJ_IN_ROOM, 14, 254     ; if object 14 (PITCHER) is in inventory
         .byte A_MESSAGE, 92     ; say msg 92 "YOUR PITCHER IS FULL"
         .byte A_PUT_OBJ, 14, 253     ; put object 14 (PITCHER) in nowhere
@@ -1123,7 +1123,7 @@ rule_4720:
 ; room 4 (IN THE KITCHEN), GET, WATER
 rule_4734:
         .byte 4, V_GET, N_WATER, rule_473F-rule_4734, 1, 1
-        .byte C_SWITCH_EQ, 4, 1     ; if switch[4] == 1
+        .byte C_SWITCH_EQ, SW_KITCHEN_WATER, 1     ; if SW_KITCHEN_WATER == 1
         .byte A_MESSAGE, 14     ; say msg 14 "YOU HAVE NO CONTAINER"
 
 ; room 4 (IN THE KITCHEN), GET, WATER
@@ -1142,7 +1142,7 @@ rule_4750:
         .byte 4, V_OPEN, N_DOOR, rule_475D-rule_4750, 1, 2
         .byte C_VIEW_IS, 13     ; if current picture == 13
         .byte A_SET_BASE_VIEW, 14     ; make picture 14 the room view
-        .byte A_SET_SWITCH, 14, 1     ; switch[14] = 1
+        .byte A_SET_SWITCH, SW_KITCHEN_DOOR_OPEN, 1     ; SW_KITCHEN_DOOR_OPEN = 1
 
 ; room 4 (IN THE KITCHEN), OPEN, DOOR
 rule_475D:
@@ -1155,7 +1155,7 @@ rule_4767:
         .byte 4, V_CLOSE, N_DOOR, rule_4774-rule_4767, 1, 2
         .byte C_VIEW_IS, 14     ; if current picture == 14
         .byte A_SET_BASE_VIEW, 13     ; make picture 13 the room view
-        .byte A_SET_SWITCH, 14, 0     ; switch[14] = 0
+        .byte A_SET_SWITCH, SW_KITCHEN_DOOR_OPEN, 0     ; SW_KITCHEN_DOOR_OPEN = 0
 
 ; room 4 (IN THE KITCHEN), CLOSE, DOOR
 rule_4774:
@@ -1184,7 +1184,7 @@ rule_4793:
 ; room 4 (IN THE KITCHEN), FAUCET, OFF
 rule_479E:
         .byte 4, V_FAUCET, N_OFF, rule_47A9-rule_479E, 0, 2
-        .byte A_SET_SWITCH, 4, 0     ; switch[4] = 0
+        .byte A_SET_SWITCH, SW_KITCHEN_WATER, 0     ; SW_KITCHEN_WATER = 0
         .byte A_MESSAGE, 2     ; say msg 2 "OK"
 
 ; room 4 (IN THE KITCHEN), GO, DOOR
@@ -1206,7 +1206,7 @@ rule_47BB:
 ; room 5 (IN A FOREST), UP, 
 rule_47C3:
         .byte 5, V_U, N_NONE, rule_47CE-rule_47C3, 1, 1
-        .byte C_SWITCH_EQ, 14, 0     ; if switch[14] == 0
+        .byte C_SWITCH_EQ, SW_KITCHEN_DOOR_OPEN, 0     ; if SW_KITCHEN_DOOR_OPEN == 0
         .byte A_MESSAGE, 144     ; say msg 144 "THE KITCHEN DOOR IS CLOSED"
 
 ; room 5 (IN A FOREST), UP, 
@@ -1224,7 +1224,7 @@ rule_47DE:
         .byte 5, V_OPEN, N_DOOR, rule_47EC-rule_47DE, 0, 3
         .byte A_MESSAGE, 162     ; say msg 162 "THE KITCHEN DOOR IS OPEN"
         .byte A_SET_ROOM_VIEW, 4, 14     ; set room 4 (IN THE KITCHEN) view to picture 14
-        .byte A_SET_SWITCH, 14, 1     ; switch[14] = 1
+        .byte A_SET_SWITCH, SW_KITCHEN_DOOR_OPEN, 1     ; SW_KITCHEN_DOOR_OPEN = 1
 
 ; room 13 (THERE IS A VERY TALL PINE TREE IN FRO...), UP, TREE
 rule_47EC:
@@ -1356,8 +1356,8 @@ rule_48B8:
 rule_48C0:
         .byte 16, ANY, ANY, rule_48D6-rule_48C0, 2, 3
         .byte C_OBJ_IN_ROOM, 18, 254     ; if object 18 (CANDLE) is in inventory
-        .byte C_SWITCH_EQ, 5, 0     ; if switch[5] == 0
-        .byte A_SET_SWITCH, 5, 1     ; switch[5] = 1
+        .byte C_SWITCH_EQ, SW_RUG_FIRE, 0     ; if SW_RUG_FIRE == 0
+        .byte A_SET_SWITCH, SW_RUG_FIRE, 1     ; SW_RUG_FIRE = 1
         .byte A_MESSAGE, 44     ; say msg 44 "YOU TRIP OVER RUG AND FALL.  OH,OH, YOU STARTED A FIRE WITH YOUR CANDLE!"
         .byte A_PLACE_OBJ, 20, 16, 81, 92     ; put object 20 (FIRE) in room 16 (IN THE DINING ROOM) at (81,92)
 
@@ -1663,7 +1663,7 @@ rule_4ACC:
         .byte C_OBJ_IN_ROOM, 53, 254     ; if object 53 (DAGGER) is in inventory
         .byte A_MESSAGE, 30     ; say msg 30 "THERE IS A DEAD BODY HERE"
         .byte A_PUT_OBJ, 27, 18     ; put object 27 (X'S) in room 18 (IN A SMALL FENCED CEMETARY)
-        .byte A_SET_SWITCH, 7, 1     ; switch[7] = 1
+        .byte A_SET_SWITCH, SW_JOE_DEAD, 1     ; SW_JOE_DEAD = 1
 
 ; room 18 (IN A SMALL FENCED CEMETARY), WITH, DAGGER
 rule_4ADD:
@@ -1675,12 +1675,12 @@ rule_4ADD:
 rule_4AE8:
         .byte 18, V_WITH, N_GUN, rule_4B01-rule_4AE8, 2, 5
         .byte C_OBJ_IN_ROOM, 45, 254     ; if object 45 (GUN) is in inventory
-        .byte C_SWITCH_EQ, 6, 0     ; if switch[6] == 0
+        .byte C_SWITCH_EQ, SW_GUN_FIRED, 0     ; if SW_GUN_FIRED == 0
         .byte A_MESSAGE, 30     ; say msg 30 "THERE IS A DEAD BODY HERE"
         .byte A_MESSAGE, 35     ; say msg 35 "YOUR GUN IS EMPTY"
         .byte A_PUT_OBJ, 27, 18     ; put object 27 (X'S) in room 18 (IN A SMALL FENCED CEMETARY)
-        .byte A_SET_SWITCH, 6, 1     ; switch[6] = 1
-        .byte A_SET_SWITCH, 7, 1     ; switch[7] = 1
+        .byte A_SET_SWITCH, SW_GUN_FIRED, 1     ; SW_GUN_FIRED = 1
+        .byte A_SET_SWITCH, SW_JOE_DEAD, 1     ; SW_JOE_DEAD = 1
 
 ; room 18 (IN A SMALL FENCED CEMETARY), LOOK, BODY
 rule_4B01:
@@ -1705,7 +1705,7 @@ rule_4B19:
 ; room 18 (IN A SMALL FENCED CEMETARY), GO, GRAVES
 rule_4B21:
         .byte 18, V_GO, N_GRAVES, rule_4B30-rule_4B21, 1, 3
-        .byte C_SWITCH_EQ, 7, 0     ; if switch[7] == 0
+        .byte C_SWITCH_EQ, SW_JOE_DEAD, 0     ; if SW_JOE_DEAD == 0
         .byte A_MESSAGE, 38     ; say msg 38 "YOU FALL IN ONE AND JOE BURIES YOU.  YOU ARE DEAD"
         .byte A_PUT_OBJ, 24, 18     ; put object 24 (GRAVES) in room 18 (IN A SMALL FENCED CEMETARY)
         .byte A_GAME_OVER     ; ask to play again
@@ -1718,7 +1718,7 @@ rule_4B30:
 ; room 18 (IN A SMALL FENCED CEMETARY), GET, SHOVEL
 rule_4B38:
         .byte 18, V_GET, N_SHOVEL, rule_4B43-rule_4B38, 1, 1
-        .byte C_SWITCH_EQ, 7, 0     ; if switch[7] == 0
+        .byte C_SWITCH_EQ, SW_JOE_DEAD, 0     ; if SW_JOE_DEAD == 0
         .byte A_MESSAGE, 40     ; say msg 40 "JOE WON'T LET YOU"
 
 ; room 18 (IN A SMALL FENCED CEMETARY), GET, SHOVEL
@@ -2078,7 +2078,7 @@ rule_4D81:
 ; room 35 (IN THE STUDY), GET, PICTURE
 rule_4D89:
         .byte 35, V_GET, N_PICTURE, rule_4D98-rule_4D89, 1, 3
-        .byte C_SWITCH_EQ, 8, 1     ; if switch[8] == 1
+        .byte C_SWITCH_EQ, SW_PICTURE_LOOSE, 1     ; if SW_PICTURE_LOOSE == 1
         .byte A_GET     ; take the named object
         .byte A_PUT_OBJ, 37, 35     ; put object 37 (BUTTON) in room 35 (IN THE STUDY)
         .byte A_MESSAGE, 76     ; say msg 76 "THERE IS A BUTTON ON THE WALL"
@@ -2093,7 +2093,7 @@ rule_4DA0:
         .byte 35, V_WITH, N_BUTTERKN, rule_4DAE-rule_4DA0, 1, 2
         .byte C_OBJ_IN_ROOM, 16, 254     ; if object 16 (BUTTERKN) is in inventory
         .byte A_MESSAGE, 75     ; say msg 75 "THE PICTURE IS LOOSE"
-        .byte A_SET_SWITCH, 8, 1     ; switch[8] = 1
+        .byte A_SET_SWITCH, SW_PICTURE_LOOSE, 1     ; SW_PICTURE_LOOSE = 1
 
 ; room 35 (IN THE STUDY), WITH, BUTTERKN
 rule_4DAE:
@@ -2154,12 +2154,12 @@ rule_4E01:
 rule_4E09:
         .byte 38, V_FAUCET, N_ON, rule_4E14-rule_4E09, 0, 2
         .byte A_MESSAGE, 13     ; say msg 13 "WATER IS RUNNING INTO THE SINK"
-        .byte A_SET_SWITCH, 9, 1     ; switch[9] = 1
+        .byte A_SET_SWITCH, SW_BATHROOM_WATER, 1     ; SW_BATHROOM_WATER = 1
 
 ; room 38 (IN THE BATHROOM), GET, WATER
 rule_4E14:
         .byte 38, V_GET, N_WATER, rule_4E28-rule_4E14, 2, 3
-        .byte C_SWITCH_EQ, 9, 1     ; if switch[9] == 1
+        .byte C_SWITCH_EQ, SW_BATHROOM_WATER, 1     ; if SW_BATHROOM_WATER == 1
         .byte C_OBJ_IN_ROOM, 14, 254     ; if object 14 (PITCHER) is in inventory
         .byte A_MESSAGE, 92     ; say msg 92 "YOUR PITCHER IS FULL"
         .byte A_PUT_OBJ, 14, 253     ; put object 14 (PITCHER) in nowhere
@@ -2168,7 +2168,7 @@ rule_4E14:
 ; room 38 (IN THE BATHROOM), GET, WATER
 rule_4E28:
         .byte 38, V_GET, N_WATER, rule_4E33-rule_4E28, 1, 1
-        .byte C_SWITCH_EQ, 9, 1     ; if switch[9] == 1
+        .byte C_SWITCH_EQ, SW_BATHROOM_WATER, 1     ; if SW_BATHROOM_WATER == 1
         .byte A_MESSAGE, 14     ; say msg 14 "YOU HAVE NO CONTAINER"
 
 ; room 38 (IN THE BATHROOM), GET, WATER
@@ -2179,7 +2179,7 @@ rule_4E33:
 ; room 38 (IN THE BATHROOM), FAUCET, OFF
 rule_4E3B:
         .byte 38, V_FAUCET, N_OFF, rule_4E46-rule_4E3B, 0, 2
-        .byte A_SET_SWITCH, 9, 0     ; switch[9] = 0
+        .byte A_SET_SWITCH, SW_BATHROOM_WATER, 0     ; SW_BATHROOM_WATER = 0
         .byte A_MESSAGE, 2     ; say msg 2 "OK"
 
 ; room 38 (IN THE BATHROOM), FLUSH, TOILET
@@ -2327,7 +2327,7 @@ rule_4F31:
 ; room 40 (IN A STORAGE ROOM), OPEN, TRUNK
 rule_4F39:
         .byte 40, V_OPEN, N_TRUNK, rule_4F4B-rule_4F39, 2, 2
-        .byte C_SWITCH_EQ, 10, 1     ; if switch[10] == 1
+        .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 1     ; if SW_TRUNK_UNLOCKED == 1
         .byte C_OBJ_IN_ROOM, 43, 40     ; if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
         .byte A_PUT_OBJ, 43, 253     ; put object 43 (TRUNK) in nowhere
         .byte A_PUT_OBJ, 44, 40     ; put object 44 (TRUNK) in room 40 (IN A STORAGE ROOM)
@@ -2335,7 +2335,7 @@ rule_4F39:
 ; room 40 (IN A STORAGE ROOM), OPEN, TRUNK
 rule_4F4B:
         .byte 40, V_OPEN, N_TRUNK, rule_4F56-rule_4F4B, 1, 1
-        .byte C_SWITCH_EQ, 10, 1     ; if switch[10] == 1
+        .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 1     ; if SW_TRUNK_UNLOCKED == 1
         .byte A_MESSAGE, 82     ; say msg 82 "IT IS LOCKED"
 
 ; room 40 (IN A STORAGE ROOM), OPEN, TRUNK
@@ -2372,14 +2372,14 @@ rule_4F83:
 rule_4F8E:
         .byte 40, V_LOOK, N_TRUNK, rule_4F9C-rule_4F8E, 2, 1
         .byte C_OBJ_IN_ROOM, 43, 40     ; if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
-        .byte C_SWITCH_EQ, 10, 0     ; if switch[10] == 0
+        .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 0     ; if SW_TRUNK_UNLOCKED == 0
         .byte A_MESSAGE, 82     ; say msg 82 "IT IS LOCKED"
 
 ; room 40 (IN A STORAGE ROOM), LOOK, TRUNK
 rule_4F9C:
         .byte 40, V_LOOK, N_TRUNK, rule_4FAA-rule_4F9C, 2, 1
         .byte C_OBJ_IN_ROOM, 43, 40     ; if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
-        .byte C_SWITCH_EQ, 10, 1     ; if switch[10] == 1
+        .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 1     ; if SW_TRUNK_UNLOCKED == 1
         .byte A_MESSAGE, 133     ; say msg 133 "IT IS NOT OPEN"
 
 ; room 40 (IN A STORAGE ROOM), UNLOCK, TRUNK
@@ -2387,30 +2387,30 @@ rule_4FAA:
         .byte 40, V_UNLOCK, N_TRUNK, rule_4FBE-rule_4FAA, 3, 2
         .byte C_OBJ_IN_ROOM, 43, 40     ; if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
         .byte C_OBJ_IN_ROOM, 22, 254     ; if object 22 (KEY) is in inventory
-        .byte C_SWITCH_EQ, 10, 0     ; if switch[10] == 0
+        .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 0     ; if SW_TRUNK_UNLOCKED == 0
         .byte A_MESSAGE, 2     ; say msg 2 "OK"
-        .byte A_SET_SWITCH, 10, 1     ; switch[10] = 1
+        .byte A_SET_SWITCH, SW_TRUNK_UNLOCKED, 1     ; SW_TRUNK_UNLOCKED = 1
 
 ; room 40 (IN A STORAGE ROOM), UNLOCK, TRUNK
 rule_4FBE:
         .byte 40, V_UNLOCK, N_TRUNK, rule_4FCF-rule_4FBE, 3, 1
         .byte C_OBJ_IN_ROOM, 43, 40     ; if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
         .byte C_OBJ_IN_ROOM, 22, 254     ; if object 22 (KEY) is in inventory
-        .byte C_SWITCH_EQ, 10, 1     ; if switch[10] == 1
+        .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 1     ; if SW_TRUNK_UNLOCKED == 1
         .byte A_MESSAGE, 136     ; say msg 136 "IT IS UNLOCKED"
 
 ; room 40 (IN A STORAGE ROOM), UNLOCK, TRUNK
 rule_4FCF:
         .byte 40, V_UNLOCK, N_TRUNK, rule_4FDD-rule_4FCF, 2, 1
         .byte C_OBJ_IN_ROOM, 43, 40     ; if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
-        .byte C_SWITCH_EQ, 10, 0     ; if switch[10] == 0
+        .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 0     ; if SW_TRUNK_UNLOCKED == 0
         .byte A_MESSAGE, 83     ; say msg 83 "YOU HAVE NOTHING TO UNLOCK IT WITH"
 
 ; room 40 (IN A STORAGE ROOM), UNLOCK, TRUNK
 rule_4FDD:
         .byte 40, V_UNLOCK, N_TRUNK, rule_4FEB-rule_4FDD, 2, 1
         .byte C_OBJ_IN_ROOM, 43, 40     ; if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
-        .byte C_SWITCH_EQ, 10, 1     ; if switch[10] == 1
+        .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 1     ; if SW_TRUNK_UNLOCKED == 1
         .byte A_MESSAGE, 136     ; say msg 136 "IT IS UNLOCKED"
 
 ; room 40 (IN A STORAGE ROOM), GO, WINDOW
@@ -2427,13 +2427,13 @@ rule_4FF5:
 ; room 41 (IN THE TOWER), LOOK, PERSON
 rule_4FFD:
         .byte 41, V_LOOK, N_PERSON, rule_5008-rule_4FFD, 1, 1
-        .byte C_SWITCH_EQ, 11, 0     ; if switch[11] == 0
+        .byte C_SWITCH_EQ, SW_DAISY_DEAD, 0     ; if SW_DAISY_DEAD == 0
         .byte A_MESSAGE, 87     ; say msg 87 "SHE IS GOING TO KILL YOU"
 
 ; room 41 (IN THE TOWER), LOOK, DAISY
 rule_5008:
         .byte 41, V_LOOK, N_DAISY, rule_5013-rule_5008, 1, 1
-        .byte C_SWITCH_EQ, 11, 0     ; if switch[11] == 0
+        .byte C_SWITCH_EQ, SW_DAISY_DEAD, 0     ; if SW_DAISY_DEAD == 0
         .byte A_MESSAGE, 87     ; say msg 87 "SHE IS GOING TO KILL YOU"
 
 ; room 41 (IN THE TOWER), LOOK, DAISY
@@ -2449,7 +2449,7 @@ rule_501B:
 ; room 41 (IN THE TOWER), WITH, DAGGER
 rule_5023:
         .byte 41, V_WITH, N_DAGGER, rule_502E-rule_5023, 1, 1
-        .byte C_SWITCH_EQ, 11, 1     ; if switch[11] == 1
+        .byte C_SWITCH_EQ, SW_DAISY_DEAD, 1     ; if SW_DAISY_DEAD == 1
         .byte A_MESSAGE, 166     ; say msg 166 "DAISY IS ALREADY DEAD"
 
 ; room 41 (IN THE TOWER), WITH, DAGGER
@@ -2469,25 +2469,25 @@ rule_503A:
 ; room 41 (IN THE TOWER), WITH, GUN
 rule_5045:
         .byte 41, V_WITH, N_GUN, rule_5061-rule_5045, 2, 6
-        .byte C_SWITCH_EQ, 6, 0     ; if switch[6] == 0
+        .byte C_SWITCH_EQ, SW_GUN_FIRED, 0     ; if SW_GUN_FIRED == 0
         .byte C_OBJ_IN_ROOM, 45, 254     ; if object 45 (GUN) is in inventory
         .byte A_PUT_OBJ, 47, 253     ; put object 47 (DOTS) in nowhere
         .byte A_PUT_OBJ, 48, 41     ; put object 48 (X'S) in room 41 (IN THE TOWER)
-        .byte A_SET_SWITCH, 6, 1     ; switch[6] = 1
+        .byte A_SET_SWITCH, SW_GUN_FIRED, 1     ; SW_GUN_FIRED = 1
         .byte A_MESSAGE, 35     ; say msg 35 "YOUR GUN IS EMPTY"
-        .byte A_SET_SWITCH, 11, 1     ; switch[11] = 1
+        .byte A_SET_SWITCH, SW_DAISY_DEAD, 1     ; SW_DAISY_DEAD = 1
         .byte A_MESSAGE, 161     ; say msg 161 "DAISY IS NOW DEAD"
 
 ; room 41 (IN THE TOWER), WITH, GUN
 rule_5061:
         .byte 41, V_WITH, N_GUN, rule_506C-rule_5061, 1, 1
-        .byte C_SWITCH_EQ, 11, 1     ; if switch[11] == 1
+        .byte C_SWITCH_EQ, SW_DAISY_DEAD, 1     ; if SW_DAISY_DEAD == 1
         .byte A_MESSAGE, 166     ; say msg 166 "DAISY IS ALREADY DEAD"
 
 ; room 41 (IN THE TOWER), WITH, GUN
 rule_506C:
         .byte 41, V_WITH, N_GUN, rule_507D-rule_506C, 2, 3
-        .byte C_SWITCH_EQ, 6, 1     ; if switch[6] == 1
+        .byte C_SWITCH_EQ, SW_GUN_FIRED, 1     ; if SW_GUN_FIRED == 1
         .byte C_OBJ_IN_ROOM, 45, 254     ; if object 45 (GUN) is in inventory
         .byte A_MESSAGE, 35     ; say msg 35 "YOUR GUN IS EMPTY"
         .byte A_MESSAGE, 90     ; say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
@@ -2536,7 +2536,7 @@ rule_50B3:
 ; room 41 (IN THE TOWER), GET, NOTE
 rule_50BE:
         .byte 41, V_GET, N_NOTE, rule_50C9-rule_50BE, 1, 1
-        .byte C_SWITCH_EQ, 11, 0     ; if switch[11] == 0
+        .byte C_SWITCH_EQ, SW_DAISY_DEAD, 0     ; if SW_DAISY_DEAD == 0
         .byte A_MESSAGE, 86     ; say msg 86 "DAISY WON'T LET YOU"
 
 ; room 41 (IN THE TOWER), GET, NOTE
@@ -2586,7 +2586,7 @@ rule_5108:
 rule_510F:
         .byte ANY, V_LIGHT, N_MATCHES, rule_511E-rule_510F, 1, 3
         .byte C_OBJ_IN_ROOM, 13, 254     ; if object 13 (MATCHES) is in inventory
-        .byte A_SET_SWITCH, 3, 4     ; switch[3] = 4
+        .byte A_SET_SWITCH, SW_MATCH_BURNING, 4     ; SW_MATCH_BURNING = 4
         .byte A_LAMP_ON     ; light on
         .byte A_MESSAGE, 2     ; say msg 2 "OK"
 
@@ -2651,15 +2651,15 @@ rule_517F:
 rule_5187:
         .byte ANY, V_WITH, N_GUN, rule_5198-rule_5187, 2, 2
         .byte C_OBJ_IN_ROOM, 45, 254     ; if object 45 (GUN) is in inventory
-        .byte C_SWITCH_EQ, 6, 0     ; if switch[6] == 0
-        .byte A_SET_SWITCH, 6, 1     ; switch[6] = 1
+        .byte C_SWITCH_EQ, SW_GUN_FIRED, 0     ; if SW_GUN_FIRED == 0
+        .byte A_SET_SWITCH, SW_GUN_FIRED, 1     ; SW_GUN_FIRED = 1
         .byte A_MESSAGE, 160     ; say msg 160 "YOUR GUN IS NOW EMPTY"
 
 ; WITH, GUN
 rule_5198:
         .byte ANY, V_WITH, N_GUN, rule_51A6-rule_5198, 1, 2
         .byte C_OBJ_IN_ROOM, 45, 254     ; if object 45 (GUN) is in inventory
-        .byte A_SET_SWITCH, 6, 1     ; switch[6] = 1
+        .byte A_SET_SWITCH, SW_GUN_FIRED, 1     ; SW_GUN_FIRED = 1
         .byte A_MESSAGE, 35     ; say msg 35 "YOUR GUN IS EMPTY"
 
 ; LOOK, GUN
@@ -2966,13 +2966,13 @@ shape_6:
 shape_7:
         .byte $15,$4C,$12,$59,$00,$09
 
-; Unreachable older version of print_message's file path.
+; Unreachable older version of MESSLSTR's file path.
 dead_read_message:
         LDA #$00
         STA floor_slot
         ASL lru_turn+1
         ROL floor_slot
-        JSR old_rt_add16
+        JSR old_BUMP16
         .word lru_turn+1
         .word $14
         LDY #$00
@@ -3081,10 +3081,10 @@ run_rules:
 ; match, say "I DONT UNDERSTAND WHAT YOU MEAN".
 run_command_rules:
         LDA command_rules_addr
-        STA AWORK
+        STA WORK
         STA rule_ptr
         LDA command_rules_addr+1
-        STA AWORK+1
+        STA WORK+1
         STA rule_ptr+1
         JMP run_command_rules.loop
 command_rules_addr:
@@ -3099,7 +3099,7 @@ run_command_rules.loop:
         CMP #HV
         BNE run_command_rules.loop
         LDX #MSG_DONT_UNDERSTAND
-        JSR print_message
+        JSR MESSLSTR
 run_command_rules.done:
         RTS
 
@@ -3107,10 +3107,10 @@ run_command_rules.done:
 ; to the command.
 run_turn_rules:
         LDA turn_rules_addr
-        STA AWORK
+        STA WORK
         STA rule_ptr
         LDA turn_rules_addr+1
-        STA AWORK+1
+        STA WORK+1
         STA rule_ptr+1
         JMP run_turn_rules.loop
 turn_rules_addr:
@@ -3124,7 +3124,7 @@ run_turn_rules.loop:
         RTS
 
 ; Test the rule at rule_ptr: room, verb and noun must match (ANY matches everything). If they
-; do, AWORK steps through the conditions; each condition handler continues at cond_pass or
+; do, WORK steps through the conditions; each condition handler continues at cond_pass or
 ; cond_fail, and when all have passed rule_done runs the actions.
 ; cmp_result: 0 = header did not match, 1 = header matched (and conditions passed unless a
 ; condition reset it to 0).
@@ -3135,7 +3135,7 @@ test_rule:
         LDA (rule_ptr),Y
         CMP #ANY
         BEQ test_rule.check_verb
-        CMP room_no
+        CMP CURONO
         BEQ test_rule.check_verb
         JMP rule_done
 test_rule.check_verb:
@@ -3161,18 +3161,18 @@ test_rule.matched:
         LDA #$01
         STA cmp_result
         LDX #6
-        JSR rt_add8
-        .word AWORK
+        JSR BUMPIT
+        .word WORK
 
-; Dispatch the condition at AWORK through tbl_conditions, or run the actions when counter
-; (conditions left) reaches 0. Condition handlers read their operands at (AWORK),Y.
+; Dispatch the condition at WORK through tbl_conditions, or run the actions when counter
+; (conditions left) reaches 0. Condition handlers read their operands at (WORK),Y.
 next_condition:
         LDA counter
         BNE next_condition.dispatch
         JMP rule_done
 next_condition.dispatch:
         LDY #$00
-        LDA (AWORK),Y
+        LDA (WORK),Y
         ASL A
         TAY
         LDA tbl_conditions,Y
@@ -3197,16 +3197,16 @@ tbl_conditions:
 ; Condition 3: object ARG_X is in room ARG_Y.
 cond_obj_in_room:
         LDY #ARG_X
-        LDA (AWORK),Y
+        LDA (WORK),Y
         TAX
         JSR find_object
         LDY #OROOM
         LDA (found_obj),Y
-        STA cond_value
+        STA cond_actual
         LDY #ARG_Y
-        LDA (AWORK),Y
+        LDA (WORK),Y
         LDX #2
-        CMP cond_value
+        CMP cond_actual
         BEQ cond_pass
         JMP cond_fail
 
@@ -3218,7 +3218,7 @@ cond_turns_gt:
         CMP #$00
         BNE cond_fail
         LDY #ARG_X
-        LDA (AWORK),Y
+        LDA (WORK),Y
         CMP turns
         BCS cond_fail
         JMP cond_pass
@@ -3227,13 +3227,13 @@ cond_turns_gt:
 cond_switch_eq:
         LDX #2
         LDY #ARG_X
-        LDA (AWORK),Y
+        LDA (WORK),Y
         TAY
         LDA SWITCH,Y
-        STA cond_value
+        STA cond_actual
         LDY #ARG_Y
-        LDA (AWORK),Y
-        CMP cond_value
+        LDA (WORK),Y
+        CMP cond_actual
         BEQ cond_pass
         JMP cond_fail
 
@@ -3241,7 +3241,7 @@ cond_switch_eq:
 cond_view_is:
         LDX #1
         LDY #ARG_X
-        LDA (AWORK),Y
+        LDA (WORK),Y
         CMP shown_picture
         BEQ cond_pass
         JMP cond_fail
@@ -3249,24 +3249,24 @@ cond_view_is:
 ; Condition 10: object ARG_X is drawn as picture ARG_Y.
 cond_obj_pic_is:
         LDY #ARG_X
-        LDA (AWORK),Y
+        LDA (WORK),Y
         TAX
         JSR find_object
         LDY #OPIC
         LDA (found_obj),Y
-        STA cond_value
+        STA cond_actual
         LDY #ARG_Y
-        LDA (AWORK),Y
+        LDA (WORK),Y
         LDX #2
-        CMP cond_value
+        CMP cond_actual
         BEQ cond_pass
         JMP cond_fail
 
-; Condition true: step AWORK past it (opcode + X operand bytes) and test the next one.
+; Condition true: step WORK past it (opcode + X operand bytes) and test the next one.
 cond_pass:
         INX
-        JSR rt_add8
-        .word AWORK
+        JSR BUMPIT
+        .word WORK
         LDY counter
         DEY
         STY counter
@@ -3288,19 +3288,19 @@ rule_done.run:
         JSR run_actions
         RTS
 
-; Advance rule_ptr (and AWORK) by RULE_LEN. cmp_result = HV at the end of the table, else 0.
+; Advance rule_ptr (and WORK) by RULE_LEN. cmp_result = HV at the end of the table, else 0.
 next_rule:
         LDY #RULE_LEN
         LDA (rule_ptr),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word rule_ptr
         LDA rule_ptr
-        STA AWORK
+        STA WORK
         LDA rule_ptr+1
-        STA AWORK+1
+        STA WORK+1
         LDY #$00
-        LDA (AWORK),Y
+        LDA (WORK),Y
         CMP #HV
         BEQ next_rule.at_end
         LDA #$00
@@ -3314,7 +3314,7 @@ next_rule.at_end:
 ; found_obj = the record of object X. Walks OBJBASE by ONEXT; hitting HV is a BRK (the
 ; source comments it ";UH-OH, KABOOM!").
 find_object:
-        STX find_id
+        STX find_objectno
         LDA objbase_addr
         STA found_obj
         LDA objbase_addr+1
@@ -3325,7 +3325,7 @@ objbase_addr:
 find_object.loop:
         LDY #OBJECTNO
         LDA (found_obj),Y
-        CMP find_id
+        CMP find_objectno
         BEQ find_object.found
         CMP #HV
         BNE find_object.next
@@ -3334,7 +3334,7 @@ find_object.next:
         LDY #ONEXT
         LDA (found_obj),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word found_obj
         JMP find_object.loop
 find_object.found:
@@ -3352,7 +3352,7 @@ main.turn:
         JSR run_rules
         JSR nothing
         LDX #1
-        JSR rt_add8
+        JSR BUMPIT
         .word turns
         JMP main.turn
         .incbin "data/adventure_5E19.bin"    ; $5E19-$60FF leftover memory, not used by the code (see NOTES.md)
@@ -3367,7 +3367,7 @@ init_game:
         LDA #$00
         STA turns+1
         LDA #$01
-        STA room_no
+        STA CURONO
         LDX #NSWITCH
         JSR rt_copy
         .word init_switches
@@ -3381,7 +3381,7 @@ init_game:
         LDA #>ROOMBASE
         STA CUROOM+1
         LDX #10
-        JSR rt_add8
+        JSR BUMPIT
         .word CUROOM
         LDA #<applesoft_vars
         STA fake_vartab
@@ -3483,7 +3483,7 @@ messages_open:
 ; A blank second word looks up as N_NONE (eight spaces is in the noun table).
 read_command:
         LDA #$00
-        STA cmd_state
+        STA cmd_unused
         JSR print_prompt
         JSR get_line
         JSR next_word
@@ -3620,10 +3620,10 @@ lookup_word:
         STA word_id
         LDY #$00
         LDA (rt_operands),Y
-        STA AWORK
+        STA WORK
         INY
         LDA (rt_operands),Y
-        STA AWORK+1
+        STA WORK+1
 lookup_word.next_group:
         INC word_id
         LDX #WORDLEN
@@ -3633,10 +3633,10 @@ lookup_word.next_group:
         CMP #$00
         BEQ lookup_word.done
         LDX #8
-        JSR rt_add8
-        .word AWORK
+        JSR BUMPIT
+        .word WORK
         LDY #$00
-        LDA (AWORK),Y
+        LDA (WORK),Y
         CMP #HV
         BNE lookup_word.check_synonyms
         LDA #NOT_FOUND
@@ -3646,13 +3646,13 @@ lookup_word.check_synonyms:
         CMP #$00
         BNE lookup_word.synonyms
         JSR rt_inc16
-        .word AWORK
+        .word WORK
         JMP lookup_word.next_group
 lookup_word.synonyms:
-        LDA (AWORK),Y
+        LDA (WORK),Y
         STA counter
         JSR rt_inc16
-        .word AWORK
+        .word WORK
 lookup_word.next_synonym:
         LDA counter
         BEQ lookup_word.next_group
@@ -3663,8 +3663,8 @@ lookup_word.next_synonym:
         CMP #$00
         BEQ lookup_word.done
         LDX #8
-        JSR rt_add8
-        .word AWORK
+        JSR BUMPIT
+        .word WORK
         DEC counter
         JMP lookup_word.next_synonym
 lookup_word.done:
@@ -3680,25 +3680,25 @@ text_mode:
         .byte $FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00,$FF,$FF,$00,$00
         .byte $FF,$FF,$00,$00
 
-; Run the rule's actions: action_ptr = AWORK (just past the conditions), actions_left =
-; RULE_NACT. Each action handler (ACnn00) leaves through AC9000, which steps action_ptr past it
+; Run the rule's actions: AWORK = WORK (just past the conditions), actions_left =
+; RULE_NACT. Each action handler (ACnn00) leaves through AC9000, which steps AWORK past it
 ; and dispatches the next one through tbl_actions.
 run_actions:
-        LDA AWORK
-        STA action_ptr
-        LDA AWORK+1
-        STA action_ptr+1
+        LDA WORK
+        STA AWORK
+        LDA WORK+1
+        STA AWORK+1
         LDY #RULE_NACT
         LDA (rule_ptr),Y
         STA actions_left
 
-; Dispatch the action at action_ptr, or return when none are left.
+; Dispatch the action at AWORK, or return when none are left.
 next_action:
         LDA actions_left
         BEQ stop_actions
-        LDA action_ptr
+        LDA AWORK
         STA ZWORK
-        LDA action_ptr+1
+        LDA AWORK+1
         STA ZWORK+1
         LDY #$00
         LDA (ZWORK),Y
@@ -3757,8 +3757,8 @@ AC1100:
         TAY
         LDA SWITCH,Y
         CLC
-        STX act_temp
-        ADC act_temp
+        STX AWORK1
+        ADC AWORK1
         STA SWITCH,Y
         LDX #2
         JMP AC9000
@@ -3767,13 +3767,13 @@ AC1100:
 AC1200:
         LDY #ARG_X
         LDA (ZWORK),Y
-        STA act_temp
+        STA AWORK1
         LDY #ARG_Y
         LDA (ZWORK),Y
         TAY
         LDA SWITCH,Y
         SEC
-        SBC act_temp
+        SBC AWORK1
         STA SWITCH,Y
         LDX #2
         JMP AC9000
@@ -3808,14 +3808,14 @@ AC1400.next:
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word ZAWORK
         JMP AC1400.loop
 AC1400.list_it:
         LDY #OMSG
         LDA (ZAWORK),Y
         TAX
-        JSR print_message
+        JSR MESSLSTR
         JMP AC1400.next
 AC1400.done:
         LDX #0
@@ -3829,10 +3829,10 @@ AC1500:
         STA ZAWORK+1
         LDY #ARG_X
         LDA (ZWORK),Y
-        STA act_temp
+        STA AWORK1
         LDY #ARG_Y
         LDA (ZWORK),Y
-        STA act_word1
+        STA AWORK2
 AC1500.loop:
         LDY #OBJECTNO
         LDA (ZAWORK),Y
@@ -3840,17 +3840,17 @@ AC1500.loop:
         BNE AC1500.check_id
         BRK
 AC1500.check_id:
-        CMP act_temp
+        CMP AWORK1
         BEQ AC1500.found
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word ZAWORK
         JMP AC1500.loop
 AC1500.found:
         LDY #OROOM
-        LDA act_word1
+        LDA AWORK2
         STA (ZAWORK),Y
         LDX #2
         JMP AC9000
@@ -3862,24 +3862,24 @@ AC1600:
         LDY #RCURPIC
         STA (CUROOM),Y
         LDA #<ROOMBASE
-        STA act_word1
+        STA AWORK2
         LDA #>ROOMBASE
-        STA act_word1+1
+        STA AWORK2+1
         LDY #ARG_X
         LDA (ZWORK),Y
-        STA act_word2
-        STA room_no
+        STA AWORK3
+        STA CURONO
         LDA #$00
-        STA act_word2+1
+        STA AWORK3+1
         LDX #RTBLSIZ
-        JSR rt_mul8
-        .word act_word2
-        JSR rt_add16
-        .word act_word2
-        .word act_word1
-        LDA act_word1
+        JSR MULTIPLY
+        .word AWORK3
+        JSR BUMP16
+        .word AWORK3
+        .word AWORK2
+        LDA AWORK2
         STA CUROOM
-        LDA act_word1+1
+        LDA AWORK2+1
         STA CUROOM+1
         LDX #1
         JMP AC9000
@@ -3909,7 +3909,7 @@ AC1900:
         LDY #ARG_X
         LDA (ZWORK),Y
         TAX
-        JSR print_message
+        JSR MESSLSTR
         LDX #1
         JMP AC9000
 
@@ -3934,7 +3934,7 @@ AC2200:
 ; action 13: quit
 AC2300:
         LDX #MSG_GOODBYE
-        JSR print_message
+        JSR MESSLSTR
         JMP dos_warm_start
 
 ; action 14: unused (BRK)
@@ -3951,12 +3951,12 @@ AC2500:
 
 ; Action 16: restore game. BLOADs the save file over $0830-$10FE (variables, objects, rooms),
 ; empties the picture cache so blocks are reloaded, then puts back the action pointer saved
-; before the load. Bug: both bytes are stored into action_ptr's low byte; the high byte keeps
+; before the load. Bug: both bytes are stored into AWORK's low byte; the high byte keeps
 ; the value from the save file.
 AC2600:
-        LDA action_ptr
+        LDA AWORK
         STA ZAWORK
-        LDA action_ptr+1
+        LDA AWORK+1
         STA ZAWORK+1
         JSR rt_print
         .hiasc "\x04BLOAD SAVED GAME,A$830\r"
@@ -3969,9 +3969,9 @@ AC2600.clear_cache:
         BNE AC2600.clear_cache
         STA pic_cache
         LDA ZAWORK
-        STA action_ptr             ; bug: both bytes go to the low byte
+        STA AWORK             ; bug: both bytes go to the low byte
         LDA ZAWORK+1
-        STA action_ptr             ; bug: both bytes go to the low byte
+        STA AWORK             ; bug: both bytes go to the low byte
         LDX #0
         JMP AC9000
 
@@ -3985,9 +3985,9 @@ AC2700:
         LDA input_buffer
         CMP #'N'|$80
         BEQ AC2700.quit
-        LDA action_ptr
+        LDA AWORK
         STA ZAWORK
-        LDA action_ptr+1
+        LDA AWORK+1
         STA ZAWORK+1
         JSR rt_print
         .hiasc "\x04BLOAD STARTUP\r"
@@ -4004,16 +4004,16 @@ AC2700.quit:
 AC2800:
         LDY #ARG_X
         LDA (ZWORK),Y
-        STA act_arg1
+        STA AX
         LDY #ARG_Y
         LDA (ZWORK),Y
-        STA act_arg2
+        STA AY
         LDY #ARG_3
         LDA (ZWORK),Y
-        STA act_arg3
+        STA AX1
         LDY #ARG_4
         LDA (ZWORK),Y
-        STA act_arg4
+        STA AY1
         LDA #<OBJBASE
         STA ZAWORK
         LDA #>OBJBASE
@@ -4021,23 +4021,23 @@ AC2800:
 AC2800.loop:
         LDY #OBJECTNO
         LDA (ZAWORK),Y
-        CMP act_arg1
+        CMP AX
         BEQ AC2800.found
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word ZAWORK
         JMP AC2800.loop
 AC2800.found:
         LDY #OROOM
-        LDA act_arg2
+        LDA AY
         STA (ZAWORK),Y
         LDY #OXCOORD
-        LDA act_arg3
+        LDA AX1
         STA (ZAWORK),Y
         LDY #OYCOORD
-        LDA act_arg4
+        LDA AY1
         STA (ZAWORK),Y
         LDX #4
         JMP AC9000
@@ -4046,10 +4046,10 @@ AC2800.found:
 AC2900:
         LDY #ARG_X
         LDA (ZWORK),Y
-        STA act_arg1
+        STA AX
         LDY #ARG_Y
         LDA (ZWORK),Y
-        STA act_arg2
+        STA AY
         LDA #<OBJBASE
         STA ZAWORK
         LDA #>OBJBASE
@@ -4061,17 +4061,17 @@ AC2900.loop:
         BNE AC2900.check_id
         BRK
 AC2900.check_id:
-        CMP act_arg2
+        CMP AY
         BEQ AC2900.found
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word ZAWORK
         JMP AC2900.loop
 AC2900.found:
         LDY #OPIC
-        LDA act_arg1
+        LDA AX
         STA (ZAWORK),Y
         LDX #2
         JMP AC9000
@@ -4089,77 +4089,77 @@ AC3000:
 AC3100:
         LDY #RN
         LDA (CUROOM),Y
-        STA act_arg1
+        STA AX
         JMP ACNEWROM
 
 ; action 22: go south
 AC3200:
         LDY #RS
         LDA (CUROOM),Y
-        STA act_arg1
+        STA AX
         JMP ACNEWROM
 
 ; action 23: go east
 AC3300:
         LDY #RE
         LDA (CUROOM),Y
-        STA act_arg1
+        STA AX
         JMP ACNEWROM
 
 ; action 24: go west
 AC3400:
         LDY #RW
         LDA (CUROOM),Y
-        STA act_arg1
+        STA AX
         JMP ACNEWROM
 
 ; action 25: go up
 AC3500:
         LDY #RU
         LDA (CUROOM),Y
-        STA act_arg1
+        STA AX
         JMP ACNEWROM
 
 ; action 26: go down
 AC3600:
         LDY #RD
         LDA (CUROOM),Y
-        STA act_arg1
+        STA AX
         JMP ACNEWROM
 
-; Move through exit act_arg1 of the current room (0 = "I CANT GO IN THAT DIRECTION"). The room
-; left reverts to its permanent view. Bug: act_word1's low byte is never set to the new room
-; number before the multiply, so CUROOM is wrong until draw_room rebuilds it from room_no at
+; Move through exit AX of the current room (0 = "I CANT GO IN THAT DIRECTION"). The room
+; left reverts to its permanent view. Bug: AWORK2's low byte is never set to the new room
+; number before the multiply, so CUROOM is wrong until draw_room rebuilds it from CURONO at
 ; the start of the next turn; nothing reads it in between. Ends the action list.
 ACNEWROM:
-        LDA act_arg1
+        LDA AX
         CMP #$00
         BNE ACNEWROM.move
         LDX #MSG_CANT_GO
-        JSR print_message
+        JSR MESSLSTR
         JMP ACNEWROM.done
 ACNEWROM.move:
         LDA #$00
-        STA act_word1+1
-        LDA act_arg1
-        STA room_no
+        STA AWORK2+1
+        LDA AX
+        STA CURONO
         LDX #RTBLSIZ
         LDY #RBASEPIC
         LDA (CUROOM),Y
         LDY #RCURPIC
         STA (CUROOM),Y
-        JSR rt_mul8
-        .word act_word1
+        JSR MULTIPLY
+        .word AWORK2
         LDA #<ROOMBASE
-        STA act_word2
+        STA AWORK3
         LDA #>ROOMBASE
-        STA act_word2+1
-        JSR rt_add16
-        .word act_word1
-        .word act_word2
-        LDA act_word2
+        STA AWORK3+1
+        JSR BUMP16
+        .word AWORK2
+        .word AWORK3
+        LDA AWORK3
         STA CUROOM
-        LDA act_word2+1
+        LDA AWORK3+1
         STA CUROOM+1
 ACNEWROM.done:
         LDX #0
@@ -4170,7 +4170,7 @@ ACNEWROM.done:
 ; the picture on screen is one it appears in (ORPICSTA). Otherwise "I DONT SEE IT HERE".
 AC3700:
         LDY noun
-        STY act_arg1
+        STY AX
         LDA #<OBJBASE
         STA ZAWORK
         LDA #>OBJBASE
@@ -4182,24 +4182,24 @@ AC3700.loop:
         BEQ AC3700.not_here
         LDY #ONOUN
         LDA (ZAWORK),Y
-        CMP act_arg1
+        CMP AX
         BNE AC3700.next
         LDY #OROOM
         LDA (ZAWORK),Y
-        CMP room_no
+        CMP CURONO
         BNE AC3700.next
         LDY #OSTATUS
         LDA (ZAWORK),Y
         CMP #OFIXED
         BNE AC3700.not_fixed
         LDX #MSG_DOESNT_MOVE
-        JSR print_message
+        JSR MESSLSTR
         JMP AC3700.done
 AC3700.next:
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word ZAWORK
         JMP AC3700.loop
 AC3700.not_fixed:
@@ -4209,21 +4209,21 @@ AC3700.not_fixed:
         BEQ AC3700.take
         LDY #RCURPIC
         LDA (CUROOM),Y
-        STA act_word1
+        STA AWORK2
         LDY #ORPICKT
         LDA (ZAWORK),Y
-        STA act_word2
+        STA AWORK3
         LDY #$0B
 AC3700.check_pic:
-        LDX act_word2
+        LDX AWORK3
         BEQ AC3700.next
         LDA (ZAWORK),Y
-        CMP act_word1
+        CMP AWORK2
         BEQ AC3700.take
         INY
-        LDX act_word2
+        LDX AWORK3
         DEX
-        STX act_word2
+        STX AWORK3
         JMP AC3700.check_pic
 AC3700.take:
         LDA #CARRYING
@@ -4235,7 +4235,7 @@ AC3700.take:
         JMP AC3700.done
 AC3700.not_here:
         LDX #MSG_DONT_SEE_IT
-        JSR print_message
+        JSR MESSLSTR
 AC3700.done:
         LDX #0
         JMP AC9000
@@ -4261,7 +4261,7 @@ AC3800.loop:
         CMP #CARRYING
         BNE AC3800.next
         LDY #OROOM
-        LDA room_no
+        LDA CURONO
         STA (ZAWORK),Y
         LDA #OMOVED
         LDY #OSTATUS
@@ -4271,12 +4271,12 @@ AC3800.next:
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word ZAWORK
         JMP AC3800.loop
 AC3800.not_carried:
         LDX #MSG_DONT_UNDERSTAND
-        JSR print_message
+        JSR MESSLSTR
 AC3800.done:
         LDX #0
         JMP AC9000
@@ -4289,19 +4289,19 @@ AC3900:
         STA ZAWORK+1
         LDY #ARG_X
         LDA (ZWORK),Y
-        STA act_word1
+        STA AWORK2
         LDY #ARG_Y
         LDA (ZWORK),Y
-        STA act_word2
+        STA AWORK3
         LDA #$00
-        STA act_word1+1
+        STA AWORK2+1
         LDX #RTBLSIZ
-        JSR rt_mul8
-        .word act_word1
-        JSR rt_add16
-        .word act_word1
+        JSR MULTIPLY
+        .word AWORK2
+        JSR BUMP16
+        .word AWORK2
         .word ZAWORK
-        LDA act_word2
+        LDA AWORK3
         LDY #RBASEPIC
         STA (ZAWORK),Y
         LDY #RCURPIC
@@ -4309,12 +4309,12 @@ AC3900:
         LDX #2
         JMP AC9000
 
-; Common exit of every action handler: action_ptr += 1 + X (the opcode and X operand bytes),
+; Common exit of every action handler: AWORK += 1 + X (the opcode and X operand bytes),
 ; one fewer action left, next one.
 AC9000:
         INX
-        JSR rt_add8
-        .word action_ptr
+        JSR BUMPIT
+        .word AWORK
         LDX actions_left
         DEX
         STX actions_left
@@ -5013,13 +5013,13 @@ draw_objects.loop:
 draw_objects.check_room:
         LDY #OROOM
         LDA (ZWORK),Y
-        CMP room_no
+        CMP CURONO
         BEQ draw_objects.in_room
 draw_objects.next:
         LDY #ONEXT
         LDA (ZWORK),Y
         TAX
-        JSR rt_add8
+        JSR BUMPIT
         .word ZWORK
         JMP draw_objects.loop
 draw_objects.in_room:
@@ -5109,13 +5109,13 @@ draw_object:
         CMP #$01
         BEQ draw_object.shape
         LDA ZWORK
-        STA saved_zwork
+        STA saved_object_ptr
         LDA ZWORK+1
-        STA saved_zwork+1
+        STA saved_object_ptr+1
         JSR draw_picture
-        LDA saved_zwork
+        LDA saved_object_ptr
         STA ZWORK
-        LDA saved_zwork+1
+        LDA saved_object_ptr+1
         STA ZWORK+1
         LDX saved_picture
         STX shown_picture
@@ -5152,9 +5152,9 @@ load_picture:
         STA ZWORK
         LDA #>picture_directory
         STA ZWORK+1
-        JSR rt_mul8
+        JSR MULTIPLY
         .word picdir_index
-        JSR rt_add16
+        JSR BUMP16
         .word picdir_index
         .word ZWORK
         LDY #$00
@@ -5167,7 +5167,7 @@ load_picture:
         LDA (ZWORK),Y
         STA pic_offset+1
         JSR find_cached_block
-        JSR rt_add16
+        JSR BUMP16
         .word pic_offset
         .word ZWORK
         RTS
@@ -5175,7 +5175,7 @@ load_picture:
 ; Cache lookup, then picture_ptr = slot buffer + pic_offset.
 find_cached_block:
         JSR cache_lookup
-        JSR rt_add16
+        JSR BUMP16
         .word pic_offset
         .word ZWORK
         LDA ZWORK
@@ -5202,7 +5202,7 @@ cache_lookup.loop:
         CMP pic_block
         BEQ cache_lookup.hit
         LDX #4
-        JSR rt_add8
+        JSR BUMPIT
         .word ZWORK
         LDY counter
         INY
@@ -5255,7 +5255,7 @@ cache_choose_victim.older:
         STA lru_turn
         LDA pic_cache+1,Y
         STA lru_turn+1
-        STY temp_7c
+        STY rt_temp
         TYA
         CLC
         ROR A
@@ -5265,7 +5265,7 @@ cache_choose_victim.older:
         INY
         LDA cache_slots,Y
         STA ZWORK+1
-        LDY temp_7c
+        LDY rt_temp
         LDA counter
         STA cache_victim
         JMP cache_choose_victim.next
@@ -5353,50 +5353,50 @@ cache_victim:
 ; message_index gives the byte offset, read_message_line READs that line into input_buffer,
 ; word_wrap breaks it at 39 columns. Afterwards a short pause unless msg_no_delay is $FF
 ; (room descriptions).
-print_message:
-        STX msg_scratch
+MESSLSTR:
+        STX scratch_word
         CPX #MSG_CANT_GO
-        BNE print_message.try_not_carrying
+        BNE MESSLSTR.try_not_carrying
         JSR rt_print
         .hiasc "I CANT GO IN THAT DIRECTION\r"
         .byte $00
-        JMP print_message.done
-print_message.try_not_carrying:
+        JMP MESSLSTR.done
+MESSLSTR.try_not_carrying:
         CPX #MSG_NOT_CARRYING
-        BNE print_message.try_dont_understand
+        BNE MESSLSTR.try_dont_understand
         JSR rt_print
         .hiasc "IM NOT CARRYING THAT\r"
         .byte $00
-        JMP print_message.done
-print_message.try_dont_understand:
+        JMP MESSLSTR.done
+MESSLSTR.try_dont_understand:
         CPX #MSG_DONT_UNDERSTAND
-        BNE print_message.try_getting_dark
+        BNE MESSLSTR.try_getting_dark
         JSR rt_print
         .hiasc "I DONT UNDERSTAND WHAT YOU MEAN\r"
         .byte $00
-        JMP print_message.done
-print_message.try_getting_dark:
+        JMP MESSLSTR.done
+MESSLSTR.try_getting_dark:
         CPX #MSG_GETTING_DARK
-        BNE print_message.from_file
+        BNE MESSLSTR.from_file
         JSR rt_print
         .hiasc "IT IS GETTING DARK\r"
         .byte $00
-        JMP print_message.done
-print_message.from_file:
+        JMP MESSLSTR.done
+MESSLSTR.from_file:
         LDA message_index_addr
         STA ZWORK
         LDA message_index_addr+1
         STA ZWORK+1
-        JMP print_message.index
+        JMP MESSLSTR.index
 message_index_addr:
         .byte $00,$55
-print_message.index:
+MESSLSTR.index:
         LDA #$00
-        STA msg_scratch+1
-        ASL msg_scratch
-        ROL msg_scratch+1
-        JSR rt_add16
-        .word msg_scratch
+        STA scratch_word+1
+        ASL scratch_word
+        ROL scratch_word+1
+        JSR BUMP16
+        .word scratch_word
         .word ZWORK
         LDY #$00
         LDA (ZWORK),Y
@@ -5416,31 +5416,31 @@ print_message.index:
         STA ZWORK+1
         JSR word_wrap
         LDY #$00
-print_message.print_loop:
+MESSLSTR.print_loop:
         LDA (ZWORK),Y
         CMP #$00
-        BNE print_message.put_char
+        BNE MESSLSTR.put_char
         LDA #HI_CR
-print_message.put_char:
+MESSLSTR.put_char:
         JSR COUT
         LDA (ZWORK),Y
         INY
         CMP #$00
-        BNE print_message.print_loop
+        BNE MESSLSTR.print_loop
         LDA msg_no_delay
         CMP #$FF
-        BEQ print_message.done
+        BEQ MESSLSTR.done
         LDY #$0E
-print_message.pause:
+MESSLSTR.pause:
         DEY
-        BEQ print_message.done
+        BEQ MESSLSTR.done
         LDA #$FF
         JSR WAIT
-        JMP print_message.pause
-print_message.done:
+        JMP MESSLSTR.pause
+MESSLSTR.done:
         RTS
 
-; READ MESSAGES,B$xxxx (offset patched in by print_message) and let DOS read one line into
+; READ MESSAGES,B$xxxx (offset patched in by MESSLSTR) and let DOS read one line into
 ; input_buffer via GETLN1. The first two bytes of the line are saved around the CTRL-D that
 ; ends the READ, because printing it disturbs them.
 read_message_line:
@@ -5452,15 +5452,15 @@ read_offset_digits:
         .byte $00
         JSR GETLN1
         LDA input_buffer
-        STA msg_scratch
+        STA scratch_word
         LDA input_buffer+1
-        STA msg_scratch+1
+        STA scratch_word+1
         JSR rt_print
         .hiasc "\x04\r"
         .byte $00
-        LDA msg_scratch
+        LDA scratch_word
         STA input_buffer
-        LDA msg_scratch+1
+        LDA scratch_word+1
         STA input_buffer+1
         RTS
 
@@ -5515,12 +5515,12 @@ nibbles_to_ascii.loop:
 word_wrap:
         LDY #$00
         LDA #39
-        STA msg_scratch
+        STA scratch_word
 word_wrap.scan:
         LDA (ZWORK),Y
         CMP #HI_CR
         BEQ word_wrap.done
-        CPY msg_scratch
+        CPY scratch_word
         BEQ word_wrap.at_margin
 word_wrap.next_char:
         INY
@@ -5539,8 +5539,8 @@ word_wrap.break_line:
         STA (ZWORK),Y
         SEC
         TYA
-        ADC msg_scratch
-        STA msg_scratch
+        ADC scratch_word
+        STA scratch_word
         JMP word_wrap.next_char
 word_wrap.done:
         LDA #$00
@@ -5568,14 +5568,14 @@ rt_copy:
         JMP rt_copy_body
 
 ; word at .word addr += X
-rt_add8:
-        JMP rt_add8_body
+BUMPIT:
+        JMP BUMPIT_body
 
 ; word at .word dst += word at .word src
-rt_add16:
-        JMP rt_add16_body
+BUMP16:
+        JMP BUMP16_body
 
-; compare X bytes at (AWORK) with .word addr; cmp_result = 0 if equal
+; compare X bytes at (WORK) with .word addr; cmp_result = 0 if equal
 rt_compare:
         JMP rt_compare_body
 
@@ -5596,8 +5596,8 @@ rt_print:
         JMP rt_print_body
 
 ; mul_result = word at .word addr * X
-rt_mul8:
-        JMP rt_mul8_body
+MULTIPLY:
+        JMP MULTIPLY_body
 ; leftover memory, not used: lines here can be deleted to make room
         .byte $C1,$C1,$C1,$C1,$C1,$C1,$C1,$C1,$A0,$A0,$A0,$A0,$A0,$A0,$A0,$A0
         .byte $A0
@@ -5692,9 +5692,9 @@ rt_copy_body.loop:
         LDX #4
         JSR rt_return
 
-; rt_add8: add X to the word at addr.
-rt_add8_body:
-        STX temp_7c
+; BUMPIT: add X to the word at addr.
+BUMPIT_body:
+        STX rt_temp
         JSR rt_args
         LDY #$00
         LDA (rt_operands),Y
@@ -5705,7 +5705,7 @@ rt_add8_body:
         LDY #$00
         LDA (rt_ptr2),Y
         CLC
-        ADC temp_7c
+        ADC rt_temp
         STA (rt_ptr2),Y
         INY
         LDA (rt_ptr2),Y
@@ -5735,9 +5735,9 @@ rt_inc16_body:
         LDX #2
         JSR rt_return
 
-; rt_compare: compare X bytes at (AWORK) with addr; cmp_result = 0 if equal, 1 if not.
+; rt_compare: compare X bytes at (WORK) with addr; cmp_result = 0 if equal, 1 if not.
 rt_compare_body:
-        STX temp_7c
+        STX rt_temp
         JSR rt_args
         LDY #$00
         LDA (rt_operands),Y
@@ -5745,9 +5745,9 @@ rt_compare_body:
         INY
         LDA (rt_operands),Y
         STA rt_ptr2+1
-        LDA AWORK
+        LDA WORK
         STA rt_ptr1
-        LDA AWORK+1
+        LDA WORK+1
         STA rt_ptr1+1
         LDY #$00
 rt_compare_body.loop:
@@ -5770,8 +5770,8 @@ rt_compare_body.done:
         LDX #2
         JSR rt_return
 
-; rt_add16: word at dst += word at src.
-rt_add16_body:
+; BUMP16: word at dst += word at src.
+BUMP16_body:
         JSR rt_args
         LDY #$00
         LDA (rt_operands),Y
@@ -5797,8 +5797,8 @@ rt_add16_body:
         LDX #4
         JSR rt_return
 
-; rt_mul8: the word at addr *= X (8-step shift and add through mul_result).
-rt_mul8_body:
+; MULTIPLY: the word at addr *= X (8-step shift and add through mul_result).
+MULTIPLY_body:
         STX mul_count
         JSR rt_args
         LDY #$00
@@ -5819,26 +5819,26 @@ rt_mul8_body:
         LDA #$00
         STA mul_carry
         LDX #$08
-        STX msg_scratch
+        STX scratch_word
         LDA #$00
         STA mul_result
         STA mul_result+1
-rt_mul8_body.loop:
-        LDA msg_scratch
-        BEQ rt_mul8_body.done
+MULTIPLY_body.loop:
+        LDA scratch_word
+        BEQ MULTIPLY_body.done
         LSR mul_count
-        BCC rt_mul8_body.no_add
-        JSR rt_add16
+        BCC MULTIPLY_body.no_add
+        JSR BUMP16
         .word mul_multiplicand
         .word mul_result
-rt_mul8_body.no_add:
+MULTIPLY_body.no_add:
         ASL mul_multiplicand
         ROL mul_multiplicand+1
-        LDY msg_scratch
+        LDY scratch_word
         DEY
-        STY msg_scratch
-        JMP rt_mul8_body.loop
-rt_mul8_body.done:
+        STY scratch_word
+        JMP MULTIPLY_body.loop
+MULTIPLY_body.done:
         LDA mul_dest
         STA rt_ptr1
         LDA mul_dest+1
@@ -5854,7 +5854,7 @@ rt_mul8_body.done:
         .incbin "data/adventure_77CC.bin"    ; $77CC-$78FF fill
         .org $7900
 
-; Redraw the room: CUROOM from room_no, clear the screen, and if the room is lit (LAMPSTAT =
+; Redraw the room: CUROOM from CURONO, clear the screen, and if the room is lit (LAMPSTAT =
 ; ON) draw its current picture and the objects. Then print the description without the usual
 ; pause.
 draw_room:
@@ -5874,30 +5874,30 @@ draw_room.describe:
         TAX
         LDA #$FF
         STA msg_no_delay
-        JSR print_message
+        JSR MESSLSTR
         LDA #$00
         STA msg_no_delay
         RTS
 
-; CUROOM = ROOMBASE + room_no * RTBLSIZ.
+; CUROOM = ROOMBASE + CURONO * RTBLSIZ.
 set_curoom:
         LDA #$00
-        STA room_index+1
-        LDA room_no
-        STA room_index
+        STA room_offset+1
+        LDA CURONO
+        STA room_offset
         JMP set_curoom.compute
 roombase_addr:
         .byte $00,$0D
 set_curoom.compute:
         LDX #RTBLSIZ
-        JSR rt_mul8
-        .word room_index
+        JSR MULTIPLY
+        .word room_offset
         LDA roombase_addr
         STA CUROOM
         LDA roombase_addr+1
         STA CUROOM+1
-        JSR rt_add16
-        .word room_index
+        JSR BUMP16
+        .word room_offset
         .word CUROOM
         RTS
 stale_hglin_copy:
@@ -5931,7 +5931,7 @@ draw_picture.check_newline:
         LDA #$01
         STA pen_up
         LDX #2
-        JSR rt_add8
+        JSR BUMPIT
         .word picture_ptr
         JMP draw_picture.next_point
 draw_picture.reload_x:
@@ -5965,7 +5965,7 @@ draw_picture.line_to:
         JSR hplot_to_xy
 draw_picture.advance:
         LDX #2
-        JSR rt_add8
+        JSR BUMPIT
         .word picture_ptr
         JMP draw_picture.next_point
 draw_picture.done:

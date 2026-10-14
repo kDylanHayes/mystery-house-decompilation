@@ -227,7 +227,7 @@ ARG_4    = 4
 ON       = 0
 OFF      = 1
 
-; messages print_message handles itself
+; messages MESSLSTR handles itself
 MSG_GETTING_DARK     = $07
 MSG_DONT_UNDERSTAND  = $25
 MSG_NOT_CARRYING     = $7F
@@ -256,3 +256,20 @@ VAR_Y_HI   = $0D  ; var_y
 VAR_HCOLOR = $16  ; var_hcolor
 VAR_SHAPE  = $20  ; var_shape
 VAR_ROT    = $28  ; var_rot
+
+; ---- the game's flags: SWITCH + n (meanings from the rules that set and test them) ----------
+; Switches 0, 2, 15, 17, 18 and 19 are never used. All start at 0.
+SW_FRONT_DOOR_LOCKED  = 1   ; set when you go in by the front door; UNLOCK DOOR (with the key) clears it
+SW_MATCH_BURNING      = 3   ; LIGHT MATCHES sets 4; the turn rules count it down: the match burns 3 turns
+SW_KITCHEN_WATER      = 4   ; the kitchen faucet is running
+SW_RUG_FIRE           = 5   ; you tripped on the dining-room rug with the lit candle (happens once)
+SW_GUN_FIRED          = 6   ; the gun's one shot is used
+SW_JOE_DEAD           = 7   ; Joe the gravedigger was killed: the graves and his shovel are safe
+SW_PICTURE_LOOSE      = 8   ; the study picture was loosened with the butterknife
+SW_BATHROOM_WATER     = 9   ; the bathroom faucet is running
+SW_TRUNK_UNLOCKED     = 10  ; the storage-room trunk is unlocked
+SW_DAISY_DEAD         = 11  ; Daisy, the killer, is dead: carry the jewels to the front yard to win
+SW_PORCH_DOOR_OPEN    = 12  ; the front door is open (seen from the porch)
+SW_CABINET_MOVED      = 13  ; the kitchen cabinet was moved, showing the bricked-up wall
+SW_KITCHEN_DOOR_OPEN  = 14  ; the kitchen's outside door is open
+SW_DARK_WARNED        = 16  ; set after turn 35: stops the "IT IS GETTING DARK" warning

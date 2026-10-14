@@ -1,7 +1,7 @@
 # Game logic. After each command the engine scans the command rules ($4500)
 # for the first one whose room/verb/noun and conditions match, runs its actions and
 # stops ("I DONT UNDERSTAND WHAT YOU MEAN" if none match). It then runs every
-# matching turn rule ($4400). A "switch" is one of the game flags at $083A.
+# matching turn rule ($4400). SW_* are the game flags at $083A (src/game.inc).
 
 COMMAND RULES ($4500)
 =====================
@@ -28,26 +28,26 @@ $4530  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...) and verb JUMP and no
            say msg 1 "IT IS TOO HIGH"
 
 $4538  in room 2 (ON THE PORCH) and verb OPEN and noun DOOR
-         if switch[12] == 1
+         if SW_PORCH_DOOR_OPEN == 1
            say msg 129 "IT IS OPEN"
 
 $4543  in room 2 (ON THE PORCH) and verb OPEN and noun DOOR
            make picture 2 the room view
-           switch[12] = 1
+           SW_PORCH_DOOR_OPEN = 1
 
 $454E  in room 2 (ON THE PORCH) and verb CLOSE and noun DOOR
-         if switch[12] == 1
+         if SW_PORCH_DOOR_OPEN == 1
            make picture 1 the room view
-           switch[12] = 0
+           SW_PORCH_DOOR_OPEN = 0
 
 $455C  in room 2 (ON THE PORCH) and verb CLOSE and noun DOOR
-         if switch[12] == 0
+         if SW_PORCH_DOOR_OPEN == 0
            say msg 128 "THE DOOR IS CLOSED"
 
 $4567  in room 2 (ON THE PORCH) and verb GO and noun DOOR
-         if switch[12] == 1
+         if SW_PORCH_DOOR_OPEN == 1
            go to room 3 (IN AN ENTRY HALL)
-           switch[1] = 1
+           SW_FRONT_DOOR_LOCKED = 1
            say msg 142 "THE DOOR HAS BEEN CLOSED AND LOCKED"
 
 $4577  in room 2 (ON THE PORCH) and verb GO and noun DOOR
@@ -72,16 +72,16 @@ $45A5  in room 3 (IN AN ENTRY HALL) and verb GO and noun STAIRS
            go to room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...)
 
 $45AD  in room 3 (IN AN ENTRY HALL) and verb OPEN and noun DOOR
-         if switch[1] == 1
+         if SW_FRONT_DOOR_LOCKED == 1
            say msg 82 "IT IS LOCKED"
 
 $45B8  in room 3 (IN AN ENTRY HALL) and verb OPEN and noun DOOR
-         if switch[1] == 0
+         if SW_FRONT_DOOR_LOCKED == 0
            make picture 5 the room view
 
 $45C3  in room 3 (IN AN ENTRY HALL) and verb UNLOCK and noun DOOR
          if object 30 (KEY) is in inventory
-           switch[1] = 0
+           SW_FRONT_DOOR_LOCKED = 0
            say msg 2 "OK"
 
 $45D1  in room 3 (IN AN ENTRY HALL) and verb UNLOCK and noun DOOR
@@ -138,13 +138,13 @@ $464F  in room 4 (IN THE KITCHEN) and verb GET and noun CABINET
            say msg 138 "IT'S TOO HEAVY TO LIFT"
 
 $4657  in room 4 (IN THE KITCHEN) and verb MOVE and noun CABINET
-         if switch[13] == 1
+         if SW_CABINET_MOVED == 1
            say msg 139 "IT WON'T MOVE ANY FARTHER"
 
 $4662  in room 4 (IN THE KITCHEN) and verb MOVE and noun CABINET
            put object 10 (CABINET) in room 4 (IN THE KITCHEN) at (65,20)
            put object 11 (BRICKS) in room 4 (IN THE KITCHEN)
-           switch[13] = 1
+           SW_CABINET_MOVED = 1
            say msg 10 "THE WALL IS BRICKED UP BEHIND IT"
 
 $4675  in room 4 (IN THE KITCHEN) and verb OPEN and noun CABINET
@@ -206,17 +206,17 @@ $470A  in room 4 (IN THE KITCHEN) and verb LOOK and noun REFRIGER
 
 $4715  in room 4 (IN THE KITCHEN) and verb FAUCET and noun ON
            say msg 13 "WATER IS RUNNING INTO THE SINK"
-           switch[4] = 1
+           SW_KITCHEN_WATER = 1
 
 $4720  in room 4 (IN THE KITCHEN) and verb GET and noun WATER
-         if switch[4] == 1
+         if SW_KITCHEN_WATER == 1
          if object 14 (PITCHER) is in inventory
            say msg 92 "YOUR PITCHER IS FULL"
            put object 14 (PITCHER) in nowhere
            put object 15 (PITCHER) in inventory
 
 $4734  in room 4 (IN THE KITCHEN) and verb GET and noun WATER
-         if switch[4] == 1
+         if SW_KITCHEN_WATER == 1
            say msg 14 "YOU HAVE NO CONTAINER"
 
 $473F  in room 4 (IN THE KITCHEN) and verb GET and noun WATER
@@ -229,7 +229,7 @@ $4747  in room 4 (IN THE KITCHEN) and verb LIGHT and noun STOVE
 $4750  in room 4 (IN THE KITCHEN) and verb OPEN and noun DOOR
          if current picture == 13
            make picture 14 the room view
-           switch[14] = 1
+           SW_KITCHEN_DOOR_OPEN = 1
 
 $475D  in room 4 (IN THE KITCHEN) and verb OPEN and noun DOOR
          if current picture == 14
@@ -238,7 +238,7 @@ $475D  in room 4 (IN THE KITCHEN) and verb OPEN and noun DOOR
 $4767  in room 4 (IN THE KITCHEN) and verb CLOSE and noun DOOR
          if current picture == 14
            make picture 13 the room view
-           switch[14] = 0
+           SW_KITCHEN_DOOR_OPEN = 0
 
 $4774  in room 4 (IN THE KITCHEN) and verb CLOSE and noun DOOR
          if current picture == 13
@@ -257,7 +257,7 @@ $4793  in room 4 (IN THE KITCHEN) and verb GO and noun HOLE
            go to room 19 (IN A SMALL PANTRY)
 
 $479E  in room 4 (IN THE KITCHEN) and verb FAUCET and noun OFF
-           switch[4] = 0
+           SW_KITCHEN_WATER = 0
            say msg 2 "OK"
 
 $47A9  in room 4 (IN THE KITCHEN) and verb GO and noun DOOR
@@ -271,7 +271,7 @@ $47BB  in room 4 (IN THE KITCHEN) and verb WEST and noun
            say msg 128 "THE DOOR IS CLOSED"
 
 $47C3  in room 5 (IN A FOREST) and verb UP and noun 
-         if switch[14] == 0
+         if SW_KITCHEN_DOOR_OPEN == 0
            say msg 144 "THE KITCHEN DOOR IS CLOSED"
 
 $47CE  in room 5 (IN A FOREST) and verb UP and noun 
@@ -283,7 +283,7 @@ $47D6  in room 13 (THERE IS A VERY TALL PINE TREE IN FRO...) and verb LOOK and n
 $47DE  in room 5 (IN A FOREST) and verb OPEN and noun DOOR
            say msg 162 "THE KITCHEN DOOR IS OPEN"
            set room 4 (IN THE KITCHEN) view to picture 14
-           switch[14] = 1
+           SW_KITCHEN_DOOR_OPEN = 1
 
 $47EC  in room 13 (THERE IS A VERY TALL PINE TREE IN FRO...) and verb UP and noun TREE
            go to room 23 (AT THE TOP OF A VERY TALL PINE TREE)
@@ -369,8 +369,8 @@ $48B8  in room 15 (IN THE SIDE YARD) and verb JUMP and noun FENCE
 
 $48C0  in room 16 (IN THE DINING ROOM)
          if object 18 (CANDLE) is in inventory
-         if switch[5] == 0
-           switch[5] = 1
+         if SW_RUG_FIRE == 0
+           SW_RUG_FIRE = 1
            say msg 44 "YOU TRIP OVER RUG AND FALL.  OH,OH, YOU STARTED A FIRE WITH YOUR CANDLE!"
            put object 20 (FIRE) in room 16 (IN THE DINING ROOM) at (81,92)
 
@@ -570,7 +570,7 @@ $4ACC  in room 18 (IN A SMALL FENCED CEMETARY) and verb WITH and noun DAGGER
          if object 53 (DAGGER) is in inventory
            say msg 30 "THERE IS A DEAD BODY HERE"
            put object 27 (X'S) in room 18 (IN A SMALL FENCED CEMETARY)
-           switch[7] = 1
+           SW_JOE_DEAD = 1
 
 $4ADD  in room 18 (IN A SMALL FENCED CEMETARY) and verb WITH and noun DAGGER
            say msg 132 "YOU ARE NOT CARRYING IT"
@@ -578,12 +578,12 @@ $4ADD  in room 18 (IN A SMALL FENCED CEMETARY) and verb WITH and noun DAGGER
 
 $4AE8  in room 18 (IN A SMALL FENCED CEMETARY) and verb WITH and noun GUN
          if object 45 (GUN) is in inventory
-         if switch[6] == 0
+         if SW_GUN_FIRED == 0
            say msg 30 "THERE IS A DEAD BODY HERE"
            say msg 35 "YOUR GUN IS EMPTY"
            put object 27 (X'S) in room 18 (IN A SMALL FENCED CEMETARY)
-           switch[6] = 1
-           switch[7] = 1
+           SW_GUN_FIRED = 1
+           SW_JOE_DEAD = 1
 
 $4B01  in room 18 (IN A SMALL FENCED CEMETARY) and verb LOOK and noun BODY
            say msg 36 "IT IS JOE, THE GRAVEDIGGER"
@@ -598,7 +598,7 @@ $4B19  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun JOE
            say msg 37 "I DONT UNDERSTAND WHAT YOU MEAN"
 
 $4B21  in room 18 (IN A SMALL FENCED CEMETARY) and verb GO and noun GRAVES
-         if switch[7] == 0
+         if SW_JOE_DEAD == 0
            say msg 38 "YOU FALL IN ONE AND JOE BURIES YOU.  YOU ARE DEAD"
            put object 24 (GRAVES) in room 18 (IN A SMALL FENCED CEMETARY)
            ask to play again
@@ -607,7 +607,7 @@ $4B30  in room 18 (IN A SMALL FENCED CEMETARY) and verb GO and noun GRAVES
            say msg 39 "YOU FALL IN ONE AND CLIMB OUT AGAIN"
 
 $4B38  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun SHOVEL
-         if switch[7] == 0
+         if SW_JOE_DEAD == 0
            say msg 40 "JOE WON'T LET YOU"
 
 $4B43  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun SHOVEL
@@ -829,7 +829,7 @@ $4D81  in room 35 (IN THE STUDY) and verb UNSCREW and noun BOLTS
            say msg 34 "WITH WHAT?"
 
 $4D89  in room 35 (IN THE STUDY) and verb GET and noun PICTURE
-         if switch[8] == 1
+         if SW_PICTURE_LOOSE == 1
            take the named object
            put object 37 (BUTTON) in room 35 (IN THE STUDY)
            say msg 76 "THERE IS A BUTTON ON THE WALL"
@@ -840,7 +840,7 @@ $4D98  in room 35 (IN THE STUDY) and verb GET and noun PICTURE
 $4DA0  in room 35 (IN THE STUDY) and verb WITH and noun BUTTERKN
          if object 16 (BUTTERKN) is in inventory
            say msg 75 "THE PICTURE IS LOOSE"
-           switch[8] = 1
+           SW_PICTURE_LOOSE = 1
 
 $4DAE  in room 35 (IN THE STUDY) and verb WITH and noun BUTTERKN
            say msg 132 "YOU ARE NOT CARRYING IT"
@@ -879,24 +879,24 @@ $4E01  in room 38 (IN THE BATHROOM) and verb GO and noun DOOR
 
 $4E09  in room 38 (IN THE BATHROOM) and verb FAUCET and noun ON
            say msg 13 "WATER IS RUNNING INTO THE SINK"
-           switch[9] = 1
+           SW_BATHROOM_WATER = 1
 
 $4E14  in room 38 (IN THE BATHROOM) and verb GET and noun WATER
-         if switch[9] == 1
+         if SW_BATHROOM_WATER == 1
          if object 14 (PITCHER) is in inventory
            say msg 92 "YOUR PITCHER IS FULL"
            put object 14 (PITCHER) in nowhere
            put object 15 (PITCHER) in inventory
 
 $4E28  in room 38 (IN THE BATHROOM) and verb GET and noun WATER
-         if switch[9] == 1
+         if SW_BATHROOM_WATER == 1
            say msg 14 "YOU HAVE NO CONTAINER"
 
 $4E33  in room 38 (IN THE BATHROOM) and verb GET and noun WATER
            say msg 131 "I SEE NO WATER"
 
 $4E3B  in room 38 (IN THE BATHROOM) and verb FAUCET and noun OFF
-           switch[9] = 0
+           SW_BATHROOM_WATER = 0
            say msg 2 "OK"
 
 $4E46  in room 38 (IN THE BATHROOM) and verb FLUSH and noun TOILET
@@ -990,13 +990,13 @@ $4F31  in room 40 (IN A STORAGE ROOM) and verb GET and noun TRUNK
            say msg 4 "IT IS TOO HEAVY"
 
 $4F39  in room 40 (IN A STORAGE ROOM) and verb OPEN and noun TRUNK
-         if switch[10] == 1
+         if SW_TRUNK_UNLOCKED == 1
          if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
            put object 43 (TRUNK) in nowhere
            put object 44 (TRUNK) in room 40 (IN A STORAGE ROOM)
 
 $4F4B  in room 40 (IN A STORAGE ROOM) and verb OPEN and noun TRUNK
-         if switch[10] == 1
+         if SW_TRUNK_UNLOCKED == 1
            say msg 82 "IT IS LOCKED"
 
 $4F56  in room 40 (IN A STORAGE ROOM) and verb OPEN and noun TRUNK
@@ -1021,35 +1021,35 @@ $4F83  in room 40 (IN A STORAGE ROOM) and verb LOOK and noun TRUNK
 
 $4F8E  in room 40 (IN A STORAGE ROOM) and verb LOOK and noun TRUNK
          if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
-         if switch[10] == 0
+         if SW_TRUNK_UNLOCKED == 0
            say msg 82 "IT IS LOCKED"
 
 $4F9C  in room 40 (IN A STORAGE ROOM) and verb LOOK and noun TRUNK
          if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
-         if switch[10] == 1
+         if SW_TRUNK_UNLOCKED == 1
            say msg 133 "IT IS NOT OPEN"
 
 $4FAA  in room 40 (IN A STORAGE ROOM) and verb UNLOCK and noun TRUNK
          if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
          if object 22 (KEY) is in inventory
-         if switch[10] == 0
+         if SW_TRUNK_UNLOCKED == 0
            say msg 2 "OK"
-           switch[10] = 1
+           SW_TRUNK_UNLOCKED = 1
 
 $4FBE  in room 40 (IN A STORAGE ROOM) and verb UNLOCK and noun TRUNK
          if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
          if object 22 (KEY) is in inventory
-         if switch[10] == 1
+         if SW_TRUNK_UNLOCKED == 1
            say msg 136 "IT IS UNLOCKED"
 
 $4FCF  in room 40 (IN A STORAGE ROOM) and verb UNLOCK and noun TRUNK
          if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
-         if switch[10] == 0
+         if SW_TRUNK_UNLOCKED == 0
            say msg 83 "YOU HAVE NOTHING TO UNLOCK IT WITH"
 
 $4FDD  in room 40 (IN A STORAGE ROOM) and verb UNLOCK and noun TRUNK
          if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
-         if switch[10] == 1
+         if SW_TRUNK_UNLOCKED == 1
            say msg 136 "IT IS UNLOCKED"
 
 $4FEB  in room 40 (IN A STORAGE ROOM) and verb GO and noun WINDOW
@@ -1060,11 +1060,11 @@ $4FF5  in room 41 (IN THE TOWER) and verb GO and noun TRAPDOOR
            go to room 39 (IN THE ATTIC)
 
 $4FFD  in room 41 (IN THE TOWER) and verb LOOK and noun PERSON
-         if switch[11] == 0
+         if SW_DAISY_DEAD == 0
            say msg 87 "SHE IS GOING TO KILL YOU"
 
 $5008  in room 41 (IN THE TOWER) and verb LOOK and noun DAISY
-         if switch[11] == 0
+         if SW_DAISY_DEAD == 0
            say msg 87 "SHE IS GOING TO KILL YOU"
 
 $5013  in room 41 (IN THE TOWER) and verb LOOK and noun DAISY
@@ -1074,7 +1074,7 @@ $501B  in room 41 (IN THE TOWER) and verb KILL and noun DAISY
            say msg 34 "WITH WHAT?"
 
 $5023  in room 41 (IN THE TOWER) and verb WITH and noun DAGGER
-         if switch[11] == 1
+         if SW_DAISY_DEAD == 1
            say msg 166 "DAISY IS ALREADY DEAD"
 
 $502E  in room 41 (IN THE TOWER) and verb WITH and noun DAGGER
@@ -1088,21 +1088,21 @@ $503A  in room 41 (IN THE TOWER) and verb WITH and noun DAGGER
            ask to play again
 
 $5045  in room 41 (IN THE TOWER) and verb WITH and noun GUN
-         if switch[6] == 0
+         if SW_GUN_FIRED == 0
          if object 45 (GUN) is in inventory
            put object 47 (DOTS) in nowhere
            put object 48 (X'S) in room 41 (IN THE TOWER)
-           switch[6] = 1
+           SW_GUN_FIRED = 1
            say msg 35 "YOUR GUN IS EMPTY"
-           switch[11] = 1
+           SW_DAISY_DEAD = 1
            say msg 161 "DAISY IS NOW DEAD"
 
 $5061  in room 41 (IN THE TOWER) and verb WITH and noun GUN
-         if switch[11] == 1
+         if SW_DAISY_DEAD == 1
            say msg 166 "DAISY IS ALREADY DEAD"
 
 $506C  in room 41 (IN THE TOWER) and verb WITH and noun GUN
-         if switch[6] == 1
+         if SW_GUN_FIRED == 1
          if object 45 (GUN) is in inventory
            say msg 35 "YOUR GUN IS EMPTY"
            say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
@@ -1137,7 +1137,7 @@ $50B3  in room 41 (IN THE TOWER) and verb WITH and noun SLEDGEHA
            ask to play again
 
 $50BE  in room 41 (IN THE TOWER) and verb GET and noun NOTE
-         if switch[11] == 0
+         if SW_DAISY_DEAD == 0
            say msg 86 "DAISY WON'T LET YOU"
 
 $50C9  in room 41 (IN THE TOWER) and verb GET and noun NOTE
@@ -1169,7 +1169,7 @@ $5108  verb LOOK and noun ROOM
 
 $510F  verb LIGHT and noun MATCHES
          if object 13 (MATCHES) is in inventory
-           switch[3] = 4
+           SW_MATCH_BURNING = 4
            light on
            say msg 2 "OK"
 
@@ -1214,13 +1214,13 @@ $517F  verb GO and noun WINDOW
 
 $5187  verb WITH and noun GUN
          if object 45 (GUN) is in inventory
-         if switch[6] == 0
-           switch[6] = 1
+         if SW_GUN_FIRED == 0
+           SW_GUN_FIRED = 1
            say msg 160 "YOUR GUN IS NOW EMPTY"
 
 $5198  verb WITH and noun GUN
          if object 45 (GUN) is in inventory
-           switch[6] = 1
+           SW_GUN_FIRED = 1
            say msg 35 "YOUR GUN IS EMPTY"
 
 $51A6  verb LOOK and noun GUN
@@ -1326,24 +1326,24 @@ TURN RULES ($4400)
 ==================
 
 $4400  always
-         if switch[3] == 1
+         if SW_MATCH_BURNING == 1
            say msg 130 "THE MATCH WENT OUT"
 
 $440B  always
-         if switch[3] == 0
-           switch[3] = 1
+         if SW_MATCH_BURNING == 0
+           SW_MATCH_BURNING = 1
 
 $4417  always
-           switch[3] -= 1
+           SW_MATCH_BURNING -= 1
 
 $4420  always
          if turn > 36
-         if switch[3] == 0
+         if SW_MATCH_BURNING == 0
            light off
 
 $442C  always
          if object 18 (CANDLE) is in nowhere
-         if switch[3] == 0
+         if SW_MATCH_BURNING == 0
          if turn > 36
            say msg 42 "IT IS DARK, YOU CAN'T SEE"
 
@@ -1356,16 +1356,16 @@ $4446  verb DROP
 
 $444D  always
          if turn > 20
-         if switch[16] == 0
+         if SW_DARK_WARNED == 0
            say msg 7 "IT IS GETTING DARK"
 
 $445A  always
          if turn > 35
-           switch[16] = 1
+           SW_DARK_WARNED = 1
 
 $4465  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...)
          if object 32 (JEWELS) is in inventory
-         if switch[11] == 1
+         if SW_DAISY_DEAD == 1
            say msg 164 "CONGRATULATIONS YOU HAVE BEATEN ADVENTURE AND ARE DECLARED A GURU WIZARD"
            ask to play again
 

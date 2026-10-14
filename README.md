@@ -42,6 +42,8 @@ on tracks 0-2, is kept as a binary.
 | `src/game.inc`, `src/apple2.inc` | named constants: vocabulary, rule opcodes, record layouts; hardware and ROM |
 | `original_source/` | 313 lines of the **original 1980 source**, recovered from stale memory inside the binary |
 | `assets/text/rules.txt` | the game logic: all 358 rules in plain words |
+| `assets/text/map.txt` | every room's exits and the passages rules make |
+| `tests/play/walkthrough.txt` | a complete solution, played by the tests on an emulated 6502 |
 | `assets/text/` | rooms, objects, vocabulary, messages; `gamedata.json` has all of it |
 | `assets/pictures/` | the 97 vector pictures as PNG and SVG |
 | `assets/rooms/` | each of the 41 rooms as first seen, with its objects |

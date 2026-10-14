@@ -72,9 +72,9 @@ def extract(raw, out):
         p = e + 1
     with open(out, 'w') as f:
         f.write('; The game\'s messages, by number (see tools/msgfile.py for the format).\n'
-                '; The engine prints message n with print_message (LDX #n); rules use A_MESSAGE, n.\n'
-                '; Messages 7, 37, 127 and 137 are never shown: print_message prints its own\n'
-                '; built-in text for those numbers (see print_message in src/adventure.s).\n')
+                '; The engine prints message n with MESSLSTR (LDX #n); rules use A_MESSAGE, n.\n'
+                '; Messages 7, 37, 127 and 137 are never shown: MESSLSTR prints its own\n'
+                '; built-in text for those numbers (see MESSLSTR in src/adventure.s).\n')
         for i, t in enumerate(msgs, 1):
             f.write('%d %s\n' % (i, '"%s"' % t if t != t.strip() else t))
 

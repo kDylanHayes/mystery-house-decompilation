@@ -13,7 +13,10 @@ match the original" and "build/mystery_house.do: matches disk/SHA256". The disk 
 (no stale third-party data; see `disk/README.md`), so its hash differs from the TOSEC original's.
 
 `./build.sh --check` fails unless everything matches (CI runs it). Run the tests with
-`python3 -m unittest discover -s tests`; add tests when a tool gains a feature or a bug is fixed.
+`python3 -m unittest discover -s tests`; add tests when a tool gains a feature or a bug is fixed. The play-through test
+(`tests/test_play.py`) plays the solution on the emulated game; `tools/play.py` plays any
+command script against the built game, which is the way to check a change to the engine or the
+rules.
 
 Ghidra (optional): with `GHIDRA_INSTALL_DIR=/path/to/ghidra_12.1.x` the
 build also regenerates the C pseudocode in `decomp/*.c`.

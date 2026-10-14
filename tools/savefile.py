@@ -14,7 +14,7 @@ from a base image:
   SAVED GAME   base: STARTUP; the one on the disk is a game in progress
 one change per line:
 
-    room_no = $1D                      a variable, by its name in src/adventure.s
+    CURONO = $1D                      a variable, by its name in src/adventure.s
     SWITCH+12 = $01                    a name plus an offset
     object 13 OROOM = $FE              a field of object 13 (field names from src/game.inc)
     room 3 RCURPIC = $36               a field of room 3

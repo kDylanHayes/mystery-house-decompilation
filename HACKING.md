@@ -43,7 +43,21 @@ python3 -m unittest discover -s tests
 `tests/` (standard library only) covers the tools: the assembler's addressing modes,
 expressions, directives and errors; the BASIC tokenizer's Applesoft rules and a round trip of
 every program; the message, picture and saved-state formats; the full build against the
-recorded hashes; and the disk writer (files growing, shrinking, the free-space map).
+recorded hashes; the disk writer (files growing, shrinking, the free-space map); and a full
+play-through: `tests/test_play.py` runs the built game on the 6502 emulator in
+`tools/play.py` with the walkthrough in `tests/play/`, and checks it wins with the recorded
+transcript and the same hi-res screen after every command.
+
+To play the built game from a script yourself:
+
+```
+python3 tools/play.py extracted tests/play/walkthrough.txt
+python3 tools/play.py extracted my_commands.txt --screens /tmp/screens   # PNG per prompt
+```
+
+If a change is meant to alter what the game prints or draws, regenerate the expected files with
+`--transcript tests/play/walkthrough.expected.txt --screen-hashes
+tests/play/walkthrough.screens.txt` and check the difference.
 
 `.github/workflows/build.yml` runs on every push and pull request: the tests, then
 `./build.sh --check`, then a check that the committed generated files (`assets/`,
@@ -114,7 +128,7 @@ each, high-bit text. A group's position is its id, so add new groups at the end 
 
 Edit the text, or add new numbers at the end and use them from a rule (`A_MESSAGE, 168`). Text
 is upper case; quote a message that starts or ends with a space (`167 " "`). Messages 7, 37, 127
-and 137 are never shown: `print_message` prints built-in text for those numbers. The build
+and 137 are never shown: `MESSLSTR` prints built-in text for those numbers. The build
 writes the `MESSAGES` file and the offset table the engine uses (`message_index`) from it.
 
 **A picture.** `src/pictures/blockNN.txt` holds the pictures stored in file `BLOCKNN`, in order;
@@ -151,7 +165,7 @@ assembled `ADVENTURE` for `STARTUP`, and `STARTUP` for the saved game. Each line
 changes, by variable name or by object/room number and field:
 
 ```
-room_no                      = $12
+CURONO                      = $12
 object 13 OROOM              = $FE
 ```
 

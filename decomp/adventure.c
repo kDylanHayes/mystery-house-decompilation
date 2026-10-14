@@ -30,7 +30,7 @@ void dead_init_tail(void)
 // 5912
 
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
-/* Unreachable older version of print_message's file path. */
+/* Unreachable older version of MESSLSTR's file path. */
 
 void dead_read_message(void)
 
@@ -40,7 +40,7 @@ void dead_read_message(void)
   
   floor_slot = lru_turn._1_1_ >> 7;
   lru_turn._1_1_ = lru_turn._1_1_ << 1;
-  old_rt_add16(&DAT_088d, &DAT_0014);
+  old_BUMP16(&DAT_088d, &DAT_0014);
   run_command_rules = *_DAT_0014;
   uRAM5a0b = _DAT_0014[1];
   dead_offset_to_hex();
@@ -144,9 +144,9 @@ void run_command_rules(void)
 
 {
   
-  AWORK._0_1_ = (undefined1)command_rules_addr;
+  WORK._0_1_ = (undefined1)command_rules_addr;
   rule_ptr._0_1_ = (undefined1)command_rules_addr;
-  AWORK._1_1_ = command_rules_addr._1_1_;
+  WORK._1_1_ = command_rules_addr._1_1_;
   rule_ptr._1_1_ = command_rules_addr._1_1_;
   do {
     test_rule();
@@ -155,7 +155,7 @@ void run_command_rules(void)
     }
     next_rule();
   } while (cmp_result != 0xff);
-  print_message(0x25);
+  MESSLSTR(0x25);
   return;
 }
 
@@ -169,9 +169,9 @@ void run_turn_rules(void)
 
 {
   
-  AWORK._0_1_ = (undefined1)turn_rules_addr;
+  WORK._0_1_ = (undefined1)turn_rules_addr;
   rule_ptr._0_1_ = (undefined1)turn_rules_addr;
-  AWORK._1_1_ = turn_rules_addr._1_1_;
+  WORK._1_1_ = turn_rules_addr._1_1_;
   rule_ptr._1_1_ = turn_rules_addr._1_1_;
   do {
     test_rule();
@@ -184,7 +184,7 @@ void run_turn_rules(void)
 // 5a55
 
 /* Test the rule at rule_ptr: room, verb and noun must match (ANY matches everything). If they do,
-AWORK steps through the conditions; each condition handler continues at cond_pass or cond_fail,
+WORK steps through the conditions; each condition handler continues at cond_pass or cond_fail,
 and when all have passed rule_done runs the actions. cmp_result: 0 = header did not match, 1 =
 header matched (and conditions passed unless a condition reset it to 0). */
 
@@ -193,7 +193,7 @@ void test_rule(void)
 {
   
   cmp_result = 0;
-  if ((*rule_ptr != 0xfe) && (*rule_ptr != room_no)) {
+  if ((*rule_ptr != 0xfe) && (*rule_ptr != CURONO)) {
     rule_done();
     return;
   }
@@ -207,15 +207,15 @@ void test_rule(void)
   }
   counter = rule_ptr[4];
   cmp_result = 1;
-  rt_add8(6, &AWORK);
+  BUMPIT(6, &WORK);
   if (counter == 0) {
     rule_done();
     return;
   }
   rt_ptr1 = (byte *)CONCAT11(*(undefined1 *)
-                              ((short)tbl_conditions + (ushort)(byte)(*AWORK * '\x02' + 1)),
-                            *(undefined1 *)
-                              ((short)tbl_conditions + (ushort)(byte)(*AWORK * '\x02')));
+                              ((short)tbl_conditions + (ushort)(byte)(*WORK * '\x02' + 1)),
+                            *(undefined1 *)((short)tbl_conditions + (ushort)(byte)(*WORK * '\x02'))
+                            );
                     /* WARNING: Jumptable at 0x5ab4 did not pass sanity check. */
                     /* WARNING: Treating indirect jump as call */
   (*(code *)rt_ptr1)();
@@ -225,8 +225,8 @@ void test_rule(void)
 
 // 5a9c
 
-/* Dispatch the condition at AWORK through tbl_conditions, or run the actions when counter
-(conditions left) reaches 0. Condition handlers read their operands at (AWORK),Y. */
+/* Dispatch the condition at WORK through tbl_conditions, or run the actions when counter
+(conditions left) reaches 0. Condition handlers read their operands at (WORK),Y. */
 
 void next_condition(void)
 
@@ -236,9 +236,9 @@ void next_condition(void)
     return;
   }
   rt_ptr1 = (byte *)CONCAT11(*(undefined1 *)
-                              ((short)tbl_conditions + (ushort)(byte)(*AWORK * '\x02' + 1)),
-                            *(undefined1 *)
-                              ((short)tbl_conditions + (ushort)(byte)(*AWORK * '\x02')));
+                              ((short)tbl_conditions + (ushort)(byte)(*WORK * '\x02' + 1)),
+                            *(undefined1 *)((short)tbl_conditions + (ushort)(byte)(*WORK * '\x02'))
+                            );
                     /* WARNING: Jumptable at 0x5ab4 did not pass sanity check. */
                     /* WARNING: Treating indirect jump as call */
   (*(code *)rt_ptr1)();
@@ -254,9 +254,9 @@ void cond_obj_in_room(void)
 
 {
   
-  find_object(AWORK[1]);
-  cond_value = found_obj[2];
-  if (AWORK[2] == cond_value) {
+  find_object(WORK[1]);
+  cond_actual = found_obj[2];
+  if (WORK[2] == cond_actual) {
     cond_pass();
     return;
   }
@@ -277,7 +277,7 @@ void cond_turns_gt(void)
     cond_fail();
     return;
   }
-  if ((byte)turns <= AWORK[1]) {
+  if ((byte)turns <= WORK[1]) {
     cond_fail();
     return;
   }
@@ -293,8 +293,8 @@ void cond_turns_gt(void)
 void cond_switch_eq(void)
 
 {
-  cond_value = SWITCH[AWORK[1]];
-  if (AWORK[2] == cond_value) {
+  cond_actual = SWITCH[WORK[1]];
+  if (WORK[2] == cond_actual) {
     cond_pass();
     return;
   }
@@ -310,7 +310,7 @@ void cond_switch_eq(void)
 void cond_view_is(void)
 
 {
-  if (AWORK[1] == shown_picture) {
+  if (WORK[1] == shown_picture) {
     cond_pass();
     return;
   }
@@ -327,9 +327,9 @@ void cond_obj_pic_is(void)
 
 {
   
-  find_object(AWORK[1]);
-  cond_value = found_obj[3];
-  if (AWORK[2] == cond_value) {
+  find_object(WORK[1]);
+  cond_actual = found_obj[3];
+  if (WORK[2] == cond_actual) {
     cond_pass();
     return;
   }
@@ -340,13 +340,13 @@ void cond_obj_pic_is(void)
 
 // 5b43
 
-/* Condition true: step AWORK past it (opcode + X operand bytes) and test the next one. */
+/* Condition true: step WORK past it (opcode + X operand bytes) and test the next one. */
 
 void cond_pass(char param_1)
 
 {
   
-  rt_add8(param_1 + 1, &AWORK);
+  BUMPIT(param_1 + 1, &WORK);
   counter = counter - 1;
   next_condition();
   return;
@@ -384,14 +384,14 @@ void rule_done(void)
 
 // 5b65
 
-/* Advance rule_ptr (and AWORK) by RULE_LEN. cmp_result = HV at the end of the table, else 0. */
+/* Advance rule_ptr (and WORK) by RULE_LEN. cmp_result = HV at the end of the table, else 0. */
 
 void next_rule(void)
 
 {
   
-  rt_add8(rule_ptr[3], &rule_ptr);
-  AWORK = rule_ptr;
+  BUMPIT(rule_ptr[3], &rule_ptr);
+  WORK = rule_ptr;
   if (*rule_ptr != 0xff) {
     cmp_result = 0;
     return;
@@ -413,13 +413,13 @@ void find_object(byte x)
 {
   
   found_obj = (byte *)CONCAT11(objbase_addr._1_1_,(undefined1)objbase_addr);
-  find_id = x;
+  find_objectno = x;
   while( true ) {
-    if (*found_obj == find_id) {
+    if (*found_obj == find_objectno) {
       return;
     }
     if (*found_obj == 0xff) break;
-    rt_add8(found_obj[9], &found_obj);
+    BUMPIT(found_obj[9], &found_obj);
   }
                     /* WARNING: Could not recover jumptable at 0x5baa. Too many branches */
                     /* WARNING: Treating indirect jump as call */
@@ -443,7 +443,7 @@ void main(void)
     read_command();
     run_rules();
     nothing();
-    rt_add8(1, &turns);
+    BUMPIT(1, &turns);
   } while( true );
 }
 
@@ -461,12 +461,12 @@ void init_game(void)
   
   turns._0_1_ = 1;
   turns._1_1_ = 0;
-  room_no = 1;
+  CURONO = 1;
   rt_copy(0x14, &init_switches, &SWITCH);
   rt_copy(0x14, &init_pic_cache, &pic_cache);
   CUROOM._0_1_ = 0;
   CUROOM._1_1_ = 0xd;
-  rt_add8(10, &CUROOM);
+  BUMPIT(10, &CUROOM);
   fake_vartab._0_1_ = 0;
   fake_vartab._1_1_ = 8;
   var_x._0_1_ = 0;
@@ -533,7 +533,7 @@ void read_command(void)
 
 {
   
-  cmd_state = 0;
+  cmd_unused = 0;
   print_prompt();
   get_line();
   next_word();
@@ -661,7 +661,7 @@ void lookup_word(void)
   
   rt_args();
   word_id = 0;
-  AWORK = *(byte **)rt_operands;
+  WORK = *(byte **)rt_operands;
   do {
     word_id = word_id + 1;
     rt_compare(8, &word_buf);
@@ -670,21 +670,21 @@ lookup_word.done:
                     /* WARNING: Subroutine does not return */
       rt_return(2);
     }
-    rt_add8(8, &AWORK);
-    if (*AWORK == 0xff) {
+    BUMPIT(8, &WORK);
+    if (*WORK == 0xff) {
       word_id = 0xff;
       goto lookup_word.done;
     }
-    if (*AWORK == 0) {
-      rt_inc16(&AWORK);
+    if (*WORK == 0) {
+      rt_inc16(&WORK);
     }
     else {
-      counter = *AWORK;
-      rt_inc16(&AWORK);
+      counter = *WORK;
+      rt_inc16(&WORK);
       for (; counter != 0; counter = counter - 1) {
         rt_compare(8, &word_buf);
         if (cmp_result == 0) goto lookup_word.done;
-        rt_add8(8, &AWORK);
+        BUMPIT(8, &WORK);
       }
     }
   } while( true );
@@ -693,21 +693,21 @@ lookup_word.done:
 
 // 6500
 
-/* Run the rule's actions: action_ptr = AWORK (just past the conditions), actions_left = RULE_NACT.
-Each action handler (ACnn00) leaves through AC9000, which steps action_ptr past it and dispatches
-the next one through tbl_actions. */
+/* Run the rule's actions: AWORK = WORK (just past the conditions), actions_left = RULE_NACT. Each
+action handler (ACnn00) leaves through AC9000, which steps AWORK past it and dispatches the next
+one through tbl_actions. */
 
 void run_actions(void)
 
 {
-  action_ptr._0_1_ = AWORK._0_1_;
-  action_ptr._1_1_ = AWORK._1_1_;
+  AWORK._0_1_ = WORK._0_1_;
+  AWORK._1_1_ = WORK._1_1_;
   actions_left = rule_ptr[5];
   if (actions_left == 0) {
     stop_actions();
     return;
   }
-  ZWORK = (byte *)CONCAT11(AWORK._1_1_,AWORK._0_1_);
+  ZWORK = (byte *)CONCAT11(WORK._1_1_,WORK._0_1_);
   ZAWORK = (byte *)CONCAT11(*(undefined1 *)
                             ((short)tbl_actions + (ushort)(byte)(*ZWORK * '\x02' + 1)),
                             *(undefined1 *)((short)tbl_actions + (ushort)(byte)(*ZWORK * '\x02')));
@@ -720,7 +720,7 @@ void run_actions(void)
 
 // 6511
 
-/* Dispatch the action at action_ptr, or return when none are left. */
+/* Dispatch the action at AWORK, or return when none are left. */
 
 void next_action(void)
 
@@ -729,7 +729,7 @@ void next_action(void)
     stop_actions();
     return;
   }
-  ZWORK = (byte *)CONCAT11(action_ptr._1_1_,action_ptr._0_1_);
+  ZWORK = (byte *)CONCAT11(AWORK._1_1_,AWORK._0_1_);
   ZAWORK = (byte *)CONCAT11(*(undefined1 *)
                             ((short)tbl_actions + (ushort)(byte)(*ZWORK * '\x02' + 1)),
                             *(undefined1 *)((short)tbl_actions + (ushort)(byte)(*ZWORK * '\x02')));
@@ -759,8 +759,8 @@ void stop_actions(void)
 void AC1100(void)
 
 {
-  act_temp = ZWORK[1];
-  SWITCH[ZWORK[2]] = SWITCH[ZWORK[2]] + act_temp;
+  AWORK1 = ZWORK[1];
+  SWITCH[ZWORK[2]] = SWITCH[ZWORK[2]] + AWORK1;
   AC9000(2);
   return;
 }
@@ -773,8 +773,8 @@ void AC1100(void)
 void AC1200(void)
 
 {
-  act_temp = ZWORK[1];
-  SWITCH[ZWORK[2]] = SWITCH[ZWORK[2]] - act_temp;
+  AWORK1 = ZWORK[1];
+  SWITCH[ZWORK[2]] = SWITCH[ZWORK[2]] - AWORK1;
   AC9000(2);
   return;
 }
@@ -803,9 +803,9 @@ void AC1400(void)
   ZAWORK = &obj_01;
   while (*ZAWORK != 0xff) {
     if (ZAWORK[2] == 0xfe) {
-      print_message(ZAWORK[8]);
+      MESSLSTR(ZAWORK[8]);
     }
-    rt_add8(ZAWORK[9], &ZAWORK);
+    BUMPIT(ZAWORK[9], &ZAWORK);
   }
   AC9000(0);
   return;
@@ -821,8 +821,8 @@ void AC1500(void)
 
 {
   ZAWORK = &obj_01;
-  act_temp = ZWORK[1];
-  act_word1._0_1_ = ZWORK[2];
+  AWORK1 = ZWORK[1];
+  AWORK2._0_1_ = ZWORK[2];
   while( true ) {
     if (*ZAWORK == 0xff) {
                     /* WARNING: Could not recover jumptable at 0x660c. Too many branches */
@@ -830,10 +830,10 @@ void AC1500(void)
       (*_IRQ)();
       return;
     }
-    if (*ZAWORK == act_temp) break;
-    rt_add8(ZAWORK[9], &ZAWORK);
+    if (*ZAWORK == AWORK1) break;
+    BUMPIT(ZAWORK[9], &ZAWORK);
   }
-  ZAWORK[2] = (byte)act_word1;
+  ZAWORK[2] = (byte)AWORK2;
   AC9000(2);
   return;
 }
@@ -848,14 +848,14 @@ void AC1600(void)
 {
   
   CUROOM[9] = CUROOM[8];
-  act_word1._0_1_ = 0;
-  act_word1._1_1_ = 0xd;
-  room_no = ZWORK[1];
-  act_word2._1_1_ = 0;
-  act_word2._0_1_ = room_no;
-  rt_mul8(10, &act_word2);
-  rt_add16(&act_word2, &act_word1);
-  CUROOM = (byte *)CONCAT11(act_word1._1_1_,(undefined1)act_word1);
+  AWORK2._0_1_ = 0;
+  AWORK2._1_1_ = 0xd;
+  CURONO = ZWORK[1];
+  AWORK3._1_1_ = 0;
+  AWORK3._0_1_ = CURONO;
+  MULTIPLY(10, &AWORK3);
+  BUMP16(&AWORK3, &AWORK2);
+  CUROOM = (byte *)CONCAT11(AWORK2._1_1_,(undefined1)AWORK2);
   AC9000(1);
   return;
 }
@@ -899,7 +899,7 @@ void AC1900(void)
 
 {
   
-  print_message(ZWORK[1]);
+  MESSLSTR(ZWORK[1]);
   AC9000(1);
   return;
 }
@@ -956,7 +956,7 @@ void AC2300(void)
 
 {
   
-  print_message(0x8c);
+  MESSLSTR(0x8c);
                     /* WARNING: Bad instruction - Truncating control flow here */
   halt_baddata();
 }
@@ -996,16 +996,16 @@ void AC2500(void)
 
 /* Action 16: restore game. BLOADs the save file over $0830-$10FE (variables, objects, rooms),
 empties the picture cache so blocks are reloaded, then puts back the action pointer saved before
-the load. Bug: both bytes are stored into action_ptr's low byte; the high byte keeps the value
-from the save file. */
+the load. Bug: both bytes are stored into AWORK's low byte; the high byte keeps the value from
+the save file. */
 
 void AC2600(void)
 
 {
   byte bVar1;
   
-  ZAWORK._0_1_ = action_ptr._0_1_;
-  ZAWORK._1_1_ = action_ptr._1_1_;
+  ZAWORK._0_1_ = AWORK._0_1_;
+  ZAWORK._1_1_ = AWORK._1_1_;
   rt_print("\x04BLOAD SAVED GAME,A$830\r");
   bVar1 = 0x14;
   do {
@@ -1013,7 +1013,7 @@ void AC2600(void)
     bVar1 = bVar1 - 1;
   } while (bVar1 != 0);
   pic_cache[0] = 0;
-  action_ptr._0_1_ = ZAWORK._1_1_;
+  AWORK._0_1_ = ZAWORK._1_1_;
   AC9000(0);
   return;
 }
@@ -1031,8 +1031,8 @@ void AC2700(void)
   rt_print("WOULD YOU LIKE TO PLAY AGAIN");
   GETLN1();
   if (input_buffer[0] != 0xce) {
-    ZAWORK._0_1_ = action_ptr._0_1_;
-    ZAWORK._1_1_ = action_ptr._1_1_;
+    ZAWORK._0_1_ = AWORK._0_1_;
+    ZAWORK._1_1_ = AWORK._1_1_;
     rt_print("\x04BLOAD STARTUP\r");
     hgr();
     rt_print("PRESS RETURN TO BEGIN PLAY");
@@ -1051,17 +1051,17 @@ void AC2700(void)
 void AC2800(void)
 
 {
-  act_arg1 = ZWORK[1];
-  act_arg2 = ZWORK[2];
-  act_arg3 = ZWORK[3];
-  act_arg4 = ZWORK[4];
+  AX = ZWORK[1];
+  AY = ZWORK[2];
+  AX1 = ZWORK[3];
+  AY1 = ZWORK[4];
   ZAWORK = &obj_01;
-  while (*ZAWORK != act_arg1) {
-    rt_add8(ZAWORK[9], &ZAWORK);
+  while (*ZAWORK != AX) {
+    BUMPIT(ZAWORK[9], &ZAWORK);
   }
-  ZAWORK[2] = act_arg2;
-  ZAWORK[5] = act_arg3;
-  ZAWORK[6] = act_arg4;
+  ZAWORK[2] = AY;
+  ZAWORK[5] = AX1;
+  ZAWORK[6] = AY1;
   AC9000(4);
   return;
 }
@@ -1075,8 +1075,8 @@ void AC2800(void)
 void AC2900(void)
 
 {
-  act_arg1 = ZWORK[1];
-  act_arg2 = ZWORK[2];
+  AX = ZWORK[1];
+  AY = ZWORK[2];
   ZAWORK = &obj_01;
   while( true ) {
     if (*ZAWORK == 0xff) {
@@ -1085,10 +1085,10 @@ void AC2900(void)
       (*_IRQ)();
       return;
     }
-    if (*ZAWORK == act_arg2) break;
-    rt_add8(ZAWORK[9], &ZAWORK);
+    if (*ZAWORK == AY) break;
+    BUMPIT(ZAWORK[9], &ZAWORK);
   }
-  ZAWORK[3] = act_arg1;
+  ZAWORK[3] = AX;
   AC9000(2);
   return;
 }
@@ -1114,7 +1114,7 @@ void AC3000(void)
 void AC3100(void)
 
 {
-  act_arg1 = CUROOM[2];
+  AX = CUROOM[2];
   ACNEWROM();
   return;
 }
@@ -1127,7 +1127,7 @@ void AC3100(void)
 void AC3200(void)
 
 {
-  act_arg1 = CUROOM[3];
+  AX = CUROOM[3];
   ACNEWROM();
   return;
 }
@@ -1140,7 +1140,7 @@ void AC3200(void)
 void AC3300(void)
 
 {
-  act_arg1 = CUROOM[4];
+  AX = CUROOM[4];
   ACNEWROM();
   return;
 }
@@ -1153,7 +1153,7 @@ void AC3300(void)
 void AC3400(void)
 
 {
-  act_arg1 = CUROOM[5];
+  AX = CUROOM[5];
   ACNEWROM();
   return;
 }
@@ -1166,7 +1166,7 @@ void AC3400(void)
 void AC3500(void)
 
 {
-  act_arg1 = CUROOM[6];
+  AX = CUROOM[6];
   ACNEWROM();
   return;
 }
@@ -1179,7 +1179,7 @@ void AC3500(void)
 void AC3600(void)
 
 {
-  act_arg1 = CUROOM[7];
+  AX = CUROOM[7];
   ACNEWROM();
   return;
 }
@@ -1187,27 +1187,27 @@ void AC3600(void)
 
 // 6863
 
-/* Move through exit act_arg1 of the current room (0 = "I CANT GO IN THAT DIRECTION"). The room left
-reverts to its permanent view. Bug: act_word1's low byte is never set to the new room number
-before the multiply, so CUROOM is wrong until draw_room rebuilds it from room_no at the start of
-the next turn; nothing reads it in between. Ends the action list. */
+/* Move through exit AX of the current room (0 = "I CANT GO IN THAT DIRECTION"). The room left
+reverts to its permanent view. Bug: AWORK2's low byte is never set to the new room number before
+the multiply, so CUROOM is wrong until draw_room rebuilds it from CURONO at the start of the next
+turn; nothing reads it in between. Ends the action list. */
 
 void ACNEWROM(void)
 
 {
   
-  if (act_arg1 == 0) {
-    print_message(0x89);
+  if (AX == 0) {
+    MESSLSTR(0x89);
   }
   else {
-    act_word1._1_1_ = 0;
-    room_no = act_arg1;
+    AWORK2._1_1_ = 0;
+    CURONO = AX;
     CUROOM[9] = CUROOM[8];
-    rt_mul8(10, &act_word1);
-    act_word2._0_1_ = 0;
-    act_word2._1_1_ = 0xd;
-    rt_add16(&act_word1, &act_word2);
-    CUROOM = (byte *)CONCAT11(act_word2._1_1_,(undefined1)act_word2);
+    MULTIPLY(10, &AWORK2);
+    AWORK3._0_1_ = 0;
+    AWORK3._1_1_ = 0xd;
+    BUMP16(&AWORK2, &AWORK3);
+    CUROOM = (byte *)CONCAT11(AWORK3._1_1_,(undefined1)AWORK3);
   }
   stop_actions(0);
   return;
@@ -1225,18 +1225,18 @@ void AC3700(void)
 {
   byte bVar1;
   
-  act_arg1 = noun;
+  AX = noun;
   ZAWORK = &obj_01;
   do {
     if (*ZAWORK == 0xff) {
-      print_message(0x98);
+      MESSLSTR(0x98);
 AC3700.done:
       AC9000(0);
       return;
     }
-    if ((ZAWORK[1] == act_arg1) && (ZAWORK[2] == room_no)) {
+    if ((ZAWORK[1] == AX) && (ZAWORK[2] == CURONO)) {
       if (ZAWORK[7] == 2) {
-        print_message(0x97);
+        MESSLSTR(0x97);
         goto AC3700.done;
       }
       if (ZAWORK[7] == 1) {
@@ -1245,15 +1245,14 @@ AC3700.take:
         ZAWORK[7] = 1;
         goto AC3700.done;
       }
-      act_word1._0_1_ = CUROOM[9];
+      AWORK2._0_1_ = CUROOM[9];
       bVar1 = 0xb;
-      for (act_word2._0_1_ = ZAWORK[10]; (byte)act_word2 != 0; act_word2._0_1_ = (byte)act_word2 - 1
-          ) {
-        if (ZAWORK[bVar1] == (byte)act_word1) goto AC3700.take;
+      for (AWORK3._0_1_ = ZAWORK[10]; (byte)AWORK3 != 0; AWORK3._0_1_ = (byte)AWORK3 - 1) {
+        if (ZAWORK[bVar1] == (byte)AWORK2) goto AC3700.take;
         bVar1 = bVar1 + 1;
       }
     }
-    rt_add8(ZAWORK[9], &ZAWORK);
+    BUMPIT(ZAWORK[9], &ZAWORK);
   } while( true );
 }
 
@@ -1269,17 +1268,17 @@ void AC3800(void)
   ZAWORK = &obj_01;
   do {
     if (*ZAWORK == 0xff) {
-      print_message(0x25);
+      MESSLSTR(0x25);
 AC3800.done:
       AC9000(0);
       return;
     }
     if ((ZAWORK[1] == noun) && (ZAWORK[2] == 0xfe)) {
-      ZAWORK[2] = room_no;
+      ZAWORK[2] = CURONO;
       ZAWORK[7] = 1;
       goto AC3800.done;
     }
-    rt_add8(ZAWORK[9], &ZAWORK);
+    BUMPIT(ZAWORK[9], &ZAWORK);
   } while( true );
 }
 
@@ -1294,13 +1293,13 @@ void AC3900(void)
   byte bVar1;
   
   ZAWORK = &ROOMBASE;
-  act_word1._0_1_ = ZWORK[1];
-  act_word2._0_1_ = ZWORK[2];
-  act_word1._1_1_ = 0;
-  rt_mul8(10, &act_word1);
-  rt_add16(&act_word1, &ZAWORK);
-  bVar1 = (byte)act_word2;
-  ZAWORK[8] = (byte)act_word2;
+  AWORK2._0_1_ = ZWORK[1];
+  AWORK3._0_1_ = ZWORK[2];
+  AWORK2._1_1_ = 0;
+  MULTIPLY(10, &AWORK2);
+  BUMP16(&AWORK2, &ZAWORK);
+  bVar1 = (byte)AWORK3;
+  ZAWORK[8] = (byte)AWORK3;
   ZAWORK[9] = bVar1;
   AC9000(2);
   return;
@@ -1309,14 +1308,14 @@ void AC3900(void)
 
 // 69ba
 
-/* Common exit of every action handler: action_ptr += 1 + X (the opcode and X operand bytes), one
-fewer action left, next one. */
+/* Common exit of every action handler: AWORK += 1 + X (the opcode and X operand bytes), one fewer
+action left, next one. */
 
 void AC9000(char param_1)
 
 {
   
-  rt_add8(param_1 + 1, &action_ptr);
+  BUMPIT(param_1 + 1, &AWORK);
   actions_left = actions_left - 1;
   next_action();
   return;
@@ -2565,7 +2564,7 @@ void draw_objects(void)
     if (*ZWORK == 0xff) {
       return;
     }
-    if (ZWORK[2] == room_no) {
+    if (ZWORK[2] == CURONO) {
       if (ZWORK[7] == 1) {
         if (CUROOM[8] == CUROOM[9]) {
           draw_object_on_floor();
@@ -2580,7 +2579,7 @@ void draw_objects(void)
         }
       }
     }
-    rt_add8(ZWORK[9], &ZWORK);
+    BUMPIT(ZWORK[9], &ZWORK);
   } while( true );
 }
 
@@ -2634,9 +2633,9 @@ void draw_object(byte x)
   saved_picture = shown_picture;
   shown_picture = x;
   if (ZWORK[4] != 1) {
-    saved_zwork = ZWORK;
+    saved_object_ptr = ZWORK;
     draw_picture();
-    ZWORK = saved_zwork;
+    ZWORK = saved_object_ptr;
     shown_picture = saved_picture;
     return;
   }
@@ -2662,13 +2661,13 @@ void load_picture(byte x)
   picdir_index._1_1_ = 0;
   picdir_index._0_1_ = 3;
   ZWORK = &picture_directory;
-  rt_mul8(x, &picdir_index);
-  rt_add16(&picdir_index, &ZWORK);
+  MULTIPLY(x, &picdir_index);
+  BUMP16(&picdir_index, &ZWORK);
   pic_block = *ZWORK;
   pic_offset._0_1_ = ZWORK[1];
   pic_offset._1_1_ = ZWORK[2];
   find_cached_block();
-  rt_add16(&pic_offset, &ZWORK);
+  BUMP16(&pic_offset, &ZWORK);
   return;
 }
 
@@ -2682,7 +2681,7 @@ void find_cached_block(void)
 {
   
   cache_lookup();
-  rt_add16(&pic_offset, &ZWORK);
+  BUMP16(&pic_offset, &ZWORK);
   picture_ptr._0_1_ = ZWORK._0_1_;
   picture_ptr._1_1_ = ZWORK._1_1_;
   return;
@@ -2707,7 +2706,7 @@ void cache_lookup(void)
       return;
     }
     if (ZWORK[2] == pic_block) break;
-    rt_add8(4, &ZWORK);
+    BUMPIT(4, &ZWORK);
     counter = counter + 1;
   }
   *ZWORK = (byte)turns;
@@ -2740,7 +2739,7 @@ void cache_choose_victim(void)
       ZWORK._0_1_ = *(undefined1 *)((short)cache_slots + (ushort)(bVar1 >> 1));
       ZWORK._1_1_ = *(undefined1 *)((short)cache_slots + (ushort)(byte)((bVar1 >> 1) + 1));
       cache_victim = counter;
-      temp_7c = bVar1;
+      rt_temp = bVar1;
     }
     bVar1 = bVar1 + 4;
     counter = counter + 1;
@@ -2783,7 +2782,7 @@ message_index gives the byte offset, read_message_line READs that line into inpu
 word_wrap breaks it at 39 columns. Afterwards a short pause unless msg_no_delay is $FF (room
 descriptions). */
 
-void print_message(byte x)
+void MESSLSTR(byte x)
 
 {
   ushort uVar1;
@@ -2791,7 +2790,7 @@ void print_message(byte x)
   byte bVar2;
   char cVar3;
   
-  msg_scratch._0_1_ = x;
+  scratch_word._0_1_ = x;
   if (x == 0x89) {
     rt_print("I CANT GO IN THAT DIRECTION\r");
   }
@@ -2806,9 +2805,9 @@ void print_message(byte x)
   }
   else {
     ZWORK = (byte *)CONCAT11(message_index_addr._1_1_,(undefined1)message_index_addr);
-    msg_scratch._1_1_ = x >> 7;
-    msg_scratch._0_1_ = x << 1;
-    rt_add16(&msg_scratch, &ZWORK);
+    scratch_word._1_1_ = x >> 7;
+    scratch_word._0_1_ = x << 1;
+    BUMP16(&scratch_word, &ZWORK);
     msg_offset._0_1_ = *ZWORK;
     msg_offset._1_1_ = ZWORK[1];
     offset_to_hex();
@@ -2839,9 +2838,9 @@ void print_message(byte x)
 
 // 7504
 
-/* READ MESSAGES,B$xxxx (offset patched in by print_message) and let DOS read one line into
-input_buffer via GETLN1. The first two bytes of the line are saved around the CTRL-D that ends
-the READ, because printing it disturbs them. */
+/* READ MESSAGES,B$xxxx (offset patched in by MESSLSTR) and let DOS read one line into input_buffer
+via GETLN1. The first two bytes of the line are saved around the CTRL-D that ends the READ,
+because printing it disturbs them. */
 
 void read_message_line(void)
 
@@ -2849,11 +2848,11 @@ void read_message_line(void)
   
   rt_print("\x04READ MESSAGES,B$####\r");
   GETLN1();
-  msg_scratch._0_1_ = input_buffer[0];
-  msg_scratch._1_1_ = input_buffer[1];
+  scratch_word._0_1_ = input_buffer[0];
+  scratch_word._1_1_ = input_buffer[1];
   rt_print("\x04\r");
-  input_buffer[0] = (byte)msg_scratch;
-  input_buffer[1] = msg_scratch._1_1_;
+  input_buffer[0] = (byte)scratch_word;
+  input_buffer[1] = scratch_word._1_1_;
   return;
 }
 
@@ -2921,16 +2920,16 @@ void word_wrap(void)
   byte bVar1;
   byte bVar2;
   
-  msg_scratch._0_1_ = 0x27;
+  scratch_word._0_1_ = 0x27;
   for (bVar2 = 0; ZWORK[bVar2] != 0x8d; bVar2 = bVar2 + 1) {
-    if (bVar2 == (byte)msg_scratch) {
+    if (bVar2 == (byte)scratch_word) {
       bVar1 = ZWORK[bVar2];
       while (bVar1 != 0xa0) {
         bVar2 = bVar2 - 1;
         bVar1 = ZWORK[bVar2];
       }
       ZWORK[bVar2] = 0x8d;
-      msg_scratch._0_1_ = bVar2 + (byte)msg_scratch + 1;
+      scratch_word._0_1_ = bVar2 + (byte)scratch_word + 1;
     }
   }
   ZWORK[bVar2] = 0;
@@ -2957,10 +2956,10 @@ void rt_copy(byte x)
 /* WARNING: Unknown calling convention */
 /* word at .word addr += X */
 
-void rt_add8(byte x)
+void BUMPIT(byte x)
 
 {
-  rt_add8_body(x);
+  BUMPIT_body(x);
   return;
 }
 
@@ -2969,10 +2968,10 @@ void rt_add8(byte x)
 
 /* word at .word dst += word at .word src */
 
-void rt_add16(void)
+void BUMP16(void)
 
 {
-  rt_add16_body();
+  BUMP16_body();
   return;
 }
 
@@ -2980,7 +2979,7 @@ void rt_add16(void)
 // 7609
 
 /* WARNING: Unknown calling convention */
-/* compare X bytes at (AWORK) with .word addr; cmp_result = 0 if equal */
+/* compare X bytes at (WORK) with .word addr; cmp_result = 0 if equal */
 
 void rt_compare(byte x)
 
@@ -3044,10 +3043,10 @@ void rt_print(void)
 /* WARNING: Unknown calling convention */
 /* mul_result = word at .word addr * X */
 
-void rt_mul8(byte x)
+void MULTIPLY(byte x)
 
 {
-  rt_mul8_body(x);
+  MULTIPLY_body(x);
   return;
 }
 
@@ -3141,18 +3140,18 @@ void rt_copy_body(byte x)
 // 76a8
 
 /* WARNING: Unknown calling convention */
-/* rt_add8: add X to the word at addr. */
+/* BUMPIT: add X to the word at addr. */
 
-void rt_add8_body(byte x)
+void BUMPIT_body(byte x)
 
 {
   bool bVar1;
   
-  temp_7c = x;
+  rt_temp = x;
   rt_args();
   rt_ptr2 = *(byte **)rt_operands;
-  bVar1 = CARRY1(*rt_ptr2,temp_7c);
-  *rt_ptr2 = *rt_ptr2 + temp_7c;
+  bVar1 = CARRY1(*rt_ptr2,rt_temp);
+  *rt_ptr2 = *rt_ptr2 + rt_temp;
   rt_ptr2[1] = rt_ptr2[1] + bVar1;
                     /* WARNING: Subroutine does not return */
   rt_return(2);
@@ -3181,17 +3180,17 @@ void rt_inc16_body(void)
 // 76f0
 
 /* WARNING: Unknown calling convention */
-/* rt_compare: compare X bytes at (AWORK) with addr; cmp_result = 0 if equal, 1 if not. */
+/* rt_compare: compare X bytes at (WORK) with addr; cmp_result = 0 if equal, 1 if not. */
 
 void rt_compare_body(byte x)
 
 {
   byte bVar1;
   
-  temp_7c = x;
+  rt_temp = x;
   rt_args();
   rt_ptr2 = *(byte **)rt_operands;
-  rt_ptr1 = (byte *)CONCAT11(AWORK._1_1_,AWORK._0_1_);
+  rt_ptr1 = (byte *)CONCAT11(WORK._1_1_,WORK._0_1_);
   bVar1 = 0;
   do {
     if (rt_ptr1[bVar1] != rt_ptr2[bVar1]) {
@@ -3210,9 +3209,9 @@ rt_compare_body.done:
 
 // 772a
 
-/* rt_add16: word at dst += word at src. */
+/* BUMP16: word at dst += word at src. */
 
-void rt_add16_body(void)
+void BUMP16_body(void)
 
 {
   byte bVar1;
@@ -3233,9 +3232,9 @@ void rt_add16_body(void)
 // 7757
 
 /* WARNING: Unknown calling convention */
-/* rt_mul8: the word at addr *= X (8-step shift and add through mul_result). */
+/* MULTIPLY: the word at addr *= X (8-step shift and add through mul_result). */
 
-void rt_mul8_body(byte x)
+void MULTIPLY_body(byte x)
 
 {
   char cVar1;
@@ -3252,18 +3251,18 @@ void rt_mul8_body(byte x)
   mul_carry = 0;
   mul_result._0_1_ = 0;
   mul_result._1_1_ = 0;
-  msg_scratch._0_1_ = '\b';
-  while ((char)msg_scratch != '\0') {
+  scratch_word._0_1_ = '\b';
+  while ((char)scratch_word != '\0') {
     bVar2 = mul_count & 1;
     mul_count = mul_count >> 1;
     if (bVar2 != 0) {
-      rt_add16(cVar1, &mul_multiplicand, &mul_result);
+      BUMP16(cVar1, &mul_multiplicand, &mul_result);
     }
     bVar2 = (byte)mul_multiplicand >> 7;
     mul_multiplicand._0_1_ = (byte)mul_multiplicand << 1;
     mul_multiplicand._1_1_ = mul_multiplicand._1_1_ << 1 | bVar2;
-    cVar1 = (char)msg_scratch + -1;
-    msg_scratch._0_1_ = cVar1;
+    cVar1 = (char)scratch_word + -1;
+    scratch_word._0_1_ = cVar1;
   }
   rt_ptr1 = (byte *)CONCAT11(mul_dest._1_1_,(byte)mul_dest);
   *rt_ptr1 = (byte)mul_result;
@@ -3275,7 +3274,7 @@ void rt_mul8_body(byte x)
 
 // 7900
 
-/* Redraw the room: CUROOM from room_no, clear the screen, and if the room is lit (LAMPSTAT = ON)
+/* Redraw the room: CUROOM from CURONO, clear the screen, and if the room is lit (LAMPSTAT = ON)
 draw its current picture and the objects. Then print the description without the usual pause. */
 
 void draw_room(void)
@@ -3290,7 +3289,7 @@ void draw_room(void)
     draw_objects();
   }
   msg_no_delay = 0xff;
-  print_message(CUROOM[1]);
+  MESSLSTR(CUROOM[1]);
   msg_no_delay = 0;
   return;
 }
@@ -3298,18 +3297,18 @@ void draw_room(void)
 
 // 792d
 
-/* CUROOM = ROOMBASE + room_no * RTBLSIZ. */
+/* CUROOM = ROOMBASE + CURONO * RTBLSIZ. */
 
 void set_curoom(void)
 
 {
   
-  room_index._1_1_ = 0;
-  room_index._0_1_ = room_no;
-  rt_mul8(10, &room_index);
+  room_offset._1_1_ = 0;
+  room_offset._0_1_ = CURONO;
+  MULTIPLY(10, &room_offset);
   CUROOM._0_1_ = (undefined1)roombase_addr;
   CUROOM._1_1_ = roombase_addr._1_1_;
-  rt_add16(&room_index, &CUROOM);
+  BUMP16(&room_offset, &CUROOM);
   return;
 }
 
@@ -3338,7 +3337,7 @@ draw_picture.next_point:
     if (bVar1 == 0) {
       if (picture_ptr[1] == 0) {
         pen_up = 1;
-        rt_add8(2, &picture_ptr);
+        BUMPIT(2, &picture_ptr);
         goto draw_picture.next_point;
       }
       bVar1 = *picture_ptr;
@@ -3358,7 +3357,7 @@ draw_picture.next_point:
       hplot_xy();
       pen_up = 0;
     }
-    rt_add8(2, &picture_ptr);
+    BUMPIT(2, &picture_ptr);
   } while( true );
 }
 
