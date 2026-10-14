@@ -1,0 +1,18 @@
+address,name,type,comment
+# Apple II hardware, Monitor ROM and DOS entry points (shared by every program)
+C000,KBD,byte,keyboard data
+C010,KBDSTRB,byte,keyboard strobe
+C050,TXTCLR,byte,graphics mode
+C051,TXTSET,byte,text mode
+C052,MIXCLR,byte,full-screen graphics
+C053,MIXSET,byte,mixed graphics + 4 lines of text
+C054,LOWSCR,byte,display page 1
+C055,HISCR,byte,display page 2
+C056,LORES,byte,lo-res graphics
+C057,HIRES,byte,hi-res graphics
+EE68,applesoft_error,func,Applesoft error entry used for bad HPLOT/DRAW arguments
+FC58,HOME,func,Monitor: clear the text screen
+FCA8,WAIT,func:A,Monitor: delay
+FD6A,GETLN,func,Monitor: read a line into $0200 with the prompt in $33
+FD6F,GETLN1,func,Monitor: read a line into $0200 without a prompt
+FDED,COUT,func:A,Monitor: print character A (DOS intercepts CTRL-D commands)

@@ -1,0 +1,292 @@
+# Object table at $0900. Status: OMOVABLE = can be taken, not yet moved (drawn as
+# part of the listed room pictures); OMOVED = taken or dropped (drawn in a floor
+# slot); OFIXED = cannot be taken.
+
+object 1  TOM
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as picture 52 at (41,61), status OFIXED
+  visible in pictures: 53
+
+object 2  SAM
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as picture 52 at (66,63), status OFIXED
+  visible in pictures: 53
+
+object 3  SALLY
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as picture 54 at (86,66), status OFIXED
+  visible in pictures: 53
+
+object 4  DOCTOR, GREEN, DR., DR.GREEN
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as picture 52 at (114,66), status OFIXED
+  visible in pictures: 53
+
+object 5  JOE
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as picture 52 at (132,67), status OFIXED
+  visible in pictures: 53
+
+object 6  BILL
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as picture 52 at (153,67), status OFIXED
+  visible in pictures: 53
+
+object 7  DAISY, FLOWER
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as picture 54 at (180,67), status OFIXED
+  visible in pictures: 53
+
+object 8  DOOR, DOORS, DOORWAY
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as shape 3 at (108,150), status OFIXED
+  visible in pictures: 5, 4, 53
+
+object 9  NOTE, MEMO, LETTER, PAPER
+  where: room 3 (IN AN ENTRY HALL)
+  drawn as shape 4 at (41,126), status OMOVABLE
+  inventory text: A NOTE
+  visible in pictures: 5, 4, 53
+
+object 10  CABINET, CUPBOARD
+  where: room 4 (IN THE KITCHEN)
+  drawn as picture 55 at (3,77), status OMOVABLE
+  inventory text: A CABINET
+  visible in pictures: 14, 13
+
+object 11  BRICKS, BRICK
+  where: nowhere
+  drawn as picture 56 at (13,82), status OFIXED
+  visible in pictures: 14, 13
+
+object 12  HOLE
+  where: nowhere
+  drawn as picture 57 at (7,83), status OFIXED
+  visible in pictures: 14, 13
+
+object 13  MATCHES, MATCH
+  where: room 4 (IN THE KITCHEN)
+  drawn as shape 6 at (94,118), status OMOVABLE
+  inventory text: MATCHES
+  visible in pictures: 12
+
+object 14  PITCHER
+  where: room 4 (IN THE KITCHEN)
+  drawn as picture 58 at (75,107), status OMOVABLE
+  inventory text: AN EMPTY PITCHER
+  visible in pictures: 11
+
+object 15  PITCHER
+  where: nowhere
+  drawn as picture 59 at (0,0), status OMOVABLE
+  inventory text: A PITCHER FULL OF WATER
+
+object 16  BUTTERKN
+  where: room 4 (IN THE KITCHEN)
+  drawn as picture 60 at (125,66), status OMOVABLE
+  inventory text: A BUTTERKNIFE
+  visible in pictures: 10
+
+object 17  NOTE, MEMO, LETTER, PAPER
+  where: room 14 (IN THE OLD, DUSTY LIBRARY)
+  drawn as shape 4 at (61,79), status OMOVABLE
+  inventory text: A NOTE
+  visible in pictures: 7, 6
+
+object 18  CANDLE
+  where: nowhere
+  drawn as picture 61 at (0,0), status OMOVABLE
+  inventory text: A LIT CANDLE
+
+object 19  CANDLE
+  where: room 16 (IN THE DINING ROOM)
+  drawn as picture 62 at (102,75), status OMOVABLE
+  inventory text: AN UNLIT CANDLE
+  visible in pictures: 29, 28
+
+object 20  FIRE
+  where: nowhere
+  drawn as picture 63 at (81,92), status OFIXED
+  visible in pictures: 29, 28
+
+object 21  HOLE
+  where: nowhere
+  drawn as picture 64 at (79,115), status OFIXED
+  visible in pictures: 29, 28
+
+object 22  KEY
+  where: room 16 (IN THE DINING ROOM)
+  drawn as picture 65 at (107,59), status OMOVABLE
+  inventory text: A SMALL KEY
+  visible in pictures: 49
+
+object 23  SAM
+  where: room 17 (IN THE FENCED BACK YARD)
+  drawn as picture 66 at (125,89), status OFIXED
+  visible in pictures: 18, 17, 16, 15
+
+object 24  GRAVES, GRAVE
+  where: nowhere
+  drawn as picture 67 at (100,59), status OFIXED
+  visible in pictures: 27, 26
+
+object 25  JOE
+  where: room 18 (IN A SMALL FENCED CEMETARY)
+  drawn as picture 68 at (6,83), status OFIXED
+  visible in pictures: 27, 26
+
+object 26  DOTS
+  where: room 18 (IN A SMALL FENCED CEMETARY)
+  drawn as picture 69 at (27,88), status OFIXED
+  visible in pictures: 27, 26
+
+object 27  X'S
+  where: nowhere
+  drawn as picture 70 at (25,88), status OFIXED
+  visible in pictures: 27, 26
+
+object 28  SHOVEL, SPADE
+  where: room 18 (IN A SMALL FENCED CEMETARY)
+  drawn as picture 71 at (49,97), status OMOVABLE
+  inventory text: A SHOVEL
+  visible in pictures: 27, 26
+
+object 29  TOM
+  where: room 21 (IN A MOIST BASEMENT)
+  drawn as picture 72 at (36,63), status OFIXED
+  visible in pictures: 30
+
+object 30  KEY
+  where: room 21 (IN A MOIST BASEMENT)
+  drawn as picture 73 at (175,83), status OMOVABLE
+  inventory text: A SKELETON KEY
+  visible in pictures: 30
+
+object 31  BRICKS, BRICK
+  where: nowhere
+  drawn as picture 74 at (162,27), status OMOVABLE
+  inventory text: A BRICK
+  visible in pictures: 30
+
+object 32  JEWELS, GEMS, TREASURE, DIAMONDS
+  where: nowhere
+  drawn as picture 75 at (162,27), status OMOVABLE
+  inventory text: JEWELS
+  visible in pictures: 30
+
+object 33  SALLY
+  where: room 28 (IN A SMALL BEDROOM)
+  drawn as picture 76 at (72,70), status OFIXED
+  visible in pictures: 39
+
+object 34  DOCTOR, GREEN, DR., DR.GREEN
+  where: room 30 (IN AN OLD NURSERY)
+  drawn as picture 77 at (97,62), status OFIXED
+  visible in pictures: 37
+
+object 35  NOTE, MEMO, LETTER, PAPER
+  where: room 32 (IN A BOYS BEDROOM)
+  drawn as shape 4 at (91,82), status OMOVABLE
+  inventory text: A NOTE
+  visible in pictures: 35
+
+object 36  PICTURE, PORTRAIT
+  where: room 35 (IN THE STUDY)
+  drawn as picture 79 at (63,10), status OMOVABLE
+  inventory text: A PICTURE
+  visible in pictures: 40
+
+object 37  BUTTON, KNOB
+  where: nowhere
+  drawn as picture 80 at (103,27), status OFIXED
+  visible in pictures: 40
+
+object 38  BILL
+  where: room 38 (IN THE BATHROOM)
+  drawn as picture 81 at (69,66), status OFIXED
+  visible in pictures: 45
+
+object 39  TOWEL, CLOTH
+  where: room 38 (IN THE BATHROOM)
+  drawn as picture 82 at (127,24), status OMOVABLE
+  inventory text: A TOWEL
+  visible in pictures: 45
+
+object 40  TRAPDOOR
+  where: nowhere
+  drawn as picture 83 at (200,45), status OFIXED
+  visible in pictures: 42
+
+object 41  TRAPDOOR
+  where: nowhere
+  drawn as picture 84 at (200,45), status OFIXED
+  visible in pictures: 42
+
+object 42  SLEDGEHA, HAMMER
+  where: room 39 (IN THE ATTIC)
+  drawn as picture 85 at (102,124), status OMOVABLE
+  inventory text: A SLEDGEHAMMER
+  visible in pictures: 42
+
+object 43  TRUNK, CHEST
+  where: room 40 (IN A STORAGE ROOM)
+  drawn as picture 86 at (93,45), status OFIXED
+  visible in pictures: 43
+
+object 44  TRUNK, CHEST
+  where: nowhere
+  drawn as picture 87 at (93,45), status OFIXED
+  visible in pictures: 43
+
+object 45  GUN, PISTOL
+  where: room 40 (IN A STORAGE ROOM)
+  drawn as picture 88 at (104,61), status OMOVABLE
+  inventory text: A GUN
+  visible in pictures: 50
+
+object 46  DAISY, FLOWER
+  where: room 41 (IN THE TOWER)
+  drawn as picture 89 at (167,62), status OFIXED
+  visible in pictures: 44
+
+object 47  DOTS
+  where: room 41 (IN THE TOWER)
+  drawn as picture 90 at (203,65), status OFIXED
+  visible in pictures: 44
+
+object 48  X'S
+  where: nowhere
+  drawn as picture 91 at (201,65), status OFIXED
+  visible in pictures: 44
+
+object 49  NOTE, MEMO, LETTER, PAPER
+  where: room 41 (IN THE TOWER)
+  drawn as shape 4 at (99,103), status OMOVABLE
+  inventory text: A NOTE
+  visible in pictures: 44
+
+object 50  WELCOME
+  where: room 2 (ON THE PORCH)
+  drawn as shape 2 at (116,120), status OFIXED
+  visible in pictures: 2, 1
+
+object 51  REFRIGER, FRIDGE, ICEBOX, REFRIDGE
+  where: room 4 (IN THE KITCHEN)
+  drawn as picture 93 at (155,17), status OFIXED
+  visible in pictures: 14, 13
+
+object 52  REFRIGER, FRIDGE, ICEBOX, REFRIDGE
+  where: nowhere
+  drawn as picture 94 at (155,17), status OFIXED
+  visible in pictures: 14, 13
+
+object 53  DAGGER
+  where: room 26 (IN A LARGE BEDROOM)
+  drawn as picture 95 at (171,86), status OMOVABLE
+  inventory text: A DAGGER
+  visible in pictures: 38
+
+object 54  LINE
+  where: room 26 (IN A LARGE BEDROOM)
+  drawn as picture 96 at (73,35), status OFIXED
+  visible in pictures: 38

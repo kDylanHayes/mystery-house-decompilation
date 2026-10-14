@@ -1,0 +1,182 @@
+# Room table at $0D00 (RTBLSIZ = 10 bytes per room).
+
+room 1  picture 3
+  YOU ARE IN THE FRONT YARD OF A LARGE ABANDONED VICTORIAN HOUSE.  STONE STEPS LEAD UP TO A WIDE PORCH
+  exits: up->2
+
+room 2  picture 1
+  YOU ARE ON THE PORCH.  STONE STEPS LEAD DOWN TO THE FRONT YARD
+  exits: down->1
+  objects: object 50 (WELCOME)
+
+room 3  picture 53
+  YOU ARE IN AN ENTRY HALL.  DOORWAYS GO EAST, WEST AND SOUTH.  A STAIRWAY GOES UP
+  exits: north->2, south->16, east->14, west->4, up->24
+  objects: object 1 (TOM), object 2 (SAM), object 3 (SALLY), object 4 (DOCTOR), object 5 (JOE), object 6 (BILL), object 7 (DAISY), object 8 (DOOR), object 9 (NOTE)
+
+room 4  picture 13
+  YOU ARE IN THE KITCHEN.  THERE IS A REFRIGERATOR, STOVE AND CABINET
+  exits: east->3, west->5
+  objects: object 10 (CABINET), object 13 (MATCHES), object 14 (PITCHER), object 16 (BUTTERKN), object 51 (REFRIGER)
+
+room 5  picture 20
+  YOU ARE IN A FOREST
+  exits: north->12, south->10, east->6, west->8, up->4
+
+room 6  picture 20
+  YOU ARE IN A FOREST
+  exits: north->5, south->8, east->7, west->9
+
+room 7  picture 20
+  YOU ARE IN A FOREST
+  exits: north->6, south->7, east->8, west->10
+
+room 8  picture 20
+  YOU ARE IN A FOREST
+  exits: north->7, south->5, east->9, west->6
+
+room 9  picture 20
+  YOU ARE IN A FOREST
+  exits: north->8, east->10, west->6
+
+room 10  picture 20
+  YOU ARE IN A FOREST
+  exits: north->9, south->7, east->11, west->5
+
+room 11  picture 20
+  YOU ARE IN A FOREST
+  exits: north->10, east->12
+
+room 12  picture 20
+  YOU ARE IN A FOREST
+  exits: north->11, east->5
+
+room 13  picture 19
+  THERE IS A VERY TALL PINE TREE IN FRONT OF YOU
+  exits: up->23, down->9
+
+room 14  picture 6
+  YOU ARE IN THE OLD, DUSTY LIBRARY
+  exits: east->15, west->3
+  objects: object 17 (NOTE)
+
+room 15  picture 9
+  YOU ARE IN THE SIDE YARD.  YOU CAN FOLLOW THE FENCE TO THE SOUTH
+  exits: south->17, west->14
+
+room 16  picture 28
+  YOU ARE IN THE DINING ROOM
+  exits: north->3, south->17
+  objects: object 19 (CANDLE), object 22 (KEY)
+
+room 17  picture 15
+  YOU ARE IN THE FENCED BACK YARD.  THE FENCE FOLLOWS THE SIDE OF THE HOUSE TO THE NORTH.  THERE IS A DEAD BODY HERE
+  exits: north->15
+  objects: object 23 (SAM)
+
+room 18  picture 27
+  YOU ARE IN A SMALL FENCED CEMETARY.  THERE ARE SIX NEWLY DUG GRAVES
+  exits: none
+  objects: object 25 (JOE), object 26 (DOTS), object 28 (SHOVEL)
+
+room 19  picture 25
+  YOU ARE IN A SMALL PANTRY
+  exits: down->20
+
+room 20  picture 23
+  YOU ARE AT THE NORTH END OF A NARROW NORTH/SOUTH PASSAGEWAY
+  exits: south->21, up->19
+
+room 21  picture 30
+  YOU ARE IN A MOIST BASEMENT. ALGAE COVERS THE WALLS. THERE IS A DEAD BODY HERE.
+  exits: north->20, up->37
+  objects: object 29 (TOM), object 30 (KEY)
+
+room 22  picture 31
+  YOU ARE AT THE SOUTH END OF A NORTH/SOUTH TUNNEL
+  exits: north->13
+
+room 23  picture 21
+  YOU ARE AT THE TOP OF A VERY TALL PINE TREE
+  exits: down->13
+
+room 24  picture 32
+  YOU ARE AT THE JUNCTION OF AN EAST/WEST HALLWAY AND A NORTH/SOUTH HALLWAY
+  exits: north->33, east->25, west->29, down->3
+
+room 25  picture 33
+  THERE IS A DOORWAY HERE
+  exits: east->27, west->24
+
+room 26  picture 38
+  YOU ARE IN A LARGE BEDROOM
+  exits: none
+  objects: object 53 (DAGGER), object 54 (LINE)
+
+room 27  picture 33
+  THERE IS A DOORWAY HERE
+  exits: west->25
+
+room 28  picture 39
+  YOU ARE IN A SMALL BEDROOM. THERE IS A DEAD BODY HERE.
+  exits: none
+  objects: object 33 (SALLY)
+
+room 29  picture 33
+  THERE IS A DOORWAY HERE
+  exits: east->24, west->31
+
+room 30  picture 37
+  YOU ARE IN AN OLD NURSERY. THERE IS A DEAD BODY HERE.
+  exits: none
+  objects: object 34 (DOCTOR)
+
+room 31  picture 33
+  THERE IS A DOORWAY HERE
+  exits: east->29
+
+room 32  picture 35
+  YOU ARE IN A BOYS BEDROOM
+  exits: none
+  objects: object 35 (NOTE)
+
+room 33  picture 34
+  YOU ARE AT A STAIRWAY
+  exits: north->34, south->24, up->39
+
+room 34  picture 33
+  THERE IS A DOORWAY HERE
+  exits: south->33
+
+room 35  picture 40
+  YOU ARE IN THE STUDY
+  exits: north->34, east->38
+  objects: object 36 (PICTURE)
+
+room 36  picture 46
+  YOU ARE IN A MUSTY CRAWLSPACE
+  exits: down->37
+
+room 37  picture 47
+  YOU ARE ON A STAIRWAY
+  exits: up->36, down->21
+
+room 38  picture 45
+  YOU ARE IN THE BATHROOM. THERE IS A DEAD BODY HERE.
+  exits: none
+  objects: object 38 (BILL), object 39 (TOWEL)
+
+room 39  picture 42
+  YOU ARE IN THE ATTIC
+  exits: down->33
+  objects: object 42 (SLEDGEHA)
+
+room 40  picture 43
+  YOU ARE IN A STORAGE ROOM
+  exits: none
+  objects: object 43 (TRUNK), object 45 (GUN)
+
+room 41  picture 44
+  YOU ARE IN THE TOWER
+  exits: none
+  objects: object 46 (DAISY), object 47 (DOTS), object 49 (NOTE)

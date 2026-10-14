@@ -1,0 +1,284 @@
+address,name,type,comment
+# Names in CAPITALS come from the original source (fragments in decomp/source_fragments.s and the
+# stale assembler symbol table at $6232). Everything else is named from behaviour.
+# type: func, func:<regs> (register parameters), byte/word/ptr[/n], or empty for a label.
+#
+# ---- zero page and low memory ----
+001A,hgr_shape_ptr,word,Applesoft $1A/$1B: shape pointer / HCLR fill pointer
+001C,hgr_bits,byte,Applesoft $1C: current colour bit pattern
+001D,hgr_count_hi,byte,Applesoft $1D: HGLIN step counter (high)
+0026,hbasl,word,Applesoft HBASL/HBASH: hi-res row base address
+0030,hmask,byte,Applesoft HMASK: pixel mask within the byte
+0033,prompt_char,byte,monitor prompt character for GETLN
+004A,fake_vartab,ptr,points at $0800 where the engine keeps Applesoft-style X/Y/colour/shape variables read by the relocated HPLOT/DRAW code
+0050,hgr_dx,word,Applesoft line/shape temporaries $50-$55
+0052,hgr_dy,byte,
+0053,hgr_quadrant,byte,
+0054,hgr_err,word,
+0071,rt_operands,ptr,rt_args: pointer to the caller's inline operands
+0073,picdir_index,word,picture number * 3 while looking up the directory
+0075,picture_ptr,ptr,current point in the picture being drawn
+0077,AWORK,ptr,rule/parser cursor (word table walk; current condition)
+0079,rule_ptr,ptr,start of the rule being tested
+007B,counter,byte,loop counter (conditions left / table slot)
+007C,temp_7c,byte,
+007D,rt_ptr1,ptr,library scratch pointer (also dispatch target)
+007F,found_obj,ptr,object record found by find_object
+0081,rt_ptr2,ptr,library scratch pointer
+0083,CUROOM,ptr,record of the current room in ROOMBASE
+0085,ZWORK,ptr,current action (opcode byte then operands); also message/picture scratch
+0087,ZAWORK,ptr,object-table cursor; also the action dispatch target
+00D8,applesoft_errflg,byte,Applesoft ONERR flag
+00D9,applesoft_d9,byte,
+0200,input_buffer,byte[256],monitor GETLN input line
+0320,hgr_x,word,Applesoft HGR.X ($E0) relocated
+0322,hgr_y,byte,Applesoft HGR.Y ($E2) relocated
+0323,hgr_saved_x,byte,
+0324,hgr_color,byte,Applesoft HGR.COLOR ($E4) relocated
+0325,hgr_horiz,byte,Applesoft HGR.HORIZ ($E5) relocated: byte column
+0326,hgr_page,byte,Applesoft HGR.PAGE ($E6) relocated: $20 = page 1
+0327,hgr_scale,byte,Applesoft HGR.SCALE ($E7) relocated
+0328,hgr_shape_table,ptr,Applesoft HGR.SHAPE ($E8) relocated: shape table at $5700
+032A,hgr_collisions,byte,Applesoft HGR.COLLISIONS ($EA) relocated
+03D0,dos_warm_start,label,DOS 3.3 warm start
+#
+# ---- the engine's variables ($0800-$08FF) ----
+0805,var_x,word,X for the relocated HPLOT/DRAW (Applesoft variable layout)
+080C,var_y,word,Y for HPLOT/DRAW
+0815,var_hcolor,word,HCOLOR for HPLOT ($7F = white)
+081F,var_shape,word,shape number for DRAW
+0827,var_rot,word,ROT for DRAW
+0830,cmd_state,byte,
+0831,input_len,byte,length of the typed command
+0832,parse_pos,byte,next character of input_buffer to parse
+0833,word_id,byte,result of lookup_word: group number or $FF if unknown
+0834,verb,byte,verb number of the command
+0835,noun,byte,noun number of the command
+0836,cond_value,byte,
+0838,find_id,byte,
+0839,shown_picture,byte,picture currently on screen (tested by condition VIEW_IS)
+083A,SWITCH,byte[20],the game's flags
+084E,draw_dy,byte,picture offset (object y position)
+084F,draw_dx,byte,picture offset (object x position)
+0850,pen_up,byte,next picture point starts a new line
+0851,cmp_result,byte,rt_compare result; also "rule matched" / end-of-table flag
+0852,room_no,byte,current room number (CURONO in the source)
+0853,turns,word,turn counter
+0855,verb_word,byte[8],first word typed
+085D,noun_word,byte[8],second word typed
+0865,done_word,byte[8],"DONE"
+086D,word_buf,byte[8],word being looked up
+0875,blank_word,byte[8],eight spaces
+087D,msg_scratch,word,
+087F,mul_multiplicand,word,
+0881,mul_result,word,
+0883,mul_count,byte,
+0884,mul_carry,byte,
+0885,mul_dest,ptr,
+0887,room_index,word,
+0889,pic_block,byte,BLOCK file needed for the picture being drawn
+088A,pic_offset,word,offset of that picture inside its block
+088C,lru_turn,word,oldest turn seen while choosing a cache slot to replace
+088E,floor_slot,byte,next floor position for a dropped object
+0890,action_ptr,ptr,current action within the rule
+0892,act_temp,byte,
+0894,act_word1,word,
+0896,act_word2,word,
+0898,actions_left,byte,
+0899,act_arg1,byte,
+089A,act_arg2,byte,
+089B,act_arg3,byte,
+089C,act_arg4,byte,
+089D,LAMPSTAT,byte,0 = room is lit and the picture is drawn; 1 = dark
+089E,saved_zwork,ptr,
+08A0,msg_no_delay,byte,$FF while printing a room description: no pause afterwards
+08A1,pic_cache,byte[20],5 cache slots x (turn last used word / block / unused)
+#
+# ---- tables ----
+0900,OBJBASE,label,object table: records linked by ONEXT, ended by $FF (see NOTES.md)
+0D00,ROOMBASE,label,room table: RTBLSIZ = 10 bytes per room, indexed by room number
+1700,noun_table,label,noun groups: word[8] count synonyms[8*count]; $FF ends
+2000,hires_page1,label,hi-res page 1 (holds the 1980 title screen in the saved file)
+4000,verb_table,label,verb groups, same layout as noun_table
+4400,turn_rules,label,rules run after every command
+4500,command_rules,label,rules matched against the command
+5300,picture_directory,label,(block, offset) per picture number; entry 0 unused
+5500,message_index,word[168],byte offset of each message in the MESSAGES file
+5700,shape_table,label,Applesoft shape table for small objects (notes, matches, door)
+5A18,command_rules_addr,word,
+5A45,turn_rules_addr,word,
+5AB7,tbl_conditions,ptr[11],condition handlers by opcode
+5B9B,objbase_addr,word,
+
+6535,tbl_actions,ptr[30],action handlers by opcode (ACnn00 = entry nn-10)
+6BEB,hgr_mask_table,label,Applesoft MSKTBL and COS table
+70FF,floor_slots,byte[42],(x, y) positions for dropped objects
+7129,saved_picture,byte,
+7365,cache_addr_text,label,"7D00","8200",... for the BLOAD command
+7379,block_num_text,label," 1".."20" for the BLOAD command
+73A3,cache_slots,ptr[5],picture cache buffers $7D00 $8200 $8700 $8C00 $9100
+73AD,cache_victim,byte,
+74A0,message_index_addr,word,
+75D5,hex_digits,byte[16],
+75E5,hex_in,byte,
+75E6,hex_out,byte[4],ASCII hex of the message offset
+75EA,hex_hi,byte,
+75EB,hex_lo,byte,
+75EE,msg_offset,word,
+793B,roombase_addr,word,
+#
+# ---- code ----
+0800,start,func,BRUN entry: set up the stack and fake_vartab then enter the game
+5A00,run_rules,func,after a command: command rules, then turn rules
+5A07,run_command_rules,func,first matching command rule runs; none -> "I DONT UNDERSTAND"
+5A34,run_turn_rules,func,every matching turn rule runs
+5A55,test_rule,func,match room/verb/noun ($FE = any) and conditions; run actions if all pass
+5A9C,next_condition,func,dispatch the next condition or run the actions when none are left
+5ACD,cond_obj_in_room,func,condition 3: object X is in room Y
+5AEA,cond_turns_gt,func,condition 5: turn counter > X
+5AFF,cond_switch_eq,func,condition 6: SWITCH[X] == Y
+5B18,cond_view_is,func,condition 9: shown_picture == X
+5B26,cond_obj_pic_is,func,condition 10: object X is drawn as picture Y
+5B43,cond_pass,func,condition true: skip its X operand bytes and test the next
+5B51,cond_fail,func,condition false
+5B59,rule_done,func,run the actions if every condition passed
+5B65,next_rule,func,advance rule_ptr by the rule's length; cmp_result = $FF at the end of the table
+5B8B,find_object,func:X,found_obj = record of object X (BRK if missing)
+5E00,main,func,game loop: draw room, read command, run rules, count the turn
+6100,init_game,func,reset room, turns, switches, cache, graphics; OPEN MESSAGES
+6300,read_command,func,prompt; parse "VERB NOUN" into verb/noun; complain about unknown words
+63B9,print_prompt,func,
+63DB,get_line,func,read a line; RETURN alone toggles between the picture and full-screen text
+6418,next_word,func,copy the next blank-separated word of the input (8 chars) into word_buf
+6458,lookup_word,func,find word_buf in the word table given inline; word_id = group number or $FF
+6500,run_actions,func,run actions_left actions starting at action_ptr
+6511,next_action,func,
+6534,stop_actions,func,
+6571,AC1100,func,action 1: SWITCH[Y] += X
+658D,AC1200,func,action 2: SWITCH[Y] -= X
+65A8,AC1300,func,action 3: SWITCH[X] = Y
+65B9,AC1400,func,action 4: list objects carried
+65EE,AC1500,func,action 5: put object X in room Y
+662B,AC1600,func,action 6: move to room X (current view of the room left reverts to its base view)
+6669,AC1700,func,action 7: show picture X in this room
+6676,AC1800,func,action 8: make picture X this room's permanent view
+6687,AC1900,func,action 9: print message X
+6694,AC2000,func,action 10: light on
+669E,AC2100,func,action 11: light off
+66A8,AC2200,func,action 12: unused (BRK)
+66A9,AC2300,func,action 13: quit
+66B1,AC2400,func,action 14: unused (BRK)
+66B2,AC2500,func,action 15: save game (BSAVE SAVED GAME,A$830,L$8CF)
+66D9,AC2600,func,action 16: restore game
+671B,AC2700,func,action 17: game over: play again?
+6789,AC2800,func,action 18: put object X in room Y at (x, y)
+67DD,AC2900,func,action 19: make picture X the shape for object Y
+681A,AC3000,func,action 20: switch to the permanent view for this room
+6827,AC3100,func,action 21: go north
+6831,AC3200,func,action 22: go south
+683B,AC3300,func,action 23: go east
+6845,AC3400,func,action 24: go west
+684F,AC3500,func,action 25: go up
+6859,AC3600,func,action 26: go down
+6863,ACNEWROM,func,move through the exit in act_arg1 (0 = "I CANT GO IN THAT DIRECTION"); ends the action list
+68AC,AC3700,func,action 27: take the named object
+6939,AC3800,func,action 28: drop the named object
+6981,AC3900,func,action 29: set room X's views to picture Y
+69BA,AC9000,func,step action_ptr past the opcode and X operand bytes; next action
+6A00,hgr,func,Applesoft HGR: page 1, mixed text, clear
+6A0E,hclr,func,
+6A2E,hposn,func,Applesoft HPOSN
+6A75,hgr_set_bits,func,
+6A7A,hplot0,func,Applesoft HPLOT0
+6A7D,hplot_here,func,
+6A88,move_left_or_right,func,Applesoft MOVE_LEFT_OR_RIGHT
+6AA2,color_shift,func,Applesoft COLOR.SHIFT
+6AD8,draw_move_ud_plot,func,
+6AD9,draw_move_ud,func,
+6AF9,move_down,func,
+6B64,hglin,func,Applesoft HGLIN: line from the current point
+6C3B,draw0,func,Applesoft DRAW0
+6CF9,hfns,func,read var_x/var_y into HGR.X/HGR.Y (Applesoft HFNS)
+6D0E,hplot_xy,func,HPLOT var_x,var_y
+6D14,hplot_to_xy,func,HPLOT TO var_x,var_y
+6D37,draw_shape,func,DRAW var_shape AT var_x,var_y
+6D51,find_shape,func,
+6D90,get_hcolor,func,
+6D92,get_var,func,
+6D9A,get_var_x,func,
+6DAC,quantity_error,func,
+6DAF,get_var_y,func,
+6E00,nothing,func,empty hook called every turn
+7000,draw_objects,func,draw the objects visible in the current room and picture
+706D,draw_object_in_place,func,
+708C,draw_object_on_floor,func,dropped object: next floor_slots position
+70B6,draw_object,func:X,draw picture or shape X at draw_dx/draw_dy
+7200,load_picture,func:X,picture_ptr = picture X, loading its BLOCK into the cache if needed
+723B,find_cached_block,func,
+724E,cache_lookup,func,
+72A1,cache_choose_victim,func,least recently used of the 5 slots
+72FD,cache_load_block,func,BLOAD BLOCKn,A$xxxx into the chosen slot
+7400,print_message,func:X,print message X (four are built in; others are read from MESSAGES)
+7504,read_message_line,func,
+7540,offset_to_hex,func,
+756E,split_nibbles,func,
+758C,nibbles_to_ascii,func,
+759E,word_wrap,func,wrap the line in input_buffer at 39 columns
+7600,rt_copy,func:X,copy X bytes: .word src, dst
+7603,rt_add8,func:X,word at .word addr += X
+7606,rt_add16,func,word at .word dst += word at .word src
+7609,rt_compare,func:X,compare X bytes at (AWORK) with .word addr; cmp_result = 0 if equal
+760C,rt_args,func,rt_operands = the caller's inline operands
+760F,rt_return,func:X,return to the caller's caller skipping X inline operand bytes
+7612,rt_inc16,func,word at .word addr += 1
+7615,rt_print,func,print the inline $00-terminated text
+7618,rt_mul8,func:X,mul_result = word at .word addr * X
+7900,draw_room,func,set up CUROOM; draw its current picture and objects (if lit); print its description
+792D,set_curoom,func,CUROOM = ROOMBASE + room_no * 10
+7A00,draw_picture,func,draw shown_picture from its cached block
+#
+# ---- macro library bodies (rt_* are the jump table entries) ----
+762C,rt_args_body,func,
+7650,rt_return_body,func,
+7666,rt_print_body,func,
+767D,rt_copy_body,func,
+76A8,rt_add8_body,func,
+76CD,rt_inc16_body,func,
+76F0,rt_compare_body,func,
+772A,rt_add16_body,func,
+7757,rt_mul8_body,func,
+#
+# ---- data inside the code area ----
+61DB,init_blank_word,byte[8],
+61E3,init_done_word,byte[8],
+61EB,init_pic_cache,byte[20],
+61FF,init_switches,byte[20],starting values of SWITCH
+6213,disk_error_handler_ptr,word,
+6215,disk_error_handler,func,installed as the DOS error handler: prints "A DISK ERROR HAS OCCURED"
+6232,messages_open,byte,$FF once MESSAGES has been OPENed
+6362,unknown_verb_text,byte[8],patched into "I DONT KNOW HOW TO ________ SOMETHING"
+63A1,unknown_noun_verb,byte[8],patched into "I DONT KNOW HOW TO ________ A ________"
+63AC,unknown_noun_text,byte[8],
+64CB,text_mode,byte,$FF while RETURN has switched to full-screen text
+6BEA,hgr_mask_table_m1,label,
+733F,bload_block_digits,byte[2],self-modified: block number in "BLOAD BLOCKnn,A$xxxx"
+7344,bload_addr_digits,byte[4],self-modified: cache slot address in the same command
+7518,read_offset_digits,byte[4],self-modified: byte offset in "READ MESSAGES,B$xxxx"
+9D5A,dos_error_vector,word,DOS 3.3 error-handler vector
+#
+# ---- dead code: an older build's routines, still calling the library at its old address $4A00
+# (which now holds rule bytecode). Nothing reaches them.
+4A00,old_rt_copy,func,the macro library's address in an older build; now inside command_rules
+4A03,old_rt_add8,func,
+4A06,old_rt_add16,func,
+4A15,old_rt_print,func,
+5651,dead_init_tail,func,unreachable older copy of the end of init_game (shape table at $6D00; also sets the DOS language flag)
+5912,dead_read_message,func,unreachable older message reader; its variables at $5A01-$5A0B are now engine code
+5957,dead_read_message_cmd,func,
+5993,dead_offset_to_hex,func,
+59C1,dead_split_nibbles,func,
+59DF,dead_nibbles_to_ascii,func,
+59F1,dead_hex_digits,byte[15],"0".."E": the table stops where run_rules begins
+69CA,stale_basic,label,two lines of a tokenized Applesoft prototype: 10000 DATA 81,"YOU ARE IN A STORAGE ROOM"
+7956,stale_hglin_copy,label,leftover copy of the Applesoft line routine
+AAB6,dos_language_flag,byte,DOS 3.3: $40 = Applesoft active

@@ -1,0 +1,31 @@
+type locked sectors  name                            load   length
+A                 3  HELLO                                  $01DA
+A                 5  MYSTERY.HELLO                          $0344
+T                22  MESSAGES                               
+B                 5  BLOCK1                          $4400  $036A
+B                 6  BLOCK2                          $4400  $049C
+B                 5  BLOCK3                          $4400  $0368
+B                 5  BLOCK4                          $4400  $0302
+B                 5  BLOCK5                          $4400  $030C
+B                 5  BLOCK6                          $4400  $02F4
+B                 6  BLOCK7                          $4400  $0406
+B                 5  BLOCK8                          $4400  $038A
+B                 5  BLOCK9                          $4400  $0382
+B                 5  BLOCK10                         $4400  $0388
+B                 5  BLOCK11                         $4400  $03F4
+B                 7  BLOCK12                         $4400  $0332
+B                 5  BLOCK13                         $4400  $0304
+B                 5  BLOCK14                         $4400  $033A
+B                 5  BLOCK15                         $4400  $0316
+B                 5  BLOCK16                         $4400  $030C
+B                 5  BLOCK17                         $4400  $0322
+B                 4  BLOCK18                         $4400  $02F8
+B                 4  BLOCK19                         $4400  $0108
+B                50  AUTO LOAD OBJ                   $0FFD  $3003
+B                10  SAVED GAME                      $0830  $08CF
+B                10  STARTUP                         $0830  $08CF
+B                 3  BLOCK DIRECTORY                 $4000  $0130
+I                 2  APPLESOFT                              $001F
+A                 2  PIC SIZES                              $0083
+B               119  ADVENTURE                       $0800  $7500
+B                 3  MESSAGE OBJECT                  $5000  $0150

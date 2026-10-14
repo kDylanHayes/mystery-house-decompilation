@@ -1,0 +1,1371 @@
+# Game logic. After each command the engine scans the command rules ($4500)
+# for the first one whose room/verb/noun and conditions match, runs its actions and
+# stops ("I DONT UNDERSTAND WHAT YOU MEAN" if none match). It then runs every
+# matching turn rule ($4400). A "switch" is one of the game flags at $083A.
+
+COMMAND RULES ($4500)
+=====================
+
+$4500  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...) and verb GO and noun STAIRS
+           go to room 2 (ON THE PORCH)
+
+$4508  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...) and verb UP and noun STAIRS
+           go to room 2 (ON THE PORCH)
+
+$4510  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...) and verb LOOK and noun FENCE
+           say msg 100 "IT IS VERY HIGH"
+
+$4518  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...) and verb UP and noun FENCE
+           say msg 1 "IT IS TOO HIGH"
+
+$4520  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...) and verb LOOK and noun TREE
+           say msg 101 "THERE IS A FOREST"
+
+$4528  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...) and verb GO and noun TREE
+           go to room 5 (IN A FOREST)
+
+$4530  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...) and verb JUMP and noun FENCE
+           say msg 1 "IT IS TOO HIGH"
+
+$4538  in room 2 (ON THE PORCH) and verb OPEN and noun DOOR
+         if switch[12] == 1
+           say msg 129 "IT IS OPEN"
+
+$4543  in room 2 (ON THE PORCH) and verb OPEN and noun DOOR
+           make picture 2 the room view
+           switch[12] = 1
+
+$454E  in room 2 (ON THE PORCH) and verb CLOSE and noun DOOR
+         if switch[12] == 1
+           make picture 1 the room view
+           switch[12] = 0
+
+$455C  in room 2 (ON THE PORCH) and verb CLOSE and noun DOOR
+         if switch[12] == 0
+           say msg 128 "THE DOOR IS CLOSED"
+
+$4567  in room 2 (ON THE PORCH) and verb GO and noun DOOR
+         if switch[12] == 1
+           go to room 3 (IN AN ENTRY HALL)
+           switch[1] = 1
+           say msg 142 "THE DOOR HAS BEEN CLOSED AND LOCKED"
+
+$4577  in room 2 (ON THE PORCH) and verb GO and noun DOOR
+           say msg 128 "THE DOOR IS CLOSED"
+
+$457F  in room 2 (ON THE PORCH) and verb GO and noun STAIRS
+           go to room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...)
+
+$4587  in room 3 (IN AN ENTRY HALL) and verb LOOK and noun PERSON
+         if current picture == 53
+           say msg 163 "THE PEOPLE WERE EXPLAINED AT THE BEGINNING OF THE GAME."
+
+$4591  in room 3 (IN AN ENTRY HALL) and verb GO and noun DOOR
+           say msg 48 "WHICH DIRECTION?"
+
+$4599  in room 3 (IN AN ENTRY HALL) and verb GO and noun STAIRS
+         if current picture == 53
+           make picture 4 the room view
+           go to room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...)
+
+$45A5  in room 3 (IN AN ENTRY HALL) and verb GO and noun STAIRS
+           go to room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...)
+
+$45AD  in room 3 (IN AN ENTRY HALL) and verb OPEN and noun DOOR
+         if switch[1] == 1
+           say msg 82 "IT IS LOCKED"
+
+$45B8  in room 3 (IN AN ENTRY HALL) and verb OPEN and noun DOOR
+         if switch[1] == 0
+           make picture 5 the room view
+
+$45C3  in room 3 (IN AN ENTRY HALL) and verb UNLOCK and noun DOOR
+         if object 30 (KEY) is in inventory
+           switch[1] = 0
+           say msg 2 "OK"
+
+$45D1  in room 3 (IN AN ENTRY HALL) and verb UNLOCK and noun DOOR
+           say msg 83 "YOU HAVE NOTHING TO UNLOCK IT WITH"
+
+$45D9  in room 3 (IN AN ENTRY HALL) and verb BREAK and noun DOOR
+           say msg 4 "IT IS TOO HEAVY"
+
+$45E1  in room 3 (IN AN ENTRY HALL) and verb NORTH and noun 
+         if current picture == 53
+           say msg 128 "THE DOOR IS CLOSED"
+
+$45EB  in room 3 (IN AN ENTRY HALL) and verb NORTH and noun 
+         if current picture == 5
+           make picture 4 the room view
+           go to room 2 (ON THE PORCH)
+
+$45F7  in room 3 (IN AN ENTRY HALL) and verb NORTH and noun 
+         if current picture == 4
+           say msg 128 "THE DOOR IS CLOSED"
+
+$4601  in room 3 (IN AN ENTRY HALL) and verb EAST and noun 
+         if current picture == 53
+           make picture 4 the room view
+           go to room 14 (IN THE OLD, DUSTY LIBRARY)
+
+$460D  in room 3 (IN AN ENTRY HALL) and verb EAST and noun 
+           go to room 14 (IN THE OLD, DUSTY LIBRARY)
+
+$4615  in room 3 (IN AN ENTRY HALL) and verb WEST and noun 
+         if current picture == 53
+           make picture 4 the room view
+           go to room 4 (IN THE KITCHEN)
+
+$4621  in room 3 (IN AN ENTRY HALL) and verb WEST and noun 
+           go to room 4 (IN THE KITCHEN)
+
+$4629  in room 3 (IN AN ENTRY HALL) and verb SOUTH and noun 
+         if current picture == 53
+           make picture 4 the room view
+           go to room 16 (IN THE DINING ROOM)
+
+$4635  in room 3 (IN AN ENTRY HALL) and verb SOUTH and noun 
+           go to room 16 (IN THE DINING ROOM)
+
+$463D  in room 3 (IN AN ENTRY HALL) and verb UP and noun STAIRS
+           go to room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...)
+
+$4645  in room 3 (IN AN ENTRY HALL) and verb UP and noun 
+           make picture 4 the room view
+           go to room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...)
+
+$464F  in room 4 (IN THE KITCHEN) and verb GET and noun CABINET
+           say msg 138 "IT'S TOO HEAVY TO LIFT"
+
+$4657  in room 4 (IN THE KITCHEN) and verb MOVE and noun CABINET
+         if switch[13] == 1
+           say msg 139 "IT WON'T MOVE ANY FARTHER"
+
+$4662  in room 4 (IN THE KITCHEN) and verb MOVE and noun CABINET
+           put object 10 (CABINET) in room 4 (IN THE KITCHEN) at (65,20)
+           put object 11 (BRICKS) in room 4 (IN THE KITCHEN)
+           switch[13] = 1
+           say msg 10 "THE WALL IS BRICKED UP BEHIND IT"
+
+$4675  in room 4 (IN THE KITCHEN) and verb OPEN and noun CABINET
+           draw object 10 (CABINET) as picture 97
+
+$467E  in room 4 (IN THE KITCHEN) and verb CLOSE and noun CABINET
+           draw object 10 (CABINET) as picture 55
+           show the room view
+
+$4688  in room 4 (IN THE KITCHEN) and verb LOOK and noun CABINET
+         if object 10 (CABINET) picture == 55
+           say msg 133 "IT IS NOT OPEN"
+
+$4693  in room 4 (IN THE KITCHEN) and verb LOOK and noun CABINET
+           show picture 12
+
+$469B  in room 4 (IN THE KITCHEN) and verb BREAK and noun WALL
+         if object 42 (SLEDGEHA) is in inventory
+           put object 11 (BRICKS) in nowhere
+           put object 12 (HOLE) in room 4 (IN THE KITCHEN) at (7,83)
+           say msg 11 "THE BRICKS BREAK APART LEAVING A LARGE HOLE"
+
+$46AE  in room 4 (IN THE KITCHEN) and verb BREAK and noun BRICKS
+         if object 42 (SLEDGEHA) is in inventory
+           put object 11 (BRICKS) in nowhere
+           put object 12 (HOLE) in room 4 (IN THE KITCHEN) at (7,83)
+           say msg 11 "THE BRICKS BREAK APART LEAVING A LARGE HOLE"
+
+$46C1  in room 4 (IN THE KITCHEN) and verb BREAK and noun WALL
+           say msg 12 "YOU HAVE NOTHING STRONG ENOUGH"
+
+$46C9  in room 4 (IN THE KITCHEN) and verb OPEN and noun REFRIGER
+         if object 51 (REFRIGER) is in room 4 (IN THE KITCHEN)
+           put object 51 (REFRIGER) in nowhere
+           put object 52 (REFRIGER) in room 4 (IN THE KITCHEN)
+
+$46D8  in room 4 (IN THE KITCHEN) and verb OPEN and noun REFRIGER
+         if object 52 (REFRIGER) is in room 4 (IN THE KITCHEN)
+           say msg 129 "IT IS OPEN"
+
+$46E3  in room 4 (IN THE KITCHEN) and verb CLOSE and noun REFRIGER
+         if object 52 (REFRIGER) is in room 4 (IN THE KITCHEN)
+           put object 52 (REFRIGER) in nowhere
+           put object 51 (REFRIGER) in room 4 (IN THE KITCHEN)
+           show the room view
+
+$46F3  in room 4 (IN THE KITCHEN) and verb CLOSE and noun REFRIGER
+         if object 51 (REFRIGER) is in room 4 (IN THE KITCHEN)
+           say msg 133 "IT IS NOT OPEN"
+           show the room view
+
+$46FF  in room 4 (IN THE KITCHEN) and verb LOOK and noun REFRIGER
+         if object 52 (REFRIGER) is in room 4 (IN THE KITCHEN)
+           show picture 11
+
+$470A  in room 4 (IN THE KITCHEN) and verb LOOK and noun REFRIGER
+         if object 51 (REFRIGER) is in room 4 (IN THE KITCHEN)
+           say msg 128 "THE DOOR IS CLOSED"
+
+$4715  in room 4 (IN THE KITCHEN) and verb FAUCET and noun ON
+           say msg 13 "WATER IS RUNNING INTO THE SINK"
+           switch[4] = 1
+
+$4720  in room 4 (IN THE KITCHEN) and verb GET and noun WATER
+         if switch[4] == 1
+         if object 14 (PITCHER) is in inventory
+           say msg 92 "YOUR PITCHER IS FULL"
+           put object 14 (PITCHER) in nowhere
+           put object 15 (PITCHER) in inventory
+
+$4734  in room 4 (IN THE KITCHEN) and verb GET and noun WATER
+         if switch[4] == 1
+           say msg 14 "YOU HAVE NO CONTAINER"
+
+$473F  in room 4 (IN THE KITCHEN) and verb GET and noun WATER
+           say msg 131 "I SEE NO WATER"
+
+$4747  in room 4 (IN THE KITCHEN) and verb LIGHT and noun STOVE
+           say msg 16 "THE STOVE EXPLODES, YOU ARE DEAD"
+           ask to play again
+
+$4750  in room 4 (IN THE KITCHEN) and verb OPEN and noun DOOR
+         if current picture == 13
+           make picture 14 the room view
+           switch[14] = 1
+
+$475D  in room 4 (IN THE KITCHEN) and verb OPEN and noun DOOR
+         if current picture == 14
+           say msg 129 "IT IS OPEN"
+
+$4767  in room 4 (IN THE KITCHEN) and verb CLOSE and noun DOOR
+         if current picture == 14
+           make picture 13 the room view
+           switch[14] = 0
+
+$4774  in room 4 (IN THE KITCHEN) and verb CLOSE and noun DOOR
+         if current picture == 13
+           say msg 128 "THE DOOR IS CLOSED"
+
+$477E  in room 4 (IN THE KITCHEN) and verb LOOK and noun SINK
+         if object 16 (BUTTERKN) is in room 4 (IN THE KITCHEN)
+           say msg 143 "THERE IS A BUTTERKNIFE HERE"
+           show picture 10
+
+$478B  in room 4 (IN THE KITCHEN) and verb LOOK and noun SINK
+           show picture 10
+
+$4793  in room 4 (IN THE KITCHEN) and verb GO and noun HOLE
+         if object 12 (HOLE) is in room 4 (IN THE KITCHEN)
+           go to room 19 (IN A SMALL PANTRY)
+
+$479E  in room 4 (IN THE KITCHEN) and verb FAUCET and noun OFF
+           switch[4] = 0
+           say msg 2 "OK"
+
+$47A9  in room 4 (IN THE KITCHEN) and verb GO and noun DOOR
+           say msg 48 "WHICH DIRECTION?"
+
+$47B1  in room 4 (IN THE KITCHEN) and verb WEST and noun 
+         if current picture == 14
+           go to room 5 (IN A FOREST)
+
+$47BB  in room 4 (IN THE KITCHEN) and verb WEST and noun 
+           say msg 128 "THE DOOR IS CLOSED"
+
+$47C3  in room 5 (IN A FOREST) and verb UP and noun 
+         if switch[14] == 0
+           say msg 144 "THE KITCHEN DOOR IS CLOSED"
+
+$47CE  in room 5 (IN A FOREST) and verb UP and noun 
+           go to room 4 (IN THE KITCHEN)
+
+$47D6  in room 13 (THERE IS A VERY TALL PINE TREE IN FRO...) and verb LOOK and noun TREE
+           say msg 15 "THERE IS NOTHING SPECIAL"
+
+$47DE  in room 5 (IN A FOREST) and verb OPEN and noun DOOR
+           say msg 162 "THE KITCHEN DOOR IS OPEN"
+           set room 4 (IN THE KITCHEN) view to picture 14
+           switch[14] = 1
+
+$47EC  in room 13 (THERE IS A VERY TALL PINE TREE IN FRO...) and verb UP and noun TREE
+           go to room 23 (AT THE TOP OF A VERY TALL PINE TREE)
+
+$47F4  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb OPEN and noun DOOR
+         if current picture == 6
+           make picture 7 the room view
+           set room 15 (IN THE SIDE YARD) view to picture 8
+
+$4801  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb OPEN and noun DOOR
+         if current picture == 7
+           say msg 129 "IT IS OPEN"
+
+$480B  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb CLOSE and noun DOOR
+         if current picture == 7
+           make picture 6 the room view
+           set room 15 (IN THE SIDE YARD) view to picture 9
+
+$4818  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb CLOSE and noun DOOR
+         if current picture == 6
+           say msg 128 "THE DOOR IS CLOSED"
+
+$4822  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb GO and noun DOOR
+           say msg 48 "WHICH DIRECTION?"
+
+$482A  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb EAST and noun 
+         if current picture == 7
+           go to room 15 (IN THE SIDE YARD)
+
+$4834  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb EAST and noun 
+         if current picture == 6
+           say msg 128 "THE DOOR IS CLOSED"
+
+$483E  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb WEST and noun 
+           go to room 3 (IN AN ENTRY HALL)
+
+$4846  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb LOOK and noun SHELVES
+           say msg 105 "THERE ARE NOT MANY BOOKS LEFT"
+
+$484E  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb GET and noun BOOKS
+           say msg 27 "IT DOES NOT REMOVE"
+
+$4856  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb GET and noun COUCH
+           say msg 4 "IT IS TOO HEAVY"
+
+$485E  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb GET and noun TABLE
+           say msg 4 "IT IS TOO HEAVY"
+
+$4866  in room 14 (IN THE OLD, DUSTY LIBRARY) and verb GET and noun CHAIR
+           say msg 4 "IT IS TOO HEAVY"
+
+$486E  in room 15 (IN THE SIDE YARD) and verb OPEN and noun DOOR
+         if current picture == 9
+           make picture 8 the room view
+           set room 14 (IN THE OLD, DUSTY LIBRARY) view to picture 7
+
+$487B  in room 15 (IN THE SIDE YARD) and verb OPEN and noun DOOR
+         if current picture == 8
+           say msg 129 "IT IS OPEN"
+
+$4885  in room 15 (IN THE SIDE YARD) and verb CLOSE and noun DOOR
+         if current picture == 8
+           make picture 9 the room view
+           set room 14 (IN THE OLD, DUSTY LIBRARY) view to picture 6
+
+$4892  in room 15 (IN THE SIDE YARD) and verb CLOSE and noun DOOR
+         if current picture == 9
+           say msg 128 "THE DOOR IS CLOSED"
+
+$489C  in room 15 (IN THE SIDE YARD) and verb GO and noun DOOR
+         if current picture == 8
+           go to room 14 (IN THE OLD, DUSTY LIBRARY)
+
+$48A6  in room 15 (IN THE SIDE YARD) and verb GO and noun DOOR
+         if current picture == 9
+           say msg 128 "THE DOOR IS CLOSED"
+
+$48B0  in room 15 (IN THE SIDE YARD) and verb UP and noun FENCE
+           say msg 1 "IT IS TOO HIGH"
+
+$48B8  in room 15 (IN THE SIDE YARD) and verb JUMP and noun FENCE
+           say msg 1 "IT IS TOO HIGH"
+
+$48C0  in room 16 (IN THE DINING ROOM)
+         if object 18 (CANDLE) is in inventory
+         if switch[5] == 0
+           switch[5] = 1
+           say msg 44 "YOU TRIP OVER RUG AND FALL.  OH,OH, YOU STARTED A FIRE WITH YOUR CANDLE!"
+           put object 20 (FIRE) in room 16 (IN THE DINING ROOM) at (81,92)
+
+$48D6  in room 16 (IN THE DINING ROOM) and verb POUR and noun WATER
+         if object 15 (PITCHER) is in inventory
+         if object 20 (FIRE) is in room 16 (IN THE DINING ROOM)
+           put object 20 (FIRE) in nowhere
+           put object 21 (HOLE) in room 16 (IN THE DINING ROOM) at (79,115)
+           say msg 45 "THE FIRE IS OUT"
+           say msg 17 "THE PITCHER IS EMPTY"
+           put object 15 (PITCHER) in nowhere
+           put object 14 (PITCHER) in inventory
+
+$48F4  in room 16 (IN THE DINING ROOM)
+         if object 20 (FIRE) is in room 16 (IN THE DINING ROOM)
+           say msg 46 "THE FIRE IS OUT OF CONTROL.  YOU ARE DEAD"
+           ask to play again
+
+$4900  in room 16 (IN THE DINING ROOM) and verb OPEN and noun DOOR
+         if current picture == 28
+           make picture 29 the room view
+           set room 17 (IN THE FENCED BACK YARD) view to picture 16
+
+$490D  in room 16 (IN THE DINING ROOM) and verb OPEN and noun DOOR
+         if current picture == 29
+           say msg 129 "IT IS OPEN"
+
+$4917  in room 16 (IN THE DINING ROOM) and verb CLOSE and noun DOOR
+         if current picture == 29
+           make picture 28 the room view
+           set room 17 (IN THE FENCED BACK YARD) view to picture 15
+
+$4924  in room 16 (IN THE DINING ROOM) and verb CLOSE and noun DOOR
+         if current picture == 28
+           say msg 128 "THE DOOR IS CLOSED"
+
+$492E  in room 16 (IN THE DINING ROOM) and verb GO and noun DOOR
+           say msg 48 "WHICH DIRECTION?"
+
+$4936  in room 16 (IN THE DINING ROOM) and verb NORTH and noun 
+           go to room 3 (IN AN ENTRY HALL)
+
+$493E  in room 16 (IN THE DINING ROOM) and verb SOUTH and noun 
+         if current picture == 29
+           go to room 17 (IN THE FENCED BACK YARD)
+
+$4948  in room 16 (IN THE DINING ROOM) and verb SOUTH and noun 
+         if current picture == 28
+           say msg 128 "THE DOOR IS CLOSED"
+
+$4952  in room 16 (IN THE DINING ROOM) and verb GET and noun RUG
+           say msg 4 "IT IS TOO HEAVY"
+
+$495A  in room 16 (IN THE DINING ROOM) and verb GET and noun TABLE
+           say msg 4 "IT IS TOO HEAVY"
+
+$4962  in room 16 (IN THE DINING ROOM) and verb LIGHT and noun LAMP
+           say msg 47 "THERE IS NO WICK"
+
+$496A  in room 16 (IN THE DINING ROOM) and verb GET and noun LAMP
+           say msg 24 "IT IS FASTENED DOWN"
+
+$4972  in room 16 (IN THE DINING ROOM) and verb LOOK and noun HOLE
+           show picture 49
+
+$497A  in room 17 (IN THE FENCED BACK YARD) and verb OPEN and noun GATE
+         if current picture == 16
+           make picture 17 the room view
+
+$4984  in room 17 (IN THE FENCED BACK YARD) and verb OPEN and noun GATE
+           make picture 18 the room view
+
+$498C  in room 17 (IN THE FENCED BACK YARD) and verb OPEN and noun DOOR
+         if current picture == 18
+           make picture 17 the room view
+           set room 16 (IN THE DINING ROOM) view to picture 29
+
+$4999  in room 17 (IN THE FENCED BACK YARD) and verb OPEN and noun DOOR
+           make picture 16 the room view
+           set room 16 (IN THE DINING ROOM) view to picture 29
+
+$49A4  in room 17 (IN THE FENCED BACK YARD) and verb CLOSE and noun GATE
+         if current picture == 17
+           make picture 16 the room view
+
+$49AE  in room 17 (IN THE FENCED BACK YARD) and verb CLOSE and noun GATE
+           make picture 15 the room view
+
+$49B6  in room 17 (IN THE FENCED BACK YARD) and verb CLOSE and noun DOOR
+         if current picture == 17
+           make picture 18 the room view
+           set room 16 (IN THE DINING ROOM) view to picture 28
+
+$49C3  in room 17 (IN THE FENCED BACK YARD) and verb CLOSE and noun DOOR
+           make picture 15 the room view
+           set room 16 (IN THE DINING ROOM) view to picture 28
+
+$49CE  in room 17 (IN THE FENCED BACK YARD) and verb GO and noun DOOR
+         if current picture == 16
+           go to room 16 (IN THE DINING ROOM)
+
+$49D8  in room 17 (IN THE FENCED BACK YARD) and verb GO and noun DOOR
+         if current picture == 17
+           go to room 16 (IN THE DINING ROOM)
+
+$49E2  in room 17 (IN THE FENCED BACK YARD) and verb GO and noun DOOR
+         if current picture == 15
+           say msg 128 "THE DOOR IS CLOSED"
+
+$49EC  in room 17 (IN THE FENCED BACK YARD) and verb GO and noun DOOR
+         if current picture == 18
+           say msg 128 "THE DOOR IS CLOSED"
+
+$49F6  in room 17 (IN THE FENCED BACK YARD) and verb GO and noun GATE
+         if current picture == 18
+           go to room 18 (IN A SMALL FENCED CEMETARY)
+
+$4A00  in room 17 (IN THE FENCED BACK YARD) and verb GO and noun GATE
+         if current picture == 17
+           go to room 18 (IN A SMALL FENCED CEMETARY)
+
+$4A0A  in room 17 (IN THE FENCED BACK YARD) and verb GO and noun GATE
+         if current picture == 15
+           say msg 133 "IT IS NOT OPEN"
+
+$4A14  in room 17 (IN THE FENCED BACK YARD) and verb GO and noun GATE
+         if current picture == 16
+           say msg 133 "IT IS NOT OPEN"
+
+$4A1E  in room 17 (IN THE FENCED BACK YARD) and verb UP and noun FENCE
+           say msg 1 "IT IS TOO HIGH"
+
+$4A26  in room 17 (IN THE FENCED BACK YARD) and verb JUMP and noun FENCE
+           say msg 1 "IT IS TOO HIGH"
+
+$4A2E  in room 17 (IN THE FENCED BACK YARD) and verb LOOK and noun BODY
+           say msg 3 "IT IS SAM, THE MECHANIC.  HE HAS BEEN HIT IN THE HEAD BY A BLUNT OBJECT"
+
+$4A36  in room 17 (IN THE FENCED BACK YARD) and verb GET and noun BODY
+           say msg 4 "IT IS TOO HEAVY"
+
+$4A3E  in room 18 (IN A SMALL FENCED CEMETARY) and verb OPEN and noun GATE
+         if current picture == 26
+           make picture 27 the room view
+
+$4A48  in room 18 (IN A SMALL FENCED CEMETARY) and verb OPEN and noun GATE
+           say msg 129 "IT IS OPEN"
+
+$4A50  in room 18 (IN A SMALL FENCED CEMETARY) and verb CLOSE and noun GATE
+         if current picture == 27
+           make picture 26 the room view
+
+$4A5A  in room 18 (IN A SMALL FENCED CEMETARY) and verb CLOSE and noun GATE
+           say msg 128 "THE DOOR IS CLOSED"
+
+$4A62  in room 18 (IN A SMALL FENCED CEMETARY) and verb GO and noun GATE
+         if current picture == 27
+           go to room 17 (IN THE FENCED BACK YARD)
+
+$4A6C  in room 18 (IN A SMALL FENCED CEMETARY) and verb GO and noun GATE
+           say msg 128 "THE DOOR IS CLOSED"
+
+$4A74  in room 18 (IN A SMALL FENCED CEMETARY) and verb UP and noun FENCE
+           say msg 1 "IT IS TOO HIGH"
+
+$4A7C  in room 18 (IN A SMALL FENCED CEMETARY) and verb JUMP and noun FENCE
+           say msg 1 "IT IS TOO HIGH"
+
+$4A84  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun GRAVESTO
+           say msg 4 "IT IS TOO HEAVY"
+
+$4A8C  in room 18 (IN A SMALL FENCED CEMETARY) and verb LOOK and noun GRAVESTO
+           say msg 31 "THE WRITING IS WORN DOWN"
+
+$4A94  in room 18 (IN A SMALL FENCED CEMETARY) and verb READ and noun GRAVESTO
+           say msg 31 "THE WRITING IS WORN DOWN"
+
+$4A9C  in room 18 (IN A SMALL FENCED CEMETARY) and verb LOOK and noun PERSON
+           say msg 32 "IT IS JOE, THE GRAVEDIGGER.  HE HAS JUST FINISHED DIGGING THE SIX GRAVES"
+
+$4AA4  in room 18 (IN A SMALL FENCED CEMETARY) and verb LOOK and noun JOE
+           say msg 32 "IT IS JOE, THE GRAVEDIGGER.  HE HAS JUST FINISHED DIGGING THE SIX GRAVES"
+
+$4AAC  in room 18 (IN A SMALL FENCED CEMETARY) and verb TALK and noun JOE
+           say msg 33 "HE DOESN'T TALK MUCH"
+
+$4AB4  in room 18 (IN A SMALL FENCED CEMETARY) and verb TALK and noun PERSON
+           say msg 33 "HE DOESN'T TALK MUCH"
+
+$4ABC  in room 18 (IN A SMALL FENCED CEMETARY) and verb KILL and noun PERSON
+           say msg 34 "WITH WHAT?"
+
+$4AC4  in room 18 (IN A SMALL FENCED CEMETARY) and verb KILL and noun JOE
+           say msg 34 "WITH WHAT?"
+
+$4ACC  in room 18 (IN A SMALL FENCED CEMETARY) and verb WITH and noun DAGGER
+         if object 53 (DAGGER) is in inventory
+           say msg 30 "THERE IS A DEAD BODY HERE"
+           put object 27 (X'S) in room 18 (IN A SMALL FENCED CEMETARY)
+           switch[7] = 1
+
+$4ADD  in room 18 (IN A SMALL FENCED CEMETARY) and verb WITH and noun DAGGER
+           say msg 132 "YOU ARE NOT CARRYING IT"
+           put object 26 (DOTS) in nowhere
+
+$4AE8  in room 18 (IN A SMALL FENCED CEMETARY) and verb WITH and noun GUN
+         if object 45 (GUN) is in inventory
+         if switch[6] == 0
+           say msg 30 "THERE IS A DEAD BODY HERE"
+           say msg 35 "YOUR GUN IS EMPTY"
+           put object 27 (X'S) in room 18 (IN A SMALL FENCED CEMETARY)
+           switch[6] = 1
+           switch[7] = 1
+
+$4B01  in room 18 (IN A SMALL FENCED CEMETARY) and verb LOOK and noun BODY
+           say msg 36 "IT IS JOE, THE GRAVEDIGGER"
+
+$4B09  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun BODY
+           say msg 4 "IT IS TOO HEAVY"
+
+$4B11  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun PERSON
+           say msg 37 "I DONT UNDERSTAND WHAT YOU MEAN"
+
+$4B19  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun JOE
+           say msg 37 "I DONT UNDERSTAND WHAT YOU MEAN"
+
+$4B21  in room 18 (IN A SMALL FENCED CEMETARY) and verb GO and noun GRAVES
+         if switch[7] == 0
+           say msg 38 "YOU FALL IN ONE AND JOE BURIES YOU.  YOU ARE DEAD"
+           put object 24 (GRAVES) in room 18 (IN A SMALL FENCED CEMETARY)
+           ask to play again
+
+$4B30  in room 18 (IN A SMALL FENCED CEMETARY) and verb GO and noun GRAVES
+           say msg 39 "YOU FALL IN ONE AND CLIMB OUT AGAIN"
+
+$4B38  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun SHOVEL
+         if switch[7] == 0
+           say msg 40 "JOE WON'T LET YOU"
+
+$4B43  in room 18 (IN A SMALL FENCED CEMETARY) and verb GET and noun SHOVEL
+           put object 28 (SHOVEL) in inventory
+
+$4B4C  in room 19 (IN A SMALL PANTRY) and verb UP and noun STAIRS
+           go to room 20 (AT THE NORTH END OF A NARROW NORTH/SO...)
+
+$4B54  in room 19 (IN A SMALL PANTRY) and verb GO and noun STAIRS
+           go to room 20 (AT THE NORTH END OF A NARROW NORTH/SO...)
+
+$4B5C  in room 19 (IN A SMALL PANTRY) and verb GO and noun HOLE
+         if object 12 (HOLE) is in room 4 (IN THE KITCHEN)
+           go to room 4 (IN THE KITCHEN)
+
+$4B67  in room 19 (IN A SMALL PANTRY) and verb GO and noun HOLE
+           say msg 156 "YOU GO IN THE HOLE BUT CANNOT CONTINUE AND HAVE TO RETURN."
+
+$4B6F  in room 19 (IN A SMALL PANTRY) and verb GET and noun FOOD
+           say msg 27 "IT DOES NOT REMOVE"
+
+$4B77  in room 19 (IN A SMALL PANTRY) and verb GET and noun JARS
+           say msg 27 "IT DOES NOT REMOVE"
+
+$4B7F  in room 19 (IN A SMALL PANTRY) and verb GET and noun BOXES
+           say msg 27 "IT DOES NOT REMOVE"
+
+$4B87  in room 20 (AT THE NORTH END OF A NARROW NORTH/SO...) and verb UP and noun STAIRS
+           go to room 19 (IN A SMALL PANTRY)
+
+$4B8F  in room 20 (AT THE NORTH END OF A NARROW NORTH/SO...) and verb GO and noun STAIRS
+           go to room 19 (IN A SMALL PANTRY)
+
+$4B97  in room 21 (IN A MOIST BASEMENT) and verb GO and noun HOLE
+           go to room 22 (AT THE SOUTH END OF A NORTH/SOUTH TUNNEL)
+
+$4B9F  in room 21 (IN A MOIST BASEMENT) and verb UP and noun STAIRS
+           go to room 37 (ON A STAIRWAY)
+
+$4BA7  in room 21 (IN A MOIST BASEMENT) and verb GO and noun STAIRS
+           go to room 37 (ON A STAIRWAY)
+
+$4BAF  in room 21 (IN A MOIST BASEMENT) and verb GO and noun DOOR
+           go to room 20 (AT THE NORTH END OF A NARROW NORTH/SO...)
+
+$4BB7  in room 21 (IN A MOIST BASEMENT) and verb BREAK and noun WALL
+           say msg 50 "IT IS TOO HARD"
+
+$4BBF  in room 21 (IN A MOIST BASEMENT) and verb GET and noun TABLE
+           say msg 4 "IT IS TOO HEAVY"
+
+$4BC7  in room 21 (IN A MOIST BASEMENT) and verb GET and noun ALGAE
+           say msg 37 "I DONT UNDERSTAND WHAT YOU MEAN"
+
+$4BCF  in room 21 (IN A MOIST BASEMENT) and verb WIPE and noun ALGAE
+         if object 39 (TOWEL) is in inventory
+         if object 31 (BRICKS) is in nowhere
+           say msg 52 "THE WALL IS EXPOSED.  THERE IS A LOOSE BRICK"
+           put object 31 (BRICKS) in room 21 (IN A MOIST BASEMENT)
+
+$4BE0  in room 21 (IN A MOIST BASEMENT) and verb WIPE and noun ALGAE
+         if object 39 (TOWEL) is in inventory
+           say msg 2 "OK"
+
+$4BEB  in room 21 (IN A MOIST BASEMENT) and verb WIPE and noun ALGAE
+           say msg 51 "YOU HAVE NOTHING TO WIPE IT WITH"
+
+$4BF3  in room 21 (IN A MOIST BASEMENT) and verb GET and noun BRICKS
+         if object 31 (BRICKS) is in room 21 (IN A MOIST BASEMENT)
+           say msg 53 "YOU HAVE FOUND THE JEWELS!"
+           take the named object
+           put object 32 (JEWELS) in room 21 (IN A MOIST BASEMENT)
+
+$4C02  in room 21 (IN A MOIST BASEMENT) and verb LOOK and noun BODY
+           say msg 54 "IT IS TOM, THE PLUMBER.  HE SEEMS TO HAVE BEEN STABBED.  THERE IS A DAISY IN HIS HAND"
+
+$4C0A  in room 21 (IN A MOIST BASEMENT) and verb GET and noun BODY
+           say msg 4 "IT IS TOO HEAVY"
+
+$4C12  in room 21 (IN A MOIST BASEMENT) and verb GET and noun DAISY
+           say msg 37 "I DONT UNDERSTAND WHAT YOU MEAN"
+
+$4C1A  in room 21 (IN A MOIST BASEMENT) and verb LOOK and noun TABLE
+           say msg 55 "THERE IS A SKELETON KEY HERE"
+
+$4C22  in room 21 (IN A MOIST BASEMENT) and verb LOOK and noun BRICKS
+           say msg 56 "IT IS LOOSE"
+
+$4C2A  in room 21 (IN A MOIST BASEMENT) and verb LOOK and noun JEWELS
+           say msg 57 "THEY ARE JEWELS, ALL RIGHT!"
+
+$4C32  in room 22 (AT THE SOUTH END OF A NORTH/SOUTH TUNNEL) and verb GO and noun HOLE
+           go to room 21 (IN A MOIST BASEMENT)
+
+$4C3A  in room 22 (AT THE SOUTH END OF A NORTH/SOUTH TUNNEL) and verb LOOK and noun TUNNEL
+           say msg 59 "IT IS VERY LONG"
+
+$4C42  in room 23 (AT THE TOP OF A VERY TALL PINE TREE) and verb UP and noun TREE
+           go to room 13 (THERE IS A VERY TALL PINE TREE IN FRO...)
+
+$4C4A  in room 23 (AT THE TOP OF A VERY TALL PINE TREE) and verb LOOK and noun TELESCOP
+           show picture 22
+           say msg 22 "YOU ARE LOOKING THROUGH THE ATTIC WINDOW.  YOU SEE A TRAPDOOR IN THE ATTIC CEILING"
+           put object 40 (TRAPDOOR) in room 39 (IN THE ATTIC)
+
+$4C57  in room 23 (AT THE TOP OF A VERY TALL PINE TREE) and verb GO and noun HOUSE
+           say msg 23 "YOU HAD BETTER CLIMB DOWN FIRST"
+
+$4C5F  in room 23 (AT THE TOP OF A VERY TALL PINE TREE) and verb GET and noun TELESCOP
+           say msg 24 "IT IS FASTENED DOWN"
+
+$4C67  in room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...) and verb GO and noun STAIRS
+           go to room 3 (IN AN ENTRY HALL)
+
+$4C6F  in room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...) and verb GO and noun HALL
+           say msg 48 "WHICH DIRECTION?"
+
+$4C77  in room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...) and verb GO and noun DOOR
+           say msg 61 "WHERE?"
+
+$4C7F  in room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...) and verb LOOK and noun DOOR
+           say msg 61 "WHERE?"
+
+$4C87  in room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...) and verb LOOK and noun HALL
+           say msg 48 "WHICH DIRECTION?"
+
+$4C8F  in room 25 (THERE IS A DOORWAY HERE) and verb GO and noun DOOR
+         if object 54 (LINE) is in room 26 (IN A LARGE BEDROOM)
+           say msg 69 "A DAGGER IS THROWN AT YOU FROM OUTSIDE THE ROOM.  IT MISSES!"
+           go to room 26 (IN A LARGE BEDROOM)
+
+$4C9C  in room 25 (THERE IS A DOORWAY HERE) and verb GO and noun DOOR
+           go to room 26 (IN A LARGE BEDROOM)
+
+$4CA4  in room 26 (IN A LARGE BEDROOM) and verb GO and noun DOOR
+           go to room 25 (THERE IS A DOORWAY HERE)
+           put object 54 (LINE) in nowhere
+
+$4CAF  in room 26 (IN A LARGE BEDROOM) and verb GET and noun DAGGER
+           put object 54 (LINE) in nowhere
+           take the named object
+
+$4CB9  in room 26 (IN A LARGE BEDROOM) and verb GET and noun BED
+           say msg 4 "IT IS TOO HEAVY"
+
+$4CC1  in room 26 (IN A LARGE BEDROOM) and verb GET and noun TRUNK
+           say msg 4 "IT IS TOO HEAVY"
+
+$4CC9  in room 27 (THERE IS A DOORWAY HERE) and verb GO and noun DOOR
+           go to room 28 (IN A SMALL BEDROOM)
+
+$4CD1  in room 28 (IN A SMALL BEDROOM) and verb GO and noun DOOR
+           go to room 27 (THERE IS A DOORWAY HERE)
+
+$4CD9  in room 28 (IN A SMALL BEDROOM) and verb LOOK and noun BODY
+           say msg 71 "IT IS SALLY, THE SEAMSTRESS.  SHE HAS A LARGE LUMP ON HER HEAD.  THERE IS A BLOND HAIR ON HER DRESS"
+
+$4CE1  in room 28 (IN A SMALL BEDROOM) and verb GET and noun BODY
+           say msg 4 "IT IS TOO HEAVY"
+
+$4CE9  in room 28 (IN A SMALL BEDROOM) and verb GET and noun BED
+           say msg 4 "IT IS TOO HEAVY"
+
+$4CF1  in room 29 (THERE IS A DOORWAY HERE) and verb GO and noun DOOR
+           go to room 30 (IN AN OLD NURSERY)
+
+$4CF9  in room 30 (IN AN OLD NURSERY) and verb GO and noun DOOR
+           go to room 29 (THERE IS A DOORWAY HERE)
+
+$4D01  in room 30 (IN AN OLD NURSERY) and verb LOOK and noun BODY
+           say msg 67 "IT IS DR. GREEN.  IT APPEARS HE HAS BEEN STABBED"
+
+$4D09  in room 30 (IN AN OLD NURSERY) and verb GET and noun BODY
+           say msg 4 "IT IS TOO HEAVY"
+
+$4D11  in room 30 (IN AN OLD NURSERY) and verb GET and noun CHAIR
+           say msg 4 "IT IS TOO HEAVY"
+
+$4D19  in room 30 (IN AN OLD NURSERY) and verb GET and noun TRUNK
+           say msg 4 "IT IS TOO HEAVY"
+
+$4D21  in room 30 (IN AN OLD NURSERY) and verb GET and noun CRADLE
+           say msg 4 "IT IS TOO HEAVY"
+
+$4D29  in room 31 (THERE IS A DOORWAY HERE) and verb GO and noun DOOR
+           go to room 32 (IN A BOYS BEDROOM)
+
+$4D31  in room 32 (IN A BOYS BEDROOM) and verb GO and noun DOOR
+           go to room 31 (THERE IS A DOORWAY HERE)
+
+$4D39  in room 32 (IN A BOYS BEDROOM) and verb GET and noun BED
+           say msg 4 "IT IS TOO HEAVY"
+
+$4D41  in room 32 (IN A BOYS BEDROOM) and verb GET and noun TRUNK
+           say msg 4 "IT IS TOO HEAVY"
+
+$4D49  in room 33 (AT A STAIRWAY) and verb UP and noun STAIRS
+           go to room 39 (IN THE ATTIC)
+
+$4D51  in room 33 (AT A STAIRWAY) and verb GO and noun STAIRS
+           go to room 39 (IN THE ATTIC)
+
+$4D59  in room 34 (THERE IS A DOORWAY HERE) and verb GO and noun DOOR
+           go to room 35 (IN THE STUDY)
+
+$4D61  in room 35 (IN THE STUDY) and verb GO and noun DOOR
+           say msg 48 "WHICH DIRECTION?"
+
+$4D69  in room 35 (IN THE STUDY) and verb LOOK and noun PICTURE
+           say msg 73 "ITS NICE BUT NOT EXACTLY MY CUP OF TEA. THANX FOR THE LOOK THOUGH."
+
+$4D71  in room 35 (IN THE STUDY) and verb GET and noun TABLE
+           say msg 4 "IT IS TOO HEAVY"
+
+$4D79  in room 35 (IN THE STUDY) and verb GET and noun CHAIR
+           say msg 4 "IT IS TOO HEAVY"
+
+$4D81  in room 35 (IN THE STUDY) and verb UNSCREW and noun BOLTS
+           say msg 34 "WITH WHAT?"
+
+$4D89  in room 35 (IN THE STUDY) and verb GET and noun PICTURE
+         if switch[8] == 1
+           take the named object
+           put object 37 (BUTTON) in room 35 (IN THE STUDY)
+           say msg 76 "THERE IS A BUTTON ON THE WALL"
+
+$4D98  in room 35 (IN THE STUDY) and verb GET and noun PICTURE
+           say msg 74 "IT IS FASTENED TO THE WALL WITH FOUR BOLTS"
+
+$4DA0  in room 35 (IN THE STUDY) and verb WITH and noun BUTTERKN
+         if object 16 (BUTTERKN) is in inventory
+           say msg 75 "THE PICTURE IS LOOSE"
+           switch[8] = 1
+
+$4DAE  in room 35 (IN THE STUDY) and verb WITH and noun BUTTERKN
+           say msg 132 "YOU ARE NOT CARRYING IT"
+
+$4DB6  in room 35 (IN THE STUDY) and verb PRESS and noun BUTTON
+         if current picture == 41
+           make picture 40 the room view
+
+$4DC0  in room 35 (IN THE STUDY) and verb PRESS and noun BUTTON
+           make picture 41 the room view
+           say msg 77 "PART OF THE WALL OPENS"
+
+$4DCA  in room 35 (IN THE STUDY) and verb CLOSE and noun WALL
+           make picture 40 the room view
+
+$4DD2  in room 35 (IN THE STUDY) and verb GO and noun WALL
+         if current picture == 41
+           go to room 36 (IN A MUSTY CRAWLSPACE)
+           say msg 95 "THE WALL CLOSES BEHIND YOU WITH A BANG"
+           set room 35 (IN THE STUDY) view to picture 40
+
+$4DE1  in room 36 (IN A MUSTY CRAWLSPACE) and verb GO and noun STAIRS
+           go to room 37 (ON A STAIRWAY)
+
+$4DE9  in room 36 (IN A MUSTY CRAWLSPACE) and verb OPEN and noun WALL
+           say msg 96 "IT WON'T OPEN"
+
+$4DF1  in room 36 (IN A MUSTY CRAWLSPACE) and verb BREAK and noun WALL
+           say msg 50 "IT IS TOO HARD"
+
+$4DF9  in room 37 (ON A STAIRWAY) and verb GO and noun STAIRS
+           say msg 48 "WHICH DIRECTION?"
+
+$4E01  in room 38 (IN THE BATHROOM) and verb GO and noun DOOR
+           go to room 35 (IN THE STUDY)
+
+$4E09  in room 38 (IN THE BATHROOM) and verb FAUCET and noun ON
+           say msg 13 "WATER IS RUNNING INTO THE SINK"
+           switch[9] = 1
+
+$4E14  in room 38 (IN THE BATHROOM) and verb GET and noun WATER
+         if switch[9] == 1
+         if object 14 (PITCHER) is in inventory
+           say msg 92 "YOUR PITCHER IS FULL"
+           put object 14 (PITCHER) in nowhere
+           put object 15 (PITCHER) in inventory
+
+$4E28  in room 38 (IN THE BATHROOM) and verb GET and noun WATER
+         if switch[9] == 1
+           say msg 14 "YOU HAVE NO CONTAINER"
+
+$4E33  in room 38 (IN THE BATHROOM) and verb GET and noun WATER
+           say msg 131 "I SEE NO WATER"
+
+$4E3B  in room 38 (IN THE BATHROOM) and verb FAUCET and noun OFF
+           switch[9] = 0
+           say msg 2 "OK"
+
+$4E46  in room 38 (IN THE BATHROOM) and verb FLUSH and noun TOILET
+           say msg 2 "OK"
+
+$4E4E  in room 38 (IN THE BATHROOM) and verb LOOK and noun BODY
+           say msg 93 "IT IS BILL, THE BUTCHER. HE HAS BEEN STRANGLED WITH A PAIR OF PANTYHOSE"
+
+$4E56  in room 38 (IN THE BATHROOM) and verb GET and noun BODY
+           say msg 4 "IT IS TOO HEAVY"
+
+$4E5E  in room 38 (IN THE BATHROOM) and verb GET and noun SHOWER
+           say msg 158 "THANK YOU. I LOVE TO FEEL CLEAN. THATS MUCH BETTER."
+
+$4E66  in room 38 (IN THE BATHROOM) and verb GO and noun TOILET
+           say msg 157 "THANX. THAT FEELS EVER SO MUCH BETTER"
+
+$4E6E  in room 39 (IN THE ATTIC) and verb HELP
+         if object 42 (SLEDGEHA) is in room 39 (IN THE ATTIC)
+           say msg 153 "I THINK I SEE A SLEDGEHAMMER HERE."
+
+$4E79  in room 39 (IN THE ATTIC) and verb GO and noun STAIRS
+           go to room 33 (AT A STAIRWAY)
+
+$4E81  in room 39 (IN THE ATTIC) and verb OPEN and noun TRAPDOOR
+         if object 40 (TRAPDOOR) is in room 39 (IN THE ATTIC)
+           put object 40 (TRAPDOOR) in nowhere
+           put object 41 (TRAPDOOR) in room 39 (IN THE ATTIC)
+
+$4E90  in room 39 (IN THE ATTIC) and verb OPEN and noun TRAPDOOR
+         if object 41 (TRAPDOOR) is in room 39 (IN THE ATTIC)
+           say msg 129 "IT IS OPEN"
+
+$4E9B  in room 39 (IN THE ATTIC) and verb OPEN and noun TRAPDOOR
+           say msg 80 "WHAT TRAPDOOR?"
+
+$4EA3  in room 39 (IN THE ATTIC) and verb CLOSE and noun TRAPDOOR
+         if object 41 (TRAPDOOR) is in room 39 (IN THE ATTIC)
+           put object 41 (TRAPDOOR) in nowhere
+           put object 40 (TRAPDOOR) in room 39 (IN THE ATTIC)
+
+$4EB2  in room 39 (IN THE ATTIC) and verb CLOSE and noun TRAPDOOR
+         if object 40 (TRAPDOOR) is in room 39 (IN THE ATTIC)
+           say msg 128 "THE DOOR IS CLOSED"
+
+$4EBD  in room 39 (IN THE ATTIC) and verb CLOSE and noun TRAPDOOR
+           say msg 80 "WHAT TRAPDOOR?"
+
+$4EC5  in room 39 (IN THE ATTIC) and verb GO and noun TRAPDOOR
+         if object 41 (TRAPDOOR) is in room 39 (IN THE ATTIC)
+           go to room 41 (IN THE TOWER)
+
+$4ED0  in room 39 (IN THE ATTIC) and verb GO and noun TRAPDOOR
+         if object 40 (TRAPDOOR) is in room 39 (IN THE ATTIC)
+           say msg 133 "IT IS NOT OPEN"
+
+$4EDB  in room 39 (IN THE ATTIC) and verb GO and noun TRAPDOOR
+           say msg 80 "WHAT TRAPDOOR?"
+
+$4EE3  in room 39 (IN THE ATTIC) and verb UP and noun LADDER
+         if object 41 (TRAPDOOR) is in room 39 (IN THE ATTIC)
+           go to room 41 (IN THE TOWER)
+
+$4EEE  in room 39 (IN THE ATTIC) and verb UP and noun LADDER
+           say msg 150 "YOU CLIMB UP BUMP YOUR HEAD ON THE CEILING AND FALL, DAZED BUT ALIVE."
+
+$4EF6  in room 39 (IN THE ATTIC) and verb GO and noun DOOR
+           go to room 40 (IN A STORAGE ROOM)
+
+$4EFE  in room 39 (IN THE ATTIC) and verb LOOK and noun WINDOW
+           say msg 79 "YOU SEE A FOREST"
+
+$4F06  in room 39 (IN THE ATTIC) and verb GET and noun LADDER
+           say msg 27 "IT DOES NOT REMOVE"
+
+$4F0E  in room 39 (IN THE ATTIC) and verb BREAK and noun WINDOW
+           say msg 2 "OK"
+
+$4F16  in room 39 (IN THE ATTIC) and verb GO and noun WINDOW
+           say msg 147 "YOU FALL TO EARTH. LUCKILY YOU HAVE ONLY MINOR INJURIES."
+           say msg 148 "UNFORTUNATELY THE AMBULANCE DRIVER SMASHS INTO A VOLKWAGEN. NO SURVIVORS. YOU ARE DEAD."
+           ask to play again
+
+$4F21  in room 40 (IN A STORAGE ROOM) and verb GO and noun DOOR
+           go to room 39 (IN THE ATTIC)
+
+$4F29  in room 40 (IN A STORAGE ROOM) and verb GET and noun BOXES
+           say msg 27 "IT DOES NOT REMOVE"
+
+$4F31  in room 40 (IN A STORAGE ROOM) and verb GET and noun TRUNK
+           say msg 4 "IT IS TOO HEAVY"
+
+$4F39  in room 40 (IN A STORAGE ROOM) and verb OPEN and noun TRUNK
+         if switch[10] == 1
+         if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+           put object 43 (TRUNK) in nowhere
+           put object 44 (TRUNK) in room 40 (IN A STORAGE ROOM)
+
+$4F4B  in room 40 (IN A STORAGE ROOM) and verb OPEN and noun TRUNK
+         if switch[10] == 1
+           say msg 82 "IT IS LOCKED"
+
+$4F56  in room 40 (IN A STORAGE ROOM) and verb OPEN and noun TRUNK
+         if object 44 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+           say msg 129 "IT IS OPEN"
+
+$4F61  in room 40 (IN A STORAGE ROOM) and verb OPEN and noun TRUNK
+           say msg 82 "IT IS LOCKED"
+
+$4F69  in room 40 (IN A STORAGE ROOM) and verb CLOSE and noun TRUNK
+         if object 44 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+           put object 44 (TRUNK) in nowhere
+           put object 43 (TRUNK) in room 40 (IN A STORAGE ROOM)
+
+$4F78  in room 40 (IN A STORAGE ROOM) and verb CLOSE and noun TRUNK
+         if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+           say msg 133 "IT IS NOT OPEN"
+
+$4F83  in room 40 (IN A STORAGE ROOM) and verb LOOK and noun TRUNK
+         if object 44 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+           show picture 50
+
+$4F8E  in room 40 (IN A STORAGE ROOM) and verb LOOK and noun TRUNK
+         if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+         if switch[10] == 0
+           say msg 82 "IT IS LOCKED"
+
+$4F9C  in room 40 (IN A STORAGE ROOM) and verb LOOK and noun TRUNK
+         if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+         if switch[10] == 1
+           say msg 133 "IT IS NOT OPEN"
+
+$4FAA  in room 40 (IN A STORAGE ROOM) and verb UNLOCK and noun TRUNK
+         if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+         if object 22 (KEY) is in inventory
+         if switch[10] == 0
+           say msg 2 "OK"
+           switch[10] = 1
+
+$4FBE  in room 40 (IN A STORAGE ROOM) and verb UNLOCK and noun TRUNK
+         if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+         if object 22 (KEY) is in inventory
+         if switch[10] == 1
+           say msg 136 "IT IS UNLOCKED"
+
+$4FCF  in room 40 (IN A STORAGE ROOM) and verb UNLOCK and noun TRUNK
+         if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+         if switch[10] == 0
+           say msg 83 "YOU HAVE NOTHING TO UNLOCK IT WITH"
+
+$4FDD  in room 40 (IN A STORAGE ROOM) and verb UNLOCK and noun TRUNK
+         if object 43 (TRUNK) is in room 40 (IN A STORAGE ROOM)
+         if switch[10] == 1
+           say msg 136 "IT IS UNLOCKED"
+
+$4FEB  in room 40 (IN A STORAGE ROOM) and verb GO and noun WINDOW
+           say msg 147 "YOU FALL TO EARTH. LUCKILY YOU HAVE ONLY MINOR INJURIES."
+           say msg 148 "UNFORTUNATELY THE AMBULANCE DRIVER SMASHS INTO A VOLKWAGEN. NO SURVIVORS. YOU ARE DEAD."
+
+$4FF5  in room 41 (IN THE TOWER) and verb GO and noun TRAPDOOR
+           go to room 39 (IN THE ATTIC)
+
+$4FFD  in room 41 (IN THE TOWER) and verb LOOK and noun PERSON
+         if switch[11] == 0
+           say msg 87 "SHE IS GOING TO KILL YOU"
+
+$5008  in room 41 (IN THE TOWER) and verb LOOK and noun DAISY
+         if switch[11] == 0
+           say msg 87 "SHE IS GOING TO KILL YOU"
+
+$5013  in room 41 (IN THE TOWER) and verb LOOK and noun DAISY
+           say msg 88 "SHE IS DEAD"
+
+$501B  in room 41 (IN THE TOWER) and verb KILL and noun DAISY
+           say msg 34 "WITH WHAT?"
+
+$5023  in room 41 (IN THE TOWER) and verb WITH and noun DAGGER
+         if switch[11] == 1
+           say msg 166 "DAISY IS ALREADY DEAD"
+
+$502E  in room 41 (IN THE TOWER) and verb WITH and noun DAGGER
+         if object 53 (DAGGER) is in inventory
+           say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
+           ask to play again
+
+$503A  in room 41 (IN THE TOWER) and verb WITH and noun DAGGER
+           say msg 132 "YOU ARE NOT CARRYING IT"
+           say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
+           ask to play again
+
+$5045  in room 41 (IN THE TOWER) and verb WITH and noun GUN
+         if switch[6] == 0
+         if object 45 (GUN) is in inventory
+           put object 47 (DOTS) in nowhere
+           put object 48 (X'S) in room 41 (IN THE TOWER)
+           switch[6] = 1
+           say msg 35 "YOUR GUN IS EMPTY"
+           switch[11] = 1
+           say msg 161 "DAISY IS NOW DEAD"
+
+$5061  in room 41 (IN THE TOWER) and verb WITH and noun GUN
+         if switch[11] == 1
+           say msg 166 "DAISY IS ALREADY DEAD"
+
+$506C  in room 41 (IN THE TOWER) and verb WITH and noun GUN
+         if switch[6] == 1
+         if object 45 (GUN) is in inventory
+           say msg 35 "YOUR GUN IS EMPTY"
+           say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
+           ask to play again
+
+$507D  in room 41 (IN THE TOWER) and verb WITH and noun GUN
+           say msg 132 "YOU ARE NOT CARRYING IT"
+           say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
+           ask to play again
+
+$5088  in room 41 (IN THE TOWER) and verb GET and noun BODY
+           say msg 4 "IT IS TOO HEAVY"
+
+$5090  in room 41 (IN THE TOWER) and verb WITH and noun BUTTERKN
+         if object 16 (BUTTERKN) is in inventory
+           say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
+           ask to play again
+
+$509C  in room 41 (IN THE TOWER) and verb WITH and noun BUTTERKN
+           say msg 132 "YOU ARE NOT CARRYING IT"
+           say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
+           ask to play again
+
+$50A7  in room 41 (IN THE TOWER) and verb WITH and noun SLEDGEHA
+         if object 42 (SLEDGEHA) is in inventory
+           say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
+           ask to play again
+
+$50B3  in room 41 (IN THE TOWER) and verb WITH and noun SLEDGEHA
+           say msg 132 "YOU ARE NOT CARRYING IT"
+           say msg 90 "DAISY STABBED YOU.  YOU ARE DEAD"
+           ask to play again
+
+$50BE  in room 41 (IN THE TOWER) and verb GET and noun NOTE
+         if switch[11] == 0
+           say msg 86 "DAISY WON'T LET YOU"
+
+$50C9  in room 41 (IN THE TOWER) and verb GET and noun NOTE
+           say msg 2 "OK"
+           take the named object
+
+$50D2  in room 41 (IN THE TOWER) and verb GET and noun KNIFE
+           say msg 37 "I DONT UNDERSTAND WHAT YOU MEAN"
+
+$50DA  in room 41 (IN THE TOWER) and verb LOOK and noun BODY
+           say msg 88 "SHE IS DEAD"
+
+$50E2  in room 41 (IN THE TOWER) and verb CLOSE and noun TRAPDOOR
+           say msg 134 "IT WONT CLOSE HERE"
+
+$50EA  verb LOOK and noun WINDOW
+           say msg 5 "WINDOWS ARE BOARDED UP EXCEPT THE ATTIC WINDOW"
+
+$50F2  verb LOOK and noun NOTE
+         if object 9 (NOTE) is in inventory
+           say msg 65 "THERE IS WRITING ON IT"
+
+$50FD  verb READ and noun NOTE
+         if object 9 (NOTE) is in inventory
+           show picture 48
+
+$5108  verb LOOK and noun ROOM
+           show the room view
+
+$510F  verb LIGHT and noun MATCHES
+         if object 13 (MATCHES) is in inventory
+           switch[3] = 4
+           light on
+           say msg 2 "OK"
+
+$511E  verb LIGHT and noun MATCHES
+           say msg 132 "YOU ARE NOT CARRYING IT"
+
+$5126  verb POUR and noun WATER
+         if object 15 (PITCHER) is in inventory
+           put object 15 (PITCHER) in nowhere
+           put object 14 (PITCHER) in inventory
+           say msg 17 "THE PITCHER IS EMPTY"
+
+$5137  verb POUR and noun WATER
+           say msg 131 "I SEE NO WATER"
+
+$513F  verb LOOK and noun TREE
+         if current picture == 20
+           say msg 15 "THERE IS NOTHING SPECIAL"
+
+$5149  verb UP and noun TREE
+         if current picture == 20
+           say msg 15 "THERE IS NOTHING SPECIAL"
+
+$5153  verb LIGHT and noun CANDLE
+         if object 19 (CANDLE) is in inventory
+         if object 13 (MATCHES) is in inventory
+           put object 19 (CANDLE) in nowhere
+           put object 18 (CANDLE) in inventory
+           light on
+           say msg 2 "OK"
+
+$5168  verb UNLIGHT and noun CANDLE
+         if object 18 (CANDLE) is in inventory
+           put object 18 (CANDLE) in nowhere
+           put object 19 (CANDLE) in inventory
+
+$5177  verb BREAK and noun WINDOW
+           say msg 5 "WINDOWS ARE BOARDED UP EXCEPT THE ATTIC WINDOW"
+
+$517F  verb GO and noun WINDOW
+           say msg 5 "WINDOWS ARE BOARDED UP EXCEPT THE ATTIC WINDOW"
+
+$5187  verb WITH and noun GUN
+         if object 45 (GUN) is in inventory
+         if switch[6] == 0
+           switch[6] = 1
+           say msg 160 "YOUR GUN IS NOW EMPTY"
+
+$5198  verb WITH and noun GUN
+         if object 45 (GUN) is in inventory
+           switch[6] = 1
+           say msg 35 "YOUR GUN IS EMPTY"
+
+$51A6  verb LOOK and noun GUN
+           say msg 84 "THERE IS ONE BULLET IN THE GUN"
+
+$51AE  verb READ and noun NOTE
+         if object 17 (NOTE) is in inventory
+           show picture 24
+
+$51B9  verb READ and noun NOTE
+         if object 35 (NOTE) is in inventory
+           show picture 36
+
+$51C4  verb READ and noun NOTE
+         if object 49 (NOTE) is in inventory
+           show picture 51
+
+$51CF  verb NORTH and noun 
+           go north
+
+$51D6  verb SOUTH and noun 
+           go south
+
+$51DD  verb EAST and noun 
+           go east
+
+$51E4  verb WEST and noun 
+           go west
+
+$51EB  verb UP and noun 
+           go up
+
+$51F2  verb DOWN and noun 
+           go down
+
+$51F9  verb GET
+           take the named object
+
+$5200  verb DROP
+           drop the named object
+
+$5207  verb LOOK and noun NOTE
+         if object 17 (NOTE) is in inventory
+           say msg 65 "THERE IS WRITING ON IT"
+
+$5212  verb LOOK and noun NOTE
+         if object 35 (NOTE) is in inventory
+           say msg 65 "THERE IS WRITING ON IT"
+
+$521D  verb LOOK and noun NOTE
+         if object 49 (NOTE) is in inventory
+           say msg 65 "THERE IS WRITING ON IT"
+
+$5228  verb LOOK and noun NOTE
+           say msg 127 "IM NOT CARRYING THAT"
+
+$5230  verb READ and noun NOTE
+           say msg 127 "IM NOT CARRYING THAT"
+
+$5238  verb SAVE and noun GAME
+           save game
+
+$523F  verb DRINK and noun WATER
+         if object 15 (PITCHER) is in inventory
+           say msg 2 "OK"
+           put object 15 (PITCHER) in nowhere
+           put object 14 (PITCHER) in inventory
+
+$5250  verb RESTORE and noun GAME
+           restore game
+
+$5257  verb QUIT and noun 
+           ask to play again
+
+$525E  verb HELP
+         if current picture == 20
+           say msg 165 "IF ONLY I COULD TELL IF I'D BEEN HERE BEFORE..."
+
+$5268  verb HELP
+           say msg 141 "TRY GOING IN SOME DIRECTION EX:NORTH,SOUTH,EAST,WEST,UP,DOWN"
+
+$5270  verb LOOK
+           say msg 15 "THERE IS NOTHING SPECIAL"
+
+$5278  verb INVENTOR and noun 
+           list objects carried
+
+$527F  verb FUCK
+           say msg 149 "IF YOU FEEL THAT WAY I REFUSE TO PLAY WITH YOU..."
+           say msg 140 "THANK YOU FOR PLAYING HI-RES ADVENTURE ... GOOD-BYE"; exit to DOS
+
+$5288  verb LIGHT and noun CANDLE
+         if object 13 (MATCHES) is in inventory
+           say msg 154 "YOU DON'T HAVE IT"
+
+$5293  verb LIGHT and noun CANDLE
+           say msg 155 "YOU HAVE NOTHING TO LIGHT IT WITH"
+
+$529B  verb SLEEP
+           say msg 159 "I FEEL MUCH MORE RESTED NOW"
+
+TURN RULES ($4400)
+==================
+
+$4400  always
+         if switch[3] == 1
+           say msg 130 "THE MATCH WENT OUT"
+
+$440B  always
+         if switch[3] == 0
+           switch[3] = 1
+
+$4417  always
+           switch[3] -= 1
+
+$4420  always
+         if turn > 36
+         if switch[3] == 0
+           light off
+
+$442C  always
+         if object 18 (CANDLE) is in nowhere
+         if switch[3] == 0
+         if turn > 36
+           say msg 42 "IT IS DARK, YOU CAN'T SEE"
+
+$443C  always
+         if object 18 (CANDLE) is in inventory
+           light on
+
+$4446  verb DROP
+           show the room view
+
+$444D  always
+         if turn > 20
+         if switch[16] == 0
+           say msg 7 "IT IS GETTING DARK"
+
+$445A  always
+         if turn > 35
+           switch[16] = 1
+
+$4465  in room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...)
+         if object 32 (JEWELS) is in inventory
+         if switch[11] == 1
+           say msg 164 "CONGRATULATIONS YOU HAVE BEATEN ADVENTURE AND ARE DECLARED A GURU WIZARD"
+           ask to play again
+

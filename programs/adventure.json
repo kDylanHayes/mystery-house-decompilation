@@ -1,0 +1,43 @@
+{
+  "name": "ADVENTURE",
+  "file": "ADVENTURE.bin",
+  "load": "0800",
+  "entries": [
+    "0800",
+    "6215",
+    "5651",
+    "5912"
+  ],
+  "lib": "7600",
+  "jump_tables": [
+    {
+      "addr": "5AB7",
+      "count": 11,
+      "name": "tbl_5AB7"
+    },
+    {
+      "addr": "6535",
+      "count": 30,
+      "name": "tbl_6535"
+    }
+  ],
+  "labels": {},
+  "always_branches": [
+    "6BE1"
+  ],
+  "data_only": [
+    [
+      "0800",
+      "080D"
+    ]
+  ],
+  "old_libs": [
+    "4A00"
+  ],
+  "inline_text_length": {
+    "7330": 23,
+    "7504": 23,
+    "5957": 23
+  },
+  "_comment": "inline_text_length: rt_print calls whose text has digits patched in at run time ($00 in the file); the length includes the terminator. Shown as # in listings."
+}

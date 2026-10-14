@@ -1,0 +1,9972 @@
+{
+ "verbs": [
+  [
+   "GO",
+   "ENTER",
+   "RUN",
+   "EXIT",
+   "LEAVE",
+   "WALK"
+  ],
+  [
+   "U",
+   "UP",
+   "CLIMB",
+   "ASCEND"
+  ],
+  [
+   "D",
+   "DOWN",
+   "DESCEND"
+  ],
+  [
+   "OPEN"
+  ],
+  [
+   "CLOSE",
+   "SHUT"
+  ],
+  [
+   "UNLOCK",
+   "UNLATCH"
+  ],
+  [
+   "N",
+   "NORTH"
+  ],
+  [
+   "S",
+   "SOUTH"
+  ],
+  [
+   "E",
+   "EAST"
+  ],
+  [
+   "W",
+   "WEST"
+  ],
+  [
+   "BREAK",
+   "TEAR",
+   "BUST"
+  ],
+  [
+   "MOVE",
+   "SLIDE",
+   "PUSH"
+  ],
+  [
+   "LOOK",
+   "EXAMINE"
+  ],
+  [
+   "GET",
+   "TAKE",
+   "LIFT"
+  ],
+  [
+   "LIGHT",
+   "STRIKE"
+  ],
+  [
+   "POUR",
+   "DUMP"
+  ],
+  [
+   "DROP",
+   "SET",
+   "LEAVE"
+  ],
+  [
+   "JUMP",
+   "LEAP"
+  ],
+  [
+   "READ"
+  ],
+  [
+   "TALK",
+   "SPEAK"
+  ],
+  [
+   "KILL",
+   "SLAY"
+  ],
+  [
+   "EAT",
+   "CONSUME"
+  ],
+  [
+   "WIPE",
+   "RUB",
+   "REMOVE"
+  ],
+  [
+   "FLUSH"
+  ],
+  [
+   "UNSCREW",
+   "UNBOLT",
+   "LOOSEN"
+  ],
+  [
+   "WITH",
+   "USE",
+   "SHOOT",
+   "FIRE"
+  ],
+  [
+   "PRESS",
+   "PUSH"
+  ],
+  [
+   "TURN"
+  ],
+  [
+   "FAUCET",
+   "TAP",
+   "WATER"
+  ],
+  [
+   "WATER"
+  ],
+  [
+   "ON"
+  ],
+  [
+   "OFF"
+  ],
+  [
+   "UNLIGHT",
+   "OFF"
+  ],
+  [
+   "SAVE",
+   "STORE"
+  ],
+  [
+   "RESTORE"
+  ],
+  [
+   "QUIT",
+   "BYE",
+   "STOP"
+  ],
+  [
+   "HELP"
+  ],
+  [
+   "INVENTOR",
+   "INVEN",
+   "CARRYING",
+   "?"
+  ],
+  [
+   "FUCK",
+   "SUCK",
+   "SHIT",
+   "CUNT"
+  ],
+  [
+   "SCORE"
+  ],
+  [
+   "SLEEP",
+   "REST",
+   "RETIRE",
+   "LIE"
+  ],
+  [
+   "DRINK",
+   "SIP",
+   "TASTE"
+  ],
+  [
+   "DONE"
+  ]
+ ],
+ "nouns": [
+  [
+   "DAISY",
+   "FLOWER"
+  ],
+  [
+   "BILL"
+  ],
+  [
+   "JOE"
+  ],
+  [
+   "SALLY"
+  ],
+  [
+   "SAM"
+  ],
+  [
+   "TOM"
+  ],
+  [
+   "DOCTOR",
+   "GREEN",
+   "DR.",
+   "DR.GREEN"
+  ],
+  [
+   "DAGGER"
+  ],
+  [
+   "GUN",
+   "PISTOL"
+  ],
+  [
+   "NOTE",
+   "MEMO",
+   "LETTER",
+   "PAPER"
+  ],
+  [
+   "BLA",
+   "DOG"
+  ],
+  [
+   "DOG"
+  ],
+  [
+   "FOOD",
+   "BREAD"
+  ],
+  [
+   "LAST"
+  ],
+  [
+   "BODY",
+   "CORPSE",
+   "CADAVER"
+  ],
+  [
+   "TRAPDOOR"
+  ],
+  [
+   "KNIFE"
+  ],
+  [
+   "BOLTS",
+   "SCREWS"
+  ],
+  [
+   "BUTTERKN"
+  ],
+  [
+   "PICTURE",
+   "PORTRAIT"
+  ],
+  [
+   "BUTTON",
+   "KNOB"
+  ],
+  [
+   "CRAWLSPA"
+  ],
+  [
+   "STAIRS",
+   "STAIRWAY",
+   "STEPS"
+  ],
+  [
+   "WALL",
+   "WALLS"
+  ],
+  [
+   "DOOR",
+   "DOORS",
+   "DOORWAY"
+  ],
+  [
+   "TABLE",
+   "DESK"
+  ],
+  [
+   "DRAWERS"
+  ],
+  [
+   "RUG",
+   "CARPET"
+  ],
+  [
+   "WATER",
+   "LIQUID"
+  ],
+  [
+   "TOILET",
+   "POTTY",
+   "JOHN"
+  ],
+  [
+   "TOWEL",
+   "CLOTH"
+  ],
+  [
+   "SHOWER"
+  ],
+  [
+   "SLEDGEHA",
+   "HAMMER"
+  ],
+  [
+   "WINDOW"
+  ],
+  [
+   "BOXES",
+   "BOX"
+  ],
+  [
+   "TRUNK",
+   "CHEST"
+  ],
+  [
+   "FENCE"
+  ],
+  [
+   "CANDLE"
+  ],
+  [
+   "LAMP"
+  ],
+  [
+   "HOLE"
+  ],
+  [
+   "KEY"
+  ],
+  [
+   "SHELVES",
+   "BOOKSHEL"
+  ],
+  [
+   "FIREPLAC",
+   "CHIMNEY"
+  ],
+  [
+   "COUCH",
+   "SOFA",
+   "DAVENPOR",
+   "DIVAN"
+  ],
+  [
+   "BED",
+   "MATTRESS"
+  ],
+  [
+   "FLOOR"
+  ],
+  [
+   "ALGAE"
+  ],
+  [
+   "BRICKS",
+   "BRICK"
+  ],
+  [
+   "JEWELS",
+   "GEMS",
+   "TREASURE",
+   "DIAMONDS"
+  ],
+  [
+   "JARS",
+   "JAR",
+   "BOTTLE",
+   "BOTTLES"
+  ],
+  [
+   "GATE"
+  ],
+  [
+   "TREE",
+   "TREES"
+  ],
+  [
+   "TELESCOP"
+  ],
+  [
+   "PERSON",
+   "MAN",
+   "WOMAN",
+   "PEOPLE"
+  ],
+  [
+   "GRAVESTO",
+   "TOMBSTON"
+  ],
+  [
+   "CABINET",
+   "CUPBOARD"
+  ],
+  [
+   "MATCHES",
+   "MATCH"
+  ],
+  [
+   "REFRIGER",
+   "FRIDGE",
+   "ICEBOX",
+   "REFRIDGE"
+  ],
+  [
+   "PITCHER"
+  ],
+  [
+   "STOVE",
+   "RANGE"
+  ],
+  [
+   "PORCH"
+  ],
+  [
+   "GRAVES",
+   "GRAVE"
+  ],
+  [
+   "FAUCET",
+   "TAP"
+  ],
+  [
+   "ON"
+  ],
+  [
+   "OFF"
+  ],
+  [
+   "SINK",
+   "TUB"
+  ],
+  [
+   "CRADLE",
+   "CRIB"
+  ],
+  [
+   "CHAIR",
+   "ROCKER"
+  ],
+  [
+   "SHOVEL",
+   "SPADE"
+  ],
+  [
+   ""
+  ],
+  [
+   "ROOM",
+   "AROUND"
+  ],
+  [
+   "TUNNEL"
+  ],
+  [
+   "HOUSE",
+   "BUILDING",
+   "HOME"
+  ],
+  [
+   "HALL",
+   "HALLWAY",
+   "CORRIDOR"
+  ],
+  [
+   "LADDER"
+  ],
+  [
+   "FIRE"
+  ],
+  [
+   "DOTS"
+  ],
+  [
+   "X'S"
+  ],
+  [
+   "WELCOME"
+  ],
+  [
+   "LINE"
+  ],
+  [
+   "N",
+   "NORTH"
+  ],
+  [
+   "S",
+   "SOUTH"
+  ],
+  [
+   "E",
+   "EAST"
+  ],
+  [
+   "W",
+   "WEST"
+  ],
+  [
+   "U",
+   "UP"
+  ],
+  [
+   "D",
+   "DOWN"
+  ],
+  [
+   "BOOKS",
+   "BOOK"
+  ],
+  [
+   "GAME",
+   "ADVENTUR"
+  ],
+  [
+   "DONE"
+  ]
+ ],
+ "messages": {
+  "1": "IT IS TOO HIGH",
+  "2": "OK",
+  "3": "IT IS SAM, THE MECHANIC.  HE HAS BEEN HIT IN THE HEAD BY A BLUNT OBJECT",
+  "4": "IT IS TOO HEAVY",
+  "5": "WINDOWS ARE BOARDED UP EXCEPT THE ATTIC WINDOW",
+  "6": "YOU ARE IN THE FENCED BACK YARD.  THE FENCE FOLLOWS THE SIDE OF THE HOUSE TO THE NORTH.  THERE IS A DEAD BODY HERE",
+  "7": "IT IS GETTING DARK",
+  "8": "YOU ARE IN THE SIDE YARD.  YOU CAN FOLLOW THE FENCE TO THE SOUTH",
+  "9": "YOU ARE IN THE KITCHEN.  THERE IS A REFRIGERATOR, STOVE AND CABINET",
+  "10": "THE WALL IS BRICKED UP BEHIND IT",
+  "11": "THE BRICKS BREAK APART LEAVING A LARGE HOLE",
+  "12": "YOU HAVE NOTHING STRONG ENOUGH",
+  "13": "WATER IS RUNNING INTO THE SINK",
+  "14": "YOU HAVE NO CONTAINER",
+  "15": "THERE IS NOTHING SPECIAL",
+  "16": "THE STOVE EXPLODES, YOU ARE DEAD",
+  "17": "THE PITCHER IS EMPTY",
+  "18": "YOU CAN'T CLIMB THESE TREES",
+  "19": "YOU ARE IN A FOREST",
+  "20": "THERE IS A VERY TALL PINE TREE IN FRONT OF YOU",
+  "21": "YOU ARE AT THE TOP OF A VERY TALL PINE TREE",
+  "22": "YOU ARE LOOKING THROUGH THE ATTIC WINDOW.  YOU SEE A TRAPDOOR IN THE ATTIC CEILING",
+  "23": "YOU HAD BETTER CLIMB DOWN FIRST",
+  "24": "IT IS FASTENED DOWN",
+  "25": "YOU ARE AT THE NORTH END OF A NARROW NORTH/SOUTH PASSAGEWAY",
+  "26": "YOU ARE IN A SMALL PANTRY",
+  "27": "IT DOES NOT REMOVE",
+  "28": "YOU ARE IN A SMALL FENCED CEMETARY.  THERE ARE SIX NEWLY DUG GRAVES",
+  "29": "THERE IS A MAN HERE",
+  "30": "THERE IS A DEAD BODY HERE",
+  "31": "THE WRITING IS WORN DOWN",
+  "32": "IT IS JOE, THE GRAVEDIGGER.  HE HAS JUST FINISHED DIGGING THE SIX GRAVES",
+  "33": "HE DOESN'T TALK MUCH",
+  "34": "WITH WHAT?",
+  "35": "YOUR GUN IS EMPTY",
+  "36": "IT IS JOE, THE GRAVEDIGGER",
+  "37": "I DONT UNDERSTAND WHAT YOU MEAN",
+  "38": "YOU FALL IN ONE AND JOE BURIES YOU.  YOU ARE DEAD",
+  "39": "YOU FALL IN ONE AND CLIMB OUT AGAIN",
+  "40": "JOE WON'T LET YOU",
+  "41": "YOU ARE IN THE DINING ROOM",
+  "42": "IT IS DARK, YOU CAN'T SEE",
+  "43": "WOULD YOU LIKE TO PLAY AGAIN?",
+  "44": "YOU TRIP OVER RUG AND FALL.  OH,OH, YOU STARTED A FIRE WITH YOUR CANDLE!",
+  "45": "THE FIRE IS OUT",
+  "46": "THE FIRE IS OUT OF CONTROL.  YOU ARE DEAD",
+  "47": "THERE IS NO WICK",
+  "48": "WHICH DIRECTION?",
+  "49": "YOU ARE IN A MOIST BASEMENT. ALGAE COVERS THE WALLS. THERE IS A DEAD BODY HERE.",
+  "50": "IT IS TOO HARD",
+  "51": "YOU HAVE NOTHING TO WIPE IT WITH",
+  "52": "THE WALL IS EXPOSED.  THERE IS A LOOSE BRICK",
+  "53": "YOU HAVE FOUND THE JEWELS!",
+  "54": "IT IS TOM, THE PLUMBER.  HE SEEMS TO HAVE BEEN STABBED.  THERE IS A DAISY IN HIS HAND",
+  "55": "THERE IS A SKELETON KEY HERE",
+  "56": "IT IS LOOSE",
+  "57": "THEY ARE JEWELS, ALL RIGHT!",
+  "58": "YOU ARE AT THE SOUTH END OF A NORTH/SOUTH TUNNEL",
+  "59": "IT IS VERY LONG",
+  "60": "YOU ARE AT THE JUNCTION OF AN EAST/WEST HALLWAY AND A NORTH/SOUTH HALLWAY",
+  "61": "WHERE?",
+  "62": "THERE IS A DOORWAY HERE",
+  "63": "YOU ARE AT A STAIRWAY",
+  "64": "YOU ARE IN A BOYS BEDROOM",
+  "65": "THERE IS WRITING ON IT",
+  "66": "YOU ARE IN AN OLD NURSERY. THERE IS A DEAD BODY HERE.",
+  "67": "IT IS DR. GREEN.  IT APPEARS HE HAS BEEN STABBED",
+  "68": "YOU ARE IN A LARGE BEDROOM",
+  "69": "A DAGGER IS THROWN AT YOU FROM OUTSIDE THE ROOM.  IT MISSES!",
+  "70": "YOU ARE IN A SMALL BEDROOM. THERE IS A DEAD BODY HERE.",
+  "71": "IT IS SALLY, THE SEAMSTRESS.  SHE HAS A LARGE LUMP ON HER HEAD.  THERE IS A BLOND HAIR ON HER DRESS",
+  "72": "YOU ARE IN THE STUDY",
+  "73": "ITS NICE BUT NOT EXACTLY MY CUP OF TEA. THANX FOR THE LOOK THOUGH.",
+  "74": "IT IS FASTENED TO THE WALL WITH FOUR BOLTS",
+  "75": "THE PICTURE IS LOOSE",
+  "76": "THERE IS A BUTTON ON THE WALL",
+  "77": "PART OF THE WALL OPENS",
+  "78": "YOU ARE IN THE ATTIC",
+  "79": "YOU SEE A FOREST",
+  "80": "WHAT TRAPDOOR?",
+  "81": "YOU ARE IN A STORAGE ROOM",
+  "82": "IT IS LOCKED",
+  "83": "YOU HAVE NOTHING TO UNLOCK IT WITH",
+  "84": "THERE IS ONE BULLET IN THE GUN",
+  "85": "YOU ARE IN THE TOWER",
+  "86": "DAISY WON'T LET YOU",
+  "87": "SHE IS GOING TO KILL YOU",
+  "88": "SHE IS DEAD",
+  "89": "YOU KILLED DAISY",
+  "90": "DAISY STABBED YOU.  YOU ARE DEAD",
+  "91": "YOU ARE IN THE BATHROOM. THERE IS A DEAD BODY HERE.",
+  "92": "YOUR PITCHER IS FULL",
+  "93": "IT IS BILL, THE BUTCHER. HE HAS BEEN STRANGLED WITH A PAIR OF PANTYHOSE",
+  "94": "YOU ARE IN A MUSTY CRAWLSPACE",
+  "95": "THE WALL CLOSES BEHIND YOU WITH A BANG",
+  "96": "IT WON'T OPEN",
+  "97": "YOU ARE ON A STAIRWAY",
+  "98": "YOU ARE ON THE PORCH.  STONE STEPS LEAD DOWN TO THE FRONT YARD",
+  "99": "YOU ARE IN THE FRONT YARD OF A LARGE ABANDONED VICTORIAN HOUSE.  STONE STEPS LEAD UP TO A WIDE PORCH",
+  "100": "IT IS VERY HIGH",
+  "101": "THERE IS A FOREST",
+  "102": "YOU ARE IN AN ENTRY HALL.  DOORWAYS GO EAST, WEST AND SOUTH.  A STAIRWAY GOES UP",
+  "103": "THE FRONT DOOR TO THE NORTH HAS BEEN CLOSED AND LOCKED",
+  "104": "YOU ARE IN THE OLD, DUSTY LIBRARY",
+  "105": "THERE ARE NOT MANY BOOKS LEFT",
+  "106": "IT IS TOO FAR DOWN",
+  "107": "THERE ARE MATCHES HERE",
+  "108": "A BUTTERKNIFE",
+  "109": "MATCHES",
+  "110": "A NOTE",
+  "111": "A SKELETON KEY",
+  "112": "A SMALL KEY",
+  "113": "A SHOVEL",
+  "114": "A SLEDGEHAMMER",
+  "115": "A LIT CANDLE",
+  "116": "AN UNLIT CANDLE",
+  "117": "A DAGGER",
+  "118": "A GUN",
+  "119": "A KNIFE",
+  "120": "A PICTURE",
+  "121": "A TOWEL",
+  "122": "A BRICK",
+  "123": "JEWELS",
+  "124": "A CABINET",
+  "125": "AN EMPTY PITCHER",
+  "126": "A PITCHER FULL OF WATER",
+  "127": "IM NOT CARRYING THAT",
+  "128": "THE DOOR IS CLOSED",
+  "129": "IT IS OPEN",
+  "130": "THE MATCH WENT OUT",
+  "131": "I SEE NO WATER",
+  "132": "YOU ARE NOT CARRYING IT",
+  "133": "IT IS NOT OPEN",
+  "134": "IT WONT CLOSE HERE",
+  "135": "AN OPEN CABINET",
+  "136": "IT IS UNLOCKED",
+  "137": "I CANT GO IN THAT DIRECTION",
+  "138": "IT'S TOO HEAVY TO LIFT",
+  "139": "IT WON'T MOVE ANY FARTHER",
+  "140": "THANK YOU FOR PLAYING HI-RES ADVENTURE ... GOOD-BYE",
+  "141": "TRY GOING IN SOME DIRECTION EX:NORTH,SOUTH,EAST,WEST,UP,DOWN",
+  "142": "THE DOOR HAS BEEN CLOSED AND LOCKED",
+  "143": "THERE IS A BUTTERKNIFE HERE",
+  "144": "THE KITCHEN DOOR IS CLOSED",
+  "145": "I DONT KNOW WHAT YOU MEAN",
+  "146": "I DONT SEE IT HERE",
+  "147": "YOU FALL TO EARTH. LUCKILY YOU HAVE ONLY MINOR INJURIES.",
+  "148": "UNFORTUNATELY THE AMBULANCE DRIVER SMASHS INTO A VOLKWAGEN. NO SURVIVORS. YOU ARE DEAD.",
+  "149": "IF YOU FEEL THAT WAY I REFUSE TO PLAY WITH YOU...",
+  "150": "YOU CLIMB UP BUMP YOUR HEAD ON THE CEILING AND FALL, DAZED BUT ALIVE.",
+  "151": "IT DOESNT MOVE",
+  "152": "I DONT SEE IT HERE",
+  "153": "I THINK I SEE A SLEDGEHAMMER HERE.",
+  "154": "YOU DON'T HAVE IT",
+  "155": "YOU HAVE NOTHING TO LIGHT IT WITH",
+  "156": "YOU GO IN THE HOLE BUT CANNOT CONTINUE AND HAVE TO RETURN.",
+  "157": "THANX. THAT FEELS EVER SO MUCH BETTER",
+  "158": "THANK YOU. I LOVE TO FEEL CLEAN. THATS MUCH BETTER.",
+  "159": "I FEEL MUCH MORE RESTED NOW",
+  "160": "YOUR GUN IS NOW EMPTY",
+  "161": "DAISY IS NOW DEAD",
+  "162": "THE KITCHEN DOOR IS OPEN",
+  "163": "THE PEOPLE WERE EXPLAINED AT THE BEGINNING OF THE GAME.",
+  "164": "CONGRATULATIONS YOU HAVE BEATEN ADVENTURE AND ARE DECLARED A GURU WIZARD",
+  "165": "IF ONLY I COULD TELL IF I'D BEEN HERE BEFORE...",
+  "166": "DAISY IS ALREADY DEAD",
+  "167": " "
+ },
+ "rooms": [
+  {
+   "RROOMNO": 1,
+   "RMSG": 99,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 2,
+   "RD": 0,
+   "RBASEPIC": 3,
+   "RCURPIC": 3
+  },
+  {
+   "RROOMNO": 2,
+   "RMSG": 98,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 1,
+   "RBASEPIC": 1,
+   "RCURPIC": 1
+  },
+  {
+   "RROOMNO": 3,
+   "RMSG": 102,
+   "RN": 2,
+   "RS": 16,
+   "RE": 14,
+   "RW": 4,
+   "RU": 24,
+   "RD": 0,
+   "RBASEPIC": 53,
+   "RCURPIC": 53
+  },
+  {
+   "RROOMNO": 4,
+   "RMSG": 9,
+   "RN": 0,
+   "RS": 0,
+   "RE": 3,
+   "RW": 5,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 13,
+   "RCURPIC": 13
+  },
+  {
+   "RROOMNO": 5,
+   "RMSG": 19,
+   "RN": 12,
+   "RS": 10,
+   "RE": 6,
+   "RW": 8,
+   "RU": 4,
+   "RD": 0,
+   "RBASEPIC": 20,
+   "RCURPIC": 20
+  },
+  {
+   "RROOMNO": 6,
+   "RMSG": 19,
+   "RN": 5,
+   "RS": 8,
+   "RE": 7,
+   "RW": 9,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 20,
+   "RCURPIC": 20
+  },
+  {
+   "RROOMNO": 7,
+   "RMSG": 19,
+   "RN": 6,
+   "RS": 7,
+   "RE": 8,
+   "RW": 10,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 20,
+   "RCURPIC": 20
+  },
+  {
+   "RROOMNO": 8,
+   "RMSG": 19,
+   "RN": 7,
+   "RS": 5,
+   "RE": 9,
+   "RW": 6,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 20,
+   "RCURPIC": 20
+  },
+  {
+   "RROOMNO": 9,
+   "RMSG": 19,
+   "RN": 8,
+   "RS": 0,
+   "RE": 10,
+   "RW": 6,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 20,
+   "RCURPIC": 20
+  },
+  {
+   "RROOMNO": 10,
+   "RMSG": 19,
+   "RN": 9,
+   "RS": 7,
+   "RE": 11,
+   "RW": 5,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 20,
+   "RCURPIC": 20
+  },
+  {
+   "RROOMNO": 11,
+   "RMSG": 19,
+   "RN": 10,
+   "RS": 0,
+   "RE": 12,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 20,
+   "RCURPIC": 20
+  },
+  {
+   "RROOMNO": 12,
+   "RMSG": 19,
+   "RN": 11,
+   "RS": 0,
+   "RE": 5,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 20,
+   "RCURPIC": 20
+  },
+  {
+   "RROOMNO": 13,
+   "RMSG": 20,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 23,
+   "RD": 9,
+   "RBASEPIC": 19,
+   "RCURPIC": 19
+  },
+  {
+   "RROOMNO": 14,
+   "RMSG": 104,
+   "RN": 0,
+   "RS": 0,
+   "RE": 15,
+   "RW": 3,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 6,
+   "RCURPIC": 6
+  },
+  {
+   "RROOMNO": 15,
+   "RMSG": 8,
+   "RN": 0,
+   "RS": 17,
+   "RE": 0,
+   "RW": 14,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 9,
+   "RCURPIC": 9
+  },
+  {
+   "RROOMNO": 16,
+   "RMSG": 41,
+   "RN": 3,
+   "RS": 17,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 28,
+   "RCURPIC": 28
+  },
+  {
+   "RROOMNO": 17,
+   "RMSG": 6,
+   "RN": 15,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 15,
+   "RCURPIC": 15
+  },
+  {
+   "RROOMNO": 18,
+   "RMSG": 28,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 27,
+   "RCURPIC": 27
+  },
+  {
+   "RROOMNO": 19,
+   "RMSG": 26,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 20,
+   "RBASEPIC": 25,
+   "RCURPIC": 25
+  },
+  {
+   "RROOMNO": 20,
+   "RMSG": 25,
+   "RN": 0,
+   "RS": 21,
+   "RE": 0,
+   "RW": 0,
+   "RU": 19,
+   "RD": 0,
+   "RBASEPIC": 23,
+   "RCURPIC": 23
+  },
+  {
+   "RROOMNO": 21,
+   "RMSG": 49,
+   "RN": 20,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 37,
+   "RD": 0,
+   "RBASEPIC": 30,
+   "RCURPIC": 30
+  },
+  {
+   "RROOMNO": 22,
+   "RMSG": 58,
+   "RN": 13,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 31,
+   "RCURPIC": 31
+  },
+  {
+   "RROOMNO": 23,
+   "RMSG": 21,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 13,
+   "RBASEPIC": 21,
+   "RCURPIC": 21
+  },
+  {
+   "RROOMNO": 24,
+   "RMSG": 60,
+   "RN": 33,
+   "RS": 0,
+   "RE": 25,
+   "RW": 29,
+   "RU": 0,
+   "RD": 3,
+   "RBASEPIC": 32,
+   "RCURPIC": 32
+  },
+  {
+   "RROOMNO": 25,
+   "RMSG": 62,
+   "RN": 0,
+   "RS": 0,
+   "RE": 27,
+   "RW": 24,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 33,
+   "RCURPIC": 33
+  },
+  {
+   "RROOMNO": 26,
+   "RMSG": 68,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 38,
+   "RCURPIC": 38
+  },
+  {
+   "RROOMNO": 27,
+   "RMSG": 62,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 25,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 33,
+   "RCURPIC": 33
+  },
+  {
+   "RROOMNO": 28,
+   "RMSG": 70,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 39,
+   "RCURPIC": 39
+  },
+  {
+   "RROOMNO": 29,
+   "RMSG": 62,
+   "RN": 0,
+   "RS": 0,
+   "RE": 24,
+   "RW": 31,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 33,
+   "RCURPIC": 33
+  },
+  {
+   "RROOMNO": 30,
+   "RMSG": 66,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 37,
+   "RCURPIC": 37
+  },
+  {
+   "RROOMNO": 31,
+   "RMSG": 62,
+   "RN": 0,
+   "RS": 0,
+   "RE": 29,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 33,
+   "RCURPIC": 33
+  },
+  {
+   "RROOMNO": 32,
+   "RMSG": 64,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 35,
+   "RCURPIC": 35
+  },
+  {
+   "RROOMNO": 33,
+   "RMSG": 63,
+   "RN": 34,
+   "RS": 24,
+   "RE": 0,
+   "RW": 0,
+   "RU": 39,
+   "RD": 0,
+   "RBASEPIC": 34,
+   "RCURPIC": 34
+  },
+  {
+   "RROOMNO": 34,
+   "RMSG": 62,
+   "RN": 0,
+   "RS": 33,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 33,
+   "RCURPIC": 33
+  },
+  {
+   "RROOMNO": 35,
+   "RMSG": 72,
+   "RN": 34,
+   "RS": 0,
+   "RE": 38,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 40,
+   "RCURPIC": 40
+  },
+  {
+   "RROOMNO": 36,
+   "RMSG": 94,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 37,
+   "RBASEPIC": 46,
+   "RCURPIC": 46
+  },
+  {
+   "RROOMNO": 37,
+   "RMSG": 97,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 36,
+   "RD": 21,
+   "RBASEPIC": 47,
+   "RCURPIC": 47
+  },
+  {
+   "RROOMNO": 38,
+   "RMSG": 91,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 45,
+   "RCURPIC": 45
+  },
+  {
+   "RROOMNO": 39,
+   "RMSG": 78,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 33,
+   "RBASEPIC": 42,
+   "RCURPIC": 42
+  },
+  {
+   "RROOMNO": 40,
+   "RMSG": 81,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 43,
+   "RCURPIC": 43
+  },
+  {
+   "RROOMNO": 41,
+   "RMSG": 85,
+   "RN": 0,
+   "RS": 0,
+   "RE": 0,
+   "RW": 0,
+   "RU": 0,
+   "RD": 0,
+   "RBASEPIC": 44,
+   "RCURPIC": 44
+  }
+ ],
+ "objects": [
+  {
+   "addr": 2304,
+   "OBJECTNO": 1,
+   "noun": 6,
+   "OROOM": 3,
+   "OPIC": 52,
+   "shape": false,
+   "OXCOORD": 41,
+   "OYCOORD": 61,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    53
+   ]
+  },
+  {
+   "addr": 2316,
+   "OBJECTNO": 2,
+   "noun": 5,
+   "OROOM": 3,
+   "OPIC": 52,
+   "shape": false,
+   "OXCOORD": 66,
+   "OYCOORD": 63,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    53
+   ]
+  },
+  {
+   "addr": 2328,
+   "OBJECTNO": 3,
+   "noun": 4,
+   "OROOM": 3,
+   "OPIC": 54,
+   "shape": false,
+   "OXCOORD": 86,
+   "OYCOORD": 66,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    53
+   ]
+  },
+  {
+   "addr": 2340,
+   "OBJECTNO": 4,
+   "noun": 7,
+   "OROOM": 3,
+   "OPIC": 52,
+   "shape": false,
+   "OXCOORD": 114,
+   "OYCOORD": 66,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    53
+   ]
+  },
+  {
+   "addr": 2352,
+   "OBJECTNO": 5,
+   "noun": 3,
+   "OROOM": 3,
+   "OPIC": 52,
+   "shape": false,
+   "OXCOORD": 132,
+   "OYCOORD": 67,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    53
+   ]
+  },
+  {
+   "addr": 2364,
+   "OBJECTNO": 6,
+   "noun": 2,
+   "OROOM": 3,
+   "OPIC": 52,
+   "shape": false,
+   "OXCOORD": 153,
+   "OYCOORD": 67,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    53
+   ]
+  },
+  {
+   "addr": 2376,
+   "OBJECTNO": 7,
+   "noun": 1,
+   "OROOM": 3,
+   "OPIC": 54,
+   "shape": false,
+   "OXCOORD": 180,
+   "OYCOORD": 67,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    53
+   ]
+  },
+  {
+   "addr": 2388,
+   "OBJECTNO": 8,
+   "noun": 25,
+   "OROOM": 3,
+   "OPIC": 3,
+   "shape": true,
+   "OXCOORD": 108,
+   "OYCOORD": 150,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 14,
+   "ORPICKT": 3,
+   "ORPICSTA": [
+    5,
+    4,
+    53
+   ]
+  },
+  {
+   "addr": 2402,
+   "OBJECTNO": 9,
+   "noun": 10,
+   "OROOM": 3,
+   "OPIC": 4,
+   "shape": true,
+   "OXCOORD": 41,
+   "OYCOORD": 126,
+   "OSTATUS": 0,
+   "OMSG": 110,
+   "ONEXT": 14,
+   "ORPICKT": 3,
+   "ORPICSTA": [
+    5,
+    4,
+    53
+   ]
+  },
+  {
+   "addr": 2416,
+   "OBJECTNO": 10,
+   "noun": 56,
+   "OROOM": 4,
+   "OPIC": 55,
+   "shape": false,
+   "OXCOORD": 3,
+   "OYCOORD": 77,
+   "OSTATUS": 0,
+   "OMSG": 124,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    14,
+    13
+   ]
+  },
+  {
+   "addr": 2429,
+   "OBJECTNO": 11,
+   "noun": 48,
+   "OROOM": 253,
+   "OPIC": 56,
+   "shape": false,
+   "OXCOORD": 13,
+   "OYCOORD": 82,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    14,
+    13
+   ]
+  },
+  {
+   "addr": 2442,
+   "OBJECTNO": 12,
+   "noun": 40,
+   "OROOM": 253,
+   "OPIC": 57,
+   "shape": false,
+   "OXCOORD": 7,
+   "OYCOORD": 83,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    14,
+    13
+   ]
+  },
+  {
+   "addr": 2455,
+   "OBJECTNO": 13,
+   "noun": 57,
+   "OROOM": 4,
+   "OPIC": 6,
+   "shape": true,
+   "OXCOORD": 94,
+   "OYCOORD": 118,
+   "OSTATUS": 0,
+   "OMSG": 109,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    12
+   ]
+  },
+  {
+   "addr": 2467,
+   "OBJECTNO": 14,
+   "noun": 59,
+   "OROOM": 4,
+   "OPIC": 58,
+   "shape": false,
+   "OXCOORD": 75,
+   "OYCOORD": 107,
+   "OSTATUS": 0,
+   "OMSG": 125,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    11
+   ]
+  },
+  {
+   "addr": 2479,
+   "OBJECTNO": 15,
+   "noun": 59,
+   "OROOM": 253,
+   "OPIC": 59,
+   "shape": false,
+   "OXCOORD": 0,
+   "OYCOORD": 0,
+   "OSTATUS": 0,
+   "OMSG": 126,
+   "ONEXT": 11,
+   "ORPICKT": 0,
+   "ORPICSTA": []
+  },
+  {
+   "addr": 2490,
+   "OBJECTNO": 16,
+   "noun": 19,
+   "OROOM": 4,
+   "OPIC": 60,
+   "shape": false,
+   "OXCOORD": 125,
+   "OYCOORD": 66,
+   "OSTATUS": 0,
+   "OMSG": 108,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    10
+   ]
+  },
+  {
+   "addr": 2502,
+   "OBJECTNO": 17,
+   "noun": 10,
+   "OROOM": 14,
+   "OPIC": 4,
+   "shape": true,
+   "OXCOORD": 61,
+   "OYCOORD": 79,
+   "OSTATUS": 0,
+   "OMSG": 110,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    7,
+    6
+   ]
+  },
+  {
+   "addr": 2515,
+   "OBJECTNO": 18,
+   "noun": 38,
+   "OROOM": 253,
+   "OPIC": 61,
+   "shape": false,
+   "OXCOORD": 0,
+   "OYCOORD": 0,
+   "OSTATUS": 0,
+   "OMSG": 115,
+   "ONEXT": 11,
+   "ORPICKT": 0,
+   "ORPICSTA": []
+  },
+  {
+   "addr": 2526,
+   "OBJECTNO": 19,
+   "noun": 38,
+   "OROOM": 16,
+   "OPIC": 62,
+   "shape": false,
+   "OXCOORD": 102,
+   "OYCOORD": 75,
+   "OSTATUS": 0,
+   "OMSG": 116,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    29,
+    28
+   ]
+  },
+  {
+   "addr": 2539,
+   "OBJECTNO": 20,
+   "noun": 76,
+   "OROOM": 253,
+   "OPIC": 63,
+   "shape": false,
+   "OXCOORD": 81,
+   "OYCOORD": 92,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    29,
+    28
+   ]
+  },
+  {
+   "addr": 2552,
+   "OBJECTNO": 21,
+   "noun": 40,
+   "OROOM": 253,
+   "OPIC": 64,
+   "shape": false,
+   "OXCOORD": 79,
+   "OYCOORD": 115,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    29,
+    28
+   ]
+  },
+  {
+   "addr": 2565,
+   "OBJECTNO": 22,
+   "noun": 41,
+   "OROOM": 16,
+   "OPIC": 65,
+   "shape": false,
+   "OXCOORD": 107,
+   "OYCOORD": 59,
+   "OSTATUS": 0,
+   "OMSG": 112,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    49
+   ]
+  },
+  {
+   "addr": 2577,
+   "OBJECTNO": 23,
+   "noun": 5,
+   "OROOM": 17,
+   "OPIC": 66,
+   "shape": false,
+   "OXCOORD": 125,
+   "OYCOORD": 89,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 15,
+   "ORPICKT": 4,
+   "ORPICSTA": [
+    18,
+    17,
+    16,
+    15
+   ]
+  },
+  {
+   "addr": 2592,
+   "OBJECTNO": 24,
+   "noun": 62,
+   "OROOM": 253,
+   "OPIC": 67,
+   "shape": false,
+   "OXCOORD": 100,
+   "OYCOORD": 59,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    27,
+    26
+   ]
+  },
+  {
+   "addr": 2605,
+   "OBJECTNO": 25,
+   "noun": 3,
+   "OROOM": 18,
+   "OPIC": 68,
+   "shape": false,
+   "OXCOORD": 6,
+   "OYCOORD": 83,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    27,
+    26
+   ]
+  },
+  {
+   "addr": 2618,
+   "OBJECTNO": 26,
+   "noun": 77,
+   "OROOM": 18,
+   "OPIC": 69,
+   "shape": false,
+   "OXCOORD": 27,
+   "OYCOORD": 88,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    27,
+    26
+   ]
+  },
+  {
+   "addr": 2631,
+   "OBJECTNO": 27,
+   "noun": 78,
+   "OROOM": 253,
+   "OPIC": 70,
+   "shape": false,
+   "OXCOORD": 25,
+   "OYCOORD": 88,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    27,
+    26
+   ]
+  },
+  {
+   "addr": 2644,
+   "OBJECTNO": 28,
+   "noun": 69,
+   "OROOM": 18,
+   "OPIC": 71,
+   "shape": false,
+   "OXCOORD": 49,
+   "OYCOORD": 97,
+   "OSTATUS": 0,
+   "OMSG": 113,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    27,
+    26
+   ]
+  },
+  {
+   "addr": 2657,
+   "OBJECTNO": 29,
+   "noun": 6,
+   "OROOM": 21,
+   "OPIC": 72,
+   "shape": false,
+   "OXCOORD": 36,
+   "OYCOORD": 63,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    30
+   ]
+  },
+  {
+   "addr": 2669,
+   "OBJECTNO": 30,
+   "noun": 41,
+   "OROOM": 21,
+   "OPIC": 73,
+   "shape": false,
+   "OXCOORD": 175,
+   "OYCOORD": 83,
+   "OSTATUS": 0,
+   "OMSG": 111,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    30
+   ]
+  },
+  {
+   "addr": 2681,
+   "OBJECTNO": 31,
+   "noun": 48,
+   "OROOM": 253,
+   "OPIC": 74,
+   "shape": false,
+   "OXCOORD": 162,
+   "OYCOORD": 27,
+   "OSTATUS": 0,
+   "OMSG": 122,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    30
+   ]
+  },
+  {
+   "addr": 2693,
+   "OBJECTNO": 32,
+   "noun": 49,
+   "OROOM": 253,
+   "OPIC": 75,
+   "shape": false,
+   "OXCOORD": 162,
+   "OYCOORD": 27,
+   "OSTATUS": 0,
+   "OMSG": 123,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    30
+   ]
+  },
+  {
+   "addr": 2705,
+   "OBJECTNO": 33,
+   "noun": 4,
+   "OROOM": 28,
+   "OPIC": 76,
+   "shape": false,
+   "OXCOORD": 72,
+   "OYCOORD": 70,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    39
+   ]
+  },
+  {
+   "addr": 2717,
+   "OBJECTNO": 34,
+   "noun": 7,
+   "OROOM": 30,
+   "OPIC": 77,
+   "shape": false,
+   "OXCOORD": 97,
+   "OYCOORD": 62,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    37
+   ]
+  },
+  {
+   "addr": 2729,
+   "OBJECTNO": 35,
+   "noun": 10,
+   "OROOM": 32,
+   "OPIC": 4,
+   "shape": true,
+   "OXCOORD": 91,
+   "OYCOORD": 82,
+   "OSTATUS": 0,
+   "OMSG": 110,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    35
+   ]
+  },
+  {
+   "addr": 2741,
+   "OBJECTNO": 36,
+   "noun": 20,
+   "OROOM": 35,
+   "OPIC": 79,
+   "shape": false,
+   "OXCOORD": 63,
+   "OYCOORD": 10,
+   "OSTATUS": 0,
+   "OMSG": 120,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    40
+   ]
+  },
+  {
+   "addr": 2753,
+   "OBJECTNO": 37,
+   "noun": 21,
+   "OROOM": 253,
+   "OPIC": 80,
+   "shape": false,
+   "OXCOORD": 103,
+   "OYCOORD": 27,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    40
+   ]
+  },
+  {
+   "addr": 2765,
+   "OBJECTNO": 38,
+   "noun": 2,
+   "OROOM": 38,
+   "OPIC": 81,
+   "shape": false,
+   "OXCOORD": 69,
+   "OYCOORD": 66,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    45
+   ]
+  },
+  {
+   "addr": 2777,
+   "OBJECTNO": 39,
+   "noun": 31,
+   "OROOM": 38,
+   "OPIC": 82,
+   "shape": false,
+   "OXCOORD": 127,
+   "OYCOORD": 24,
+   "OSTATUS": 0,
+   "OMSG": 121,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    45
+   ]
+  },
+  {
+   "addr": 2789,
+   "OBJECTNO": 40,
+   "noun": 16,
+   "OROOM": 253,
+   "OPIC": 83,
+   "shape": false,
+   "OXCOORD": 200,
+   "OYCOORD": 45,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    42
+   ]
+  },
+  {
+   "addr": 2801,
+   "OBJECTNO": 41,
+   "noun": 16,
+   "OROOM": 253,
+   "OPIC": 84,
+   "shape": false,
+   "OXCOORD": 200,
+   "OYCOORD": 45,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    42
+   ]
+  },
+  {
+   "addr": 2813,
+   "OBJECTNO": 42,
+   "noun": 33,
+   "OROOM": 39,
+   "OPIC": 85,
+   "shape": false,
+   "OXCOORD": 102,
+   "OYCOORD": 124,
+   "OSTATUS": 0,
+   "OMSG": 114,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    42
+   ]
+  },
+  {
+   "addr": 2825,
+   "OBJECTNO": 43,
+   "noun": 36,
+   "OROOM": 40,
+   "OPIC": 86,
+   "shape": false,
+   "OXCOORD": 93,
+   "OYCOORD": 45,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    43
+   ]
+  },
+  {
+   "addr": 2837,
+   "OBJECTNO": 44,
+   "noun": 36,
+   "OROOM": 253,
+   "OPIC": 87,
+   "shape": false,
+   "OXCOORD": 93,
+   "OYCOORD": 45,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    43
+   ]
+  },
+  {
+   "addr": 2849,
+   "OBJECTNO": 45,
+   "noun": 9,
+   "OROOM": 40,
+   "OPIC": 88,
+   "shape": false,
+   "OXCOORD": 104,
+   "OYCOORD": 61,
+   "OSTATUS": 0,
+   "OMSG": 118,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    50
+   ]
+  },
+  {
+   "addr": 2861,
+   "OBJECTNO": 46,
+   "noun": 1,
+   "OROOM": 41,
+   "OPIC": 89,
+   "shape": false,
+   "OXCOORD": 167,
+   "OYCOORD": 62,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    44
+   ]
+  },
+  {
+   "addr": 2873,
+   "OBJECTNO": 47,
+   "noun": 77,
+   "OROOM": 41,
+   "OPIC": 90,
+   "shape": false,
+   "OXCOORD": 203,
+   "OYCOORD": 65,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    44
+   ]
+  },
+  {
+   "addr": 2885,
+   "OBJECTNO": 48,
+   "noun": 78,
+   "OROOM": 253,
+   "OPIC": 91,
+   "shape": false,
+   "OXCOORD": 201,
+   "OYCOORD": 65,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    44
+   ]
+  },
+  {
+   "addr": 2897,
+   "OBJECTNO": 49,
+   "noun": 10,
+   "OROOM": 41,
+   "OPIC": 4,
+   "shape": true,
+   "OXCOORD": 99,
+   "OYCOORD": 103,
+   "OSTATUS": 0,
+   "OMSG": 110,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    44
+   ]
+  },
+  {
+   "addr": 2909,
+   "OBJECTNO": 50,
+   "noun": 79,
+   "OROOM": 2,
+   "OPIC": 2,
+   "shape": true,
+   "OXCOORD": 116,
+   "OYCOORD": 120,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    2,
+    1
+   ]
+  },
+  {
+   "addr": 2922,
+   "OBJECTNO": 51,
+   "noun": 58,
+   "OROOM": 4,
+   "OPIC": 93,
+   "shape": false,
+   "OXCOORD": 155,
+   "OYCOORD": 17,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    14,
+    13
+   ]
+  },
+  {
+   "addr": 2935,
+   "OBJECTNO": 52,
+   "noun": 58,
+   "OROOM": 253,
+   "OPIC": 94,
+   "shape": false,
+   "OXCOORD": 155,
+   "OYCOORD": 17,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 13,
+   "ORPICKT": 2,
+   "ORPICSTA": [
+    14,
+    13
+   ]
+  },
+  {
+   "addr": 2948,
+   "OBJECTNO": 53,
+   "noun": 8,
+   "OROOM": 26,
+   "OPIC": 95,
+   "shape": false,
+   "OXCOORD": 171,
+   "OYCOORD": 86,
+   "OSTATUS": 0,
+   "OMSG": 117,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    38
+   ]
+  },
+  {
+   "addr": 2960,
+   "OBJECTNO": 54,
+   "noun": 80,
+   "OROOM": 26,
+   "OPIC": 96,
+   "shape": false,
+   "OXCOORD": 73,
+   "OYCOORD": 35,
+   "OSTATUS": 2,
+   "OMSG": 0,
+   "ONEXT": 12,
+   "ORPICKT": 1,
+   "ORPICSTA": [
+    38
+   ]
+  }
+ ],
+ "pictures": {
+  "1": {
+   "block": 1,
+   "offset": 0
+  },
+  "2": {
+   "block": 1,
+   "offset": 78
+  },
+  "3": {
+   "block": 1,
+   "offset": 166
+  },
+  "4": {
+   "block": 1,
+   "offset": 700
+  },
+  "5": {
+   "block": 2,
+   "offset": 0
+  },
+  "6": {
+   "block": 2,
+   "offset": 186
+  },
+  "7": {
+   "block": 2,
+   "offset": 700
+  },
+  "8": {
+   "block": 3,
+   "offset": 0
+  },
+  "9": {
+   "block": 3,
+   "offset": 140
+  },
+  "10": {
+   "block": 3,
+   "offset": 300
+  },
+  "11": {
+   "block": 3,
+   "offset": 436
+  },
+  "12": {
+   "block": 3,
+   "offset": 522
+  },
+  "13": {
+   "block": 3,
+   "offset": 628
+  },
+  "14": {
+   "block": 4,
+   "offset": 0
+  },
+  "15": {
+   "block": 4,
+   "offset": 260
+  },
+  "16": {
+   "block": 4,
+   "offset": 412
+  },
+  "17": {
+   "block": 4,
+   "offset": 590
+  },
+  "18": {
+   "block": 5,
+   "offset": 0
+  },
+  "19": {
+   "block": 5,
+   "offset": 164
+  },
+  "20": {
+   "block": 5,
+   "offset": 228
+  },
+  "21": {
+   "block": 5,
+   "offset": 480
+  },
+  "22": {
+   "block": 6,
+   "offset": 0
+  },
+  "23": {
+   "block": 6,
+   "offset": 100
+  },
+  "24": {
+   "block": 6,
+   "offset": 242
+  },
+  "25": {
+   "block": 6,
+   "offset": 526
+  },
+  "26": {
+   "block": 7,
+   "offset": 0
+  },
+  "27": {
+   "block": 7,
+   "offset": 346
+  },
+  "28": {
+   "block": 7,
+   "offset": 686
+  },
+  "29": {
+   "block": 8,
+   "offset": 0
+  },
+  "30": {
+   "block": 8,
+   "offset": 374
+  },
+  "31": {
+   "block": 8,
+   "offset": 626
+  },
+  "32": {
+   "block": 9,
+   "offset": 0
+  },
+  "33": {
+   "block": 9,
+   "offset": 358
+  },
+  "34": {
+   "block": 9,
+   "offset": 424
+  },
+  "35": {
+   "block": 9,
+   "offset": 592
+  },
+  "36": {
+   "block": 10,
+   "offset": 0
+  },
+  "37": {
+   "block": 10,
+   "offset": 428
+  },
+  "38": {
+   "block": 10,
+   "offset": 734
+  },
+  "39": {
+   "block": 11,
+   "offset": 0
+  },
+  "40": {
+   "block": 11,
+   "offset": 160
+  },
+  "41": {
+   "block": 11,
+   "offset": 402
+  },
+  "42": {
+   "block": 11,
+   "offset": 648
+  },
+  "43": {
+   "block": 12,
+   "offset": 0
+  },
+  "44": {
+   "block": 12,
+   "offset": 136
+  },
+  "45": {
+   "block": 12,
+   "offset": 240
+  },
+  "46": {
+   "block": 12,
+   "offset": 562
+  },
+  "47": {
+   "block": 12,
+   "offset": 698
+  },
+  "48": {
+   "block": 13,
+   "offset": 0
+  },
+  "49": {
+   "block": 13,
+   "offset": 726
+  },
+  "50": {
+   "block": 14,
+   "offset": 0
+  },
+  "51": {
+   "block": 14,
+   "offset": 50
+  },
+  "52": {
+   "block": 14,
+   "offset": 310
+  },
+  "53": {
+   "block": 14,
+   "offset": 488
+  },
+  "54": {
+   "block": 14,
+   "offset": 664
+  },
+  "55": {
+   "block": 15,
+   "offset": 0
+  },
+  "56": {
+   "block": 15,
+   "offset": 78
+  },
+  "57": {
+   "block": 15,
+   "offset": 104
+  },
+  "58": {
+   "block": 15,
+   "offset": 124
+  },
+  "59": {
+   "block": 15,
+   "offset": 180
+  },
+  "60": {
+   "block": 15,
+   "offset": 236
+  },
+  "61": {
+   "block": 15,
+   "offset": 266
+  },
+  "62": {
+   "block": 15,
+   "offset": 320
+  },
+  "63": {
+   "block": 15,
+   "offset": 380
+  },
+  "64": {
+   "block": 15,
+   "offset": 430
+  },
+  "65": {
+   "block": 15,
+   "offset": 456
+  },
+  "66": {
+   "block": 15,
+   "offset": 524
+  },
+  "67": {
+   "block": 15,
+   "offset": 738
+  },
+  "68": {
+   "block": 16,
+   "offset": 0
+  },
+  "69": {
+   "block": 16,
+   "offset": 138
+  },
+  "70": {
+   "block": 16,
+   "offset": 148
+  },
+  "71": {
+   "block": 16,
+   "offset": 174
+  },
+  "72": {
+   "block": 16,
+   "offset": 226
+  },
+  "73": {
+   "block": 16,
+   "offset": 418
+  },
+  "74": {
+   "block": 16,
+   "offset": 472
+  },
+  "75": {
+   "block": 16,
+   "offset": 486
+  },
+  "76": {
+   "block": 16,
+   "offset": 524
+  },
+  "77": {
+   "block": 17,
+   "offset": 0
+  },
+  "78": {
+   "block": 17,
+   "offset": 200
+  },
+  "79": {
+   "block": 17,
+   "offset": 208
+  },
+  "80": {
+   "block": 17,
+   "offset": 306
+  },
+  "81": {
+   "block": 17,
+   "offset": 322
+  },
+  "82": {
+   "block": 17,
+   "offset": 534
+  },
+  "83": {
+   "block": 17,
+   "offset": 548
+  },
+  "84": {
+   "block": 17,
+   "offset": 574
+  },
+  "85": {
+   "block": 17,
+   "offset": 598
+  },
+  "86": {
+   "block": 17,
+   "offset": 636
+  },
+  "87": {
+   "block": 17,
+   "offset": 728
+  },
+  "88": {
+   "block": 18,
+   "offset": 0
+  },
+  "89": {
+   "block": 18,
+   "offset": 88
+  },
+  "90": {
+   "block": 18,
+   "offset": 302
+  },
+  "91": {
+   "block": 18,
+   "offset": 312
+  },
+  "92": {
+   "block": 18,
+   "offset": 338
+  },
+  "93": {
+   "block": 19,
+   "offset": 0
+  },
+  "94": {
+   "block": 19,
+   "offset": 38
+  },
+  "95": {
+   "block": 19,
+   "offset": 106
+  },
+  "96": {
+   "block": 19,
+   "offset": 170
+  },
+  "97": {
+   "block": 19,
+   "offset": 196
+  }
+ },
+ "command_rules": [
+  {
+   "addr": 17664,
+   "room": 1,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17672,
+   "room": 1,
+   "verb": 2,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17680,
+   "room": 1,
+   "verb": 13,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      100
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17688,
+   "room": 1,
+   "verb": 2,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17696,
+   "room": 1,
+   "verb": 13,
+   "noun": 52,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      101
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17704,
+   "room": 1,
+   "verb": 1,
+   "noun": 52,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      5
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17712,
+   "room": 1,
+   "verb": 18,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17720,
+   "room": 2,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      12,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17731,
+   "room": 2,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      2
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      12,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17742,
+   "room": 2,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      12,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      1
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      12,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17756,
+   "room": 2,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      12,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17767,
+   "room": 2,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      12,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      3
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      1,
+      1
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      142
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17783,
+   "room": 2,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17791,
+   "room": 2,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17799,
+   "room": 3,
+   "verb": 13,
+   "noun": 54,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      53
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      163
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17809,
+   "room": 3,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17817,
+   "room": 3,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      53
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      4
+     ]
+    },
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17829,
+   "room": 3,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17837,
+   "room": 3,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      1,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      82
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17848,
+   "room": 3,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      1,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      5
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17859,
+   "room": 3,
+   "verb": 6,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      30,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      1,
+      0
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17873,
+   "room": 3,
+   "verb": 6,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      83
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17881,
+   "room": 3,
+   "verb": 11,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17889,
+   "room": 3,
+   "verb": 7,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      53
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17899,
+   "room": 3,
+   "verb": 7,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      5
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      4
+     ]
+    },
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17911,
+   "room": 3,
+   "verb": 7,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17921,
+   "room": 3,
+   "verb": 9,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      53
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      4
+     ]
+    },
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17933,
+   "room": 3,
+   "verb": 9,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17941,
+   "room": 3,
+   "verb": 10,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      53
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      4
+     ]
+    },
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17953,
+   "room": 3,
+   "verb": 10,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17961,
+   "room": 3,
+   "verb": 8,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      53
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      4
+     ]
+    },
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      16
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17973,
+   "room": 3,
+   "verb": 8,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      16
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17981,
+   "room": 3,
+   "verb": 2,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17989,
+   "room": 3,
+   "verb": 2,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      4
+     ]
+    },
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17999,
+   "room": 4,
+   "verb": 14,
+   "noun": 56,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      138
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18007,
+   "room": 4,
+   "verb": 12,
+   "noun": 56,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      13,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      139
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18018,
+   "room": 4,
+   "verb": 12,
+   "noun": 56,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "PLACE_OBJ",
+     "args": [
+      10,
+      4,
+      65,
+      20
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      11,
+      4
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      13,
+      1
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18037,
+   "room": 4,
+   "verb": 4,
+   "noun": 56,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_OBJ_PIC",
+     "args": [
+      97,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18046,
+   "room": 4,
+   "verb": 5,
+   "noun": 56,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_OBJ_PIC",
+     "args": [
+      55,
+      10
+     ]
+    },
+    {
+     "op": "RESET_VIEW",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 18056,
+   "room": 4,
+   "verb": 13,
+   "noun": 56,
+   "conditions": [
+    {
+     "op": "OBJ_PIC_IS",
+     "args": [
+      10,
+      55
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      133
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18067,
+   "room": 4,
+   "verb": 13,
+   "noun": 56,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      12
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18075,
+   "room": 4,
+   "verb": 11,
+   "noun": 24,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      42,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      11,
+      253
+     ]
+    },
+    {
+     "op": "PLACE_OBJ",
+     "args": [
+      12,
+      4,
+      7,
+      83
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      11
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18094,
+   "room": 4,
+   "verb": 11,
+   "noun": 48,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      42,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      11,
+      253
+     ]
+    },
+    {
+     "op": "PLACE_OBJ",
+     "args": [
+      12,
+      4,
+      7,
+      83
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      11
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18113,
+   "room": 4,
+   "verb": 11,
+   "noun": 24,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      12
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18121,
+   "room": 4,
+   "verb": 4,
+   "noun": 58,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      51,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      51,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      52,
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18136,
+   "room": 4,
+   "verb": 4,
+   "noun": 58,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      52,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18147,
+   "room": 4,
+   "verb": 5,
+   "noun": 58,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      52,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      52,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      51,
+      4
+     ]
+    },
+    {
+     "op": "RESET_VIEW",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 18163,
+   "room": 4,
+   "verb": 5,
+   "noun": 58,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      51,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      133
+     ]
+    },
+    {
+     "op": "RESET_VIEW",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 18175,
+   "room": 4,
+   "verb": 13,
+   "noun": 58,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      52,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      11
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18186,
+   "room": 4,
+   "verb": 13,
+   "noun": 58,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      51,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18197,
+   "room": 4,
+   "verb": 29,
+   "noun": 64,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      13
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      4,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18208,
+   "room": 4,
+   "verb": 14,
+   "noun": 29,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      4,
+      1
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      14,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      92
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      14,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      15,
+      254
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18228,
+   "room": 4,
+   "verb": 14,
+   "noun": 29,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      4,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18239,
+   "room": 4,
+   "verb": 14,
+   "noun": 29,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      131
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18247,
+   "room": 4,
+   "verb": 15,
+   "noun": 60,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      16
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 18256,
+   "room": 4,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      13
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      14
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      14,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18269,
+   "room": 4,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      14
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18279,
+   "room": 4,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      14
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      13
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      14,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18292,
+   "room": 4,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      13
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18302,
+   "room": 4,
+   "verb": 13,
+   "noun": 66,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      16,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      143
+     ]
+    },
+    {
+     "op": "SET_VIEW",
+     "args": [
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18315,
+   "room": 4,
+   "verb": 13,
+   "noun": 66,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18323,
+   "room": 4,
+   "verb": 1,
+   "noun": 40,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      12,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      19
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18334,
+   "room": 4,
+   "verb": 29,
+   "noun": 65,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      4,
+      0
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18345,
+   "room": 4,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18353,
+   "room": 4,
+   "verb": 10,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      14
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      5
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18363,
+   "room": 4,
+   "verb": 10,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18371,
+   "room": 5,
+   "verb": 2,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      14,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      144
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18382,
+   "room": 5,
+   "verb": 2,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18390,
+   "room": 13,
+   "verb": 13,
+   "noun": 52,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      15
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18398,
+   "room": 5,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      162
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      4,
+      14
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      14,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18412,
+   "room": 13,
+   "verb": 2,
+   "noun": 52,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      23
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18420,
+   "room": 14,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      6
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      7
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      15,
+      8
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18433,
+   "room": 14,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      7
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18443,
+   "room": 14,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      7
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      6
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      15,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18456,
+   "room": 14,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      6
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18466,
+   "room": 14,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18474,
+   "room": 14,
+   "verb": 9,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      7
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      15
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18484,
+   "room": 14,
+   "verb": 9,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      6
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18494,
+   "room": 14,
+   "verb": 10,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      3
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18502,
+   "room": 14,
+   "verb": 13,
+   "noun": 42,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      105
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18510,
+   "room": 14,
+   "verb": 14,
+   "noun": 87,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18518,
+   "room": 14,
+   "verb": 14,
+   "noun": 44,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18526,
+   "room": 14,
+   "verb": 14,
+   "noun": 26,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18534,
+   "room": 14,
+   "verb": 14,
+   "noun": 68,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18542,
+   "room": 15,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      9
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      8
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      14,
+      7
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18555,
+   "room": 15,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      8
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18565,
+   "room": 15,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      8
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      9
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      14,
+      6
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18578,
+   "room": 15,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      9
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18588,
+   "room": 15,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      8
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18598,
+   "room": 15,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      9
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18608,
+   "room": 15,
+   "verb": 2,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18616,
+   "room": 15,
+   "verb": 18,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18624,
+   "room": 16,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      18,
+      254
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      5,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      5,
+      1
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      44
+     ]
+    },
+    {
+     "op": "PLACE_OBJ",
+     "args": [
+      20,
+      16,
+      81,
+      92
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18646,
+   "room": 16,
+   "verb": 16,
+   "noun": 29,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      15,
+      254
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      20,
+      16
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      20,
+      253
+     ]
+    },
+    {
+     "op": "PLACE_OBJ",
+     "args": [
+      21,
+      16,
+      79,
+      115
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      45
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      17
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      15,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      14,
+      254
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18676,
+   "room": 16,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      20,
+      16
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      46
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 18688,
+   "room": 16,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      28
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      29
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      17,
+      16
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18701,
+   "room": 16,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      29
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18711,
+   "room": 16,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      29
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      28
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      17,
+      15
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18724,
+   "room": 16,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      28
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18734,
+   "room": 16,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18742,
+   "room": 16,
+   "verb": 7,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      3
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18750,
+   "room": 16,
+   "verb": 8,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      29
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      17
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18760,
+   "room": 16,
+   "verb": 8,
+   "noun": 70,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      28
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18770,
+   "room": 16,
+   "verb": 14,
+   "noun": 28,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18778,
+   "room": 16,
+   "verb": 14,
+   "noun": 26,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18786,
+   "room": 16,
+   "verb": 15,
+   "noun": 39,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      47
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18794,
+   "room": 16,
+   "verb": 14,
+   "noun": 39,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18802,
+   "room": 16,
+   "verb": 13,
+   "noun": 40,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      49
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18810,
+   "room": 17,
+   "verb": 4,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      16
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      17
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18820,
+   "room": 17,
+   "verb": 4,
+   "noun": 51,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      18
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18828,
+   "room": 17,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      18
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      17
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      16,
+      29
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18841,
+   "room": 17,
+   "verb": 4,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      16
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      16,
+      29
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18852,
+   "room": 17,
+   "verb": 5,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      17
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      16
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18862,
+   "room": 17,
+   "verb": 5,
+   "noun": 51,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      15
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18870,
+   "room": 17,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      17
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      18
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      16,
+      28
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18883,
+   "room": 17,
+   "verb": 5,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      15
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      16,
+      28
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18894,
+   "room": 17,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      16
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      16
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18904,
+   "room": 17,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      17
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      16
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18914,
+   "room": 17,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      15
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18924,
+   "room": 17,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      18
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18934,
+   "room": 17,
+   "verb": 1,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      18
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      18
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18944,
+   "room": 17,
+   "verb": 1,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      17
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      18
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18954,
+   "room": 17,
+   "verb": 1,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      15
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      133
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18964,
+   "room": 17,
+   "verb": 1,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      16
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      133
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18974,
+   "room": 17,
+   "verb": 2,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18982,
+   "room": 17,
+   "verb": 18,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18990,
+   "room": 17,
+   "verb": 13,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      3
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 18998,
+   "room": 17,
+   "verb": 14,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19006,
+   "room": 18,
+   "verb": 4,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      26
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19016,
+   "room": 18,
+   "verb": 4,
+   "noun": 51,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19024,
+   "room": 18,
+   "verb": 5,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      27
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      26
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19034,
+   "room": 18,
+   "verb": 5,
+   "noun": 51,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19042,
+   "room": 18,
+   "verb": 1,
+   "noun": 51,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      27
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      17
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19052,
+   "room": 18,
+   "verb": 1,
+   "noun": 51,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19060,
+   "room": 18,
+   "verb": 2,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19068,
+   "room": 18,
+   "verb": 18,
+   "noun": 37,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19076,
+   "room": 18,
+   "verb": 14,
+   "noun": 55,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19084,
+   "room": 18,
+   "verb": 13,
+   "noun": 55,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19092,
+   "room": 18,
+   "verb": 19,
+   "noun": 55,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19100,
+   "room": 18,
+   "verb": 13,
+   "noun": 54,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      32
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19108,
+   "room": 18,
+   "verb": 13,
+   "noun": 3,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      32
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19116,
+   "room": 18,
+   "verb": 20,
+   "noun": 3,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      33
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19124,
+   "room": 18,
+   "verb": 20,
+   "noun": 54,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      33
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19132,
+   "room": 18,
+   "verb": 21,
+   "noun": 54,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      34
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19140,
+   "room": 18,
+   "verb": 21,
+   "noun": 3,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      34
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19148,
+   "room": 18,
+   "verb": 26,
+   "noun": 8,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      53,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      30
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      27,
+      18
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      7,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19165,
+   "room": 18,
+   "verb": 26,
+   "noun": 8,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      132
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      26,
+      253
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19176,
+   "room": 18,
+   "verb": 26,
+   "noun": 9,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      45,
+      254
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      6,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      30
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      35
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      27,
+      18
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      6,
+      1
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      7,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19201,
+   "room": 18,
+   "verb": 13,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      36
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19209,
+   "room": 18,
+   "verb": 14,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19217,
+   "room": 18,
+   "verb": 14,
+   "noun": 54,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19225,
+   "room": 18,
+   "verb": 14,
+   "noun": 3,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19233,
+   "room": 18,
+   "verb": 1,
+   "noun": 62,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      7,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      38
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      24,
+      18
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 19248,
+   "room": 18,
+   "verb": 1,
+   "noun": 62,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19256,
+   "room": 18,
+   "verb": 14,
+   "noun": 69,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      7,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19267,
+   "room": 18,
+   "verb": 14,
+   "noun": 69,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      28,
+      254
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19276,
+   "room": 19,
+   "verb": 2,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19284,
+   "room": 19,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19292,
+   "room": 19,
+   "verb": 1,
+   "noun": 40,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      12,
+      4
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19303,
+   "room": 19,
+   "verb": 1,
+   "noun": 40,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      156
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19311,
+   "room": 19,
+   "verb": 14,
+   "noun": 13,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19319,
+   "room": 19,
+   "verb": 14,
+   "noun": 50,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19327,
+   "room": 19,
+   "verb": 14,
+   "noun": 35,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19335,
+   "room": 20,
+   "verb": 2,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      19
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19343,
+   "room": 20,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      19
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19351,
+   "room": 21,
+   "verb": 1,
+   "noun": 40,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      22
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19359,
+   "room": 21,
+   "verb": 2,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19367,
+   "room": 21,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19375,
+   "room": 21,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19383,
+   "room": 21,
+   "verb": 11,
+   "noun": 24,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      50
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19391,
+   "room": 21,
+   "verb": 14,
+   "noun": 26,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19399,
+   "room": 21,
+   "verb": 14,
+   "noun": 47,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19407,
+   "room": 21,
+   "verb": 23,
+   "noun": 47,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      39,
+      254
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      31,
+      253
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      52
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      31,
+      21
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19424,
+   "room": 21,
+   "verb": 23,
+   "noun": 47,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      39,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19435,
+   "room": 21,
+   "verb": 23,
+   "noun": 47,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      51
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19443,
+   "room": 21,
+   "verb": 14,
+   "noun": 48,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      31,
+      21
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      53
+     ]
+    },
+    {
+     "op": "GET",
+     "args": []
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      32,
+      21
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19458,
+   "room": 21,
+   "verb": 13,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      54
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19466,
+   "room": 21,
+   "verb": 14,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19474,
+   "room": 21,
+   "verb": 14,
+   "noun": 1,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19482,
+   "room": 21,
+   "verb": 13,
+   "noun": 26,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      55
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19490,
+   "room": 21,
+   "verb": 13,
+   "noun": 48,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      56
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19498,
+   "room": 21,
+   "verb": 13,
+   "noun": 49,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      57
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19506,
+   "room": 22,
+   "verb": 1,
+   "noun": 40,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      21
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19514,
+   "room": 22,
+   "verb": 13,
+   "noun": 72,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      59
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19522,
+   "room": 23,
+   "verb": 2,
+   "noun": 52,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      13
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19530,
+   "room": 23,
+   "verb": 13,
+   "noun": 53,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      22
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      22
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      40,
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19543,
+   "room": 23,
+   "verb": 1,
+   "noun": 73,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      23
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19551,
+   "room": 23,
+   "verb": 14,
+   "noun": 53,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19559,
+   "room": 24,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      3
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19567,
+   "room": 24,
+   "verb": 1,
+   "noun": 74,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19575,
+   "room": 24,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      61
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19583,
+   "room": 24,
+   "verb": 13,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      61
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19591,
+   "room": 24,
+   "verb": 13,
+   "noun": 74,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19599,
+   "room": 25,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      54,
+      26
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      69
+     ]
+    },
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      26
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19612,
+   "room": 25,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      26
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19620,
+   "room": 26,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      25
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      54,
+      253
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19631,
+   "room": 26,
+   "verb": 14,
+   "noun": 8,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      54,
+      253
+     ]
+    },
+    {
+     "op": "GET",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 19641,
+   "room": 26,
+   "verb": 14,
+   "noun": 45,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19649,
+   "room": 26,
+   "verb": 14,
+   "noun": 36,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19657,
+   "room": 27,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      28
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19665,
+   "room": 28,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19673,
+   "room": 28,
+   "verb": 13,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      71
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19681,
+   "room": 28,
+   "verb": 14,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19689,
+   "room": 28,
+   "verb": 14,
+   "noun": 45,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19697,
+   "room": 29,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      30
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19705,
+   "room": 30,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      29
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19713,
+   "room": 30,
+   "verb": 13,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      67
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19721,
+   "room": 30,
+   "verb": 14,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19729,
+   "room": 30,
+   "verb": 14,
+   "noun": 68,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19737,
+   "room": 30,
+   "verb": 14,
+   "noun": 36,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19745,
+   "room": 30,
+   "verb": 14,
+   "noun": 67,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19753,
+   "room": 31,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      32
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19761,
+   "room": 32,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19769,
+   "room": 32,
+   "verb": 14,
+   "noun": 45,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19777,
+   "room": 32,
+   "verb": 14,
+   "noun": 36,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19785,
+   "room": 33,
+   "verb": 2,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19793,
+   "room": 33,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19801,
+   "room": 34,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      35
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19809,
+   "room": 35,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19817,
+   "room": 35,
+   "verb": 13,
+   "noun": 20,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      73
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19825,
+   "room": 35,
+   "verb": 14,
+   "noun": 26,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19833,
+   "room": 35,
+   "verb": 14,
+   "noun": 68,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19841,
+   "room": 35,
+   "verb": 25,
+   "noun": 18,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      34
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19849,
+   "room": 35,
+   "verb": 14,
+   "noun": 20,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      8,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GET",
+     "args": []
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      37,
+      35
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      76
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19864,
+   "room": 35,
+   "verb": 14,
+   "noun": 20,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      74
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19872,
+   "room": 35,
+   "verb": 26,
+   "noun": 19,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      16,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      75
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      8,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19886,
+   "room": 35,
+   "verb": 26,
+   "noun": 19,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      132
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19894,
+   "room": 35,
+   "verb": 27,
+   "noun": 21,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      41
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19904,
+   "room": 35,
+   "verb": 27,
+   "noun": 21,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      41
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      77
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19914,
+   "room": 35,
+   "verb": 5,
+   "noun": 24,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_BASE_VIEW",
+     "args": [
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19922,
+   "room": 35,
+   "verb": 1,
+   "noun": 24,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      41
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      36
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      95
+     ]
+    },
+    {
+     "op": "SET_ROOM_VIEW",
+     "args": [
+      35,
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19937,
+   "room": 36,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19945,
+   "room": 36,
+   "verb": 4,
+   "noun": 24,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      96
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19953,
+   "room": 36,
+   "verb": 11,
+   "noun": 24,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      50
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19961,
+   "room": 37,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19969,
+   "room": 38,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      35
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19977,
+   "room": 38,
+   "verb": 29,
+   "noun": 64,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      13
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      9,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 19988,
+   "room": 38,
+   "verb": 14,
+   "noun": 29,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      9,
+      1
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      14,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      92
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      14,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      15,
+      254
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20008,
+   "room": 38,
+   "verb": 14,
+   "noun": 29,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      9,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20019,
+   "room": 38,
+   "verb": 14,
+   "noun": 29,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      131
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20027,
+   "room": 38,
+   "verb": 29,
+   "noun": 65,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      9,
+      0
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20038,
+   "room": 38,
+   "verb": 24,
+   "noun": 30,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20046,
+   "room": 38,
+   "verb": 13,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      93
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20054,
+   "room": 38,
+   "verb": 14,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20062,
+   "room": 38,
+   "verb": 14,
+   "noun": 32,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      158
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20070,
+   "room": 38,
+   "verb": 1,
+   "noun": 30,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      157
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20078,
+   "room": 39,
+   "verb": 37,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      42,
+      39
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      153
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20089,
+   "room": 39,
+   "verb": 1,
+   "noun": 23,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      33
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20097,
+   "room": 39,
+   "verb": 4,
+   "noun": 16,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      40,
+      39
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      40,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      41,
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20112,
+   "room": 39,
+   "verb": 4,
+   "noun": 16,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      41,
+      39
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20123,
+   "room": 39,
+   "verb": 4,
+   "noun": 16,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      80
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20131,
+   "room": 39,
+   "verb": 5,
+   "noun": 16,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      41,
+      39
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      41,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      40,
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20146,
+   "room": 39,
+   "verb": 5,
+   "noun": 16,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      40,
+      39
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      128
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20157,
+   "room": 39,
+   "verb": 5,
+   "noun": 16,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      80
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20165,
+   "room": 39,
+   "verb": 1,
+   "noun": 16,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      41,
+      39
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      41
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20176,
+   "room": 39,
+   "verb": 1,
+   "noun": 16,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      40,
+      39
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      133
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20187,
+   "room": 39,
+   "verb": 1,
+   "noun": 16,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      80
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20195,
+   "room": 39,
+   "verb": 2,
+   "noun": 75,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      41,
+      39
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      41
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20206,
+   "room": 39,
+   "verb": 2,
+   "noun": 75,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      150
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20214,
+   "room": 39,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20222,
+   "room": 39,
+   "verb": 13,
+   "noun": 34,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      79
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20230,
+   "room": 39,
+   "verb": 14,
+   "noun": 75,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20238,
+   "room": 39,
+   "verb": 11,
+   "noun": 34,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20246,
+   "room": 39,
+   "verb": 1,
+   "noun": 34,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      147
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      148
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20257,
+   "room": 40,
+   "verb": 1,
+   "noun": 25,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20265,
+   "room": 40,
+   "verb": 14,
+   "noun": 35,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20273,
+   "room": 40,
+   "verb": 14,
+   "noun": 36,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20281,
+   "room": 40,
+   "verb": 4,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      10,
+      1
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      43,
+      40
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      43,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      44,
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20299,
+   "room": 40,
+   "verb": 4,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      10,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      82
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20310,
+   "room": 40,
+   "verb": 4,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      44,
+      40
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      129
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20321,
+   "room": 40,
+   "verb": 4,
+   "noun": 36,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      82
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20329,
+   "room": 40,
+   "verb": 5,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      44,
+      40
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      44,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      43,
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20344,
+   "room": 40,
+   "verb": 5,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      43,
+      40
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      133
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20355,
+   "room": 40,
+   "verb": 13,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      44,
+      40
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      50
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20366,
+   "room": 40,
+   "verb": 13,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      43,
+      40
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      10,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      82
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20380,
+   "room": 40,
+   "verb": 13,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      43,
+      40
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      10,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      133
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20394,
+   "room": 40,
+   "verb": 6,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      43,
+      40
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      22,
+      254
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      10,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      10,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20414,
+   "room": 40,
+   "verb": 6,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      43,
+      40
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      22,
+      254
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      10,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      136
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20431,
+   "room": 40,
+   "verb": 6,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      43,
+      40
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      10,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      83
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20445,
+   "room": 40,
+   "verb": 6,
+   "noun": 36,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      43,
+      40
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      10,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      136
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20459,
+   "room": 40,
+   "verb": 1,
+   "noun": 34,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      147
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      148
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20469,
+   "room": 41,
+   "verb": 1,
+   "noun": 16,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GOTO_ROOM",
+     "args": [
+      39
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20477,
+   "room": 41,
+   "verb": 13,
+   "noun": 54,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      11,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      87
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20488,
+   "room": 41,
+   "verb": 13,
+   "noun": 1,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      11,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      87
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20499,
+   "room": 41,
+   "verb": 13,
+   "noun": 1,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      88
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20507,
+   "room": 41,
+   "verb": 21,
+   "noun": 1,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      34
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20515,
+   "room": 41,
+   "verb": 26,
+   "noun": 8,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      11,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      166
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20526,
+   "room": 41,
+   "verb": 26,
+   "noun": 8,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      53,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      90
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20538,
+   "room": 41,
+   "verb": 26,
+   "noun": 8,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      132
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      90
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20549,
+   "room": 41,
+   "verb": 26,
+   "noun": 9,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      6,
+      0
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      45,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      47,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      48,
+      41
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      6,
+      1
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      35
+     ]
+    },
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      11,
+      1
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      161
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20577,
+   "room": 41,
+   "verb": 26,
+   "noun": 9,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      11,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      166
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20588,
+   "room": 41,
+   "verb": 26,
+   "noun": 9,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      6,
+      1
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      45,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      35
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      90
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20605,
+   "room": 41,
+   "verb": 26,
+   "noun": 9,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      132
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      90
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20616,
+   "room": 41,
+   "verb": 14,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20624,
+   "room": 41,
+   "verb": 26,
+   "noun": 19,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      16,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      90
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20636,
+   "room": 41,
+   "verb": 26,
+   "noun": 19,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      132
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      90
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20647,
+   "room": 41,
+   "verb": 26,
+   "noun": 33,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      42,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      90
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20659,
+   "room": 41,
+   "verb": 26,
+   "noun": 33,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      132
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      90
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20670,
+   "room": 41,
+   "verb": 14,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      11,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      86
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20681,
+   "room": 41,
+   "verb": 14,
+   "noun": 10,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    },
+    {
+     "op": "GET",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20690,
+   "room": 41,
+   "verb": 14,
+   "noun": 17,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      37
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20698,
+   "room": 41,
+   "verb": 13,
+   "noun": 15,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      88
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20706,
+   "room": 41,
+   "verb": 5,
+   "noun": 16,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      134
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20714,
+   "room": 254,
+   "verb": 13,
+   "noun": 34,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      5
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20722,
+   "room": 254,
+   "verb": 13,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      9,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      65
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20733,
+   "room": 254,
+   "verb": 19,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      9,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      48
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20744,
+   "room": 254,
+   "verb": 13,
+   "noun": 71,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "RESET_VIEW",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20751,
+   "room": 254,
+   "verb": 15,
+   "noun": 57,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      13,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      3,
+      4
+     ]
+    },
+    {
+     "op": "LAMP_ON",
+     "args": []
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20766,
+   "room": 254,
+   "verb": 15,
+   "noun": 57,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      132
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20774,
+   "room": 254,
+   "verb": 16,
+   "noun": 29,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      15,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      15,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      14,
+      254
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      17
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20791,
+   "room": 254,
+   "verb": 16,
+   "noun": 29,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      131
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20799,
+   "room": 254,
+   "verb": 13,
+   "noun": 52,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      20
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      15
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20809,
+   "room": 254,
+   "verb": 2,
+   "noun": 52,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      20
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      15
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20819,
+   "room": 254,
+   "verb": 15,
+   "noun": 38,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      19,
+      254
+     ]
+    },
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      13,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      19,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      18,
+      254
+     ]
+    },
+    {
+     "op": "LAMP_ON",
+     "args": []
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20840,
+   "room": 254,
+   "verb": 33,
+   "noun": 38,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      18,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      18,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      19,
+      254
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20855,
+   "room": 254,
+   "verb": 11,
+   "noun": 34,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      5
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20863,
+   "room": 254,
+   "verb": 1,
+   "noun": 34,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      5
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20871,
+   "room": 254,
+   "verb": 26,
+   "noun": 9,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      45,
+      254
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      6,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      6,
+      1
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      160
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20888,
+   "room": 254,
+   "verb": 26,
+   "noun": 9,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      45,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      6,
+      1
+     ]
+    },
+    {
+     "op": "MESSAGE",
+     "args": [
+      35
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20902,
+   "room": 254,
+   "verb": 13,
+   "noun": 9,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      84
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20910,
+   "room": 254,
+   "verb": 19,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      17,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20921,
+   "room": 254,
+   "verb": 19,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      35,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      36
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20932,
+   "room": 254,
+   "verb": 19,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      49,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_VIEW",
+     "args": [
+      51
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 20943,
+   "room": 254,
+   "verb": 7,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GO_N",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20950,
+   "room": 254,
+   "verb": 8,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GO_S",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20957,
+   "room": 254,
+   "verb": 9,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GO_E",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20964,
+   "room": 254,
+   "verb": 10,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GO_W",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20971,
+   "room": 254,
+   "verb": 2,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GO_U",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20978,
+   "room": 254,
+   "verb": 3,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GO_D",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20985,
+   "room": 254,
+   "verb": 14,
+   "noun": 254,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GET",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20992,
+   "room": 254,
+   "verb": 17,
+   "noun": 254,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "DROP",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 20999,
+   "room": 254,
+   "verb": 13,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      17,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      65
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21010,
+   "room": 254,
+   "verb": 13,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      35,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      65
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21021,
+   "room": 254,
+   "verb": 13,
+   "noun": 10,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      49,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      65
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21032,
+   "room": 254,
+   "verb": 13,
+   "noun": 10,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      127
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21040,
+   "room": 254,
+   "verb": 19,
+   "noun": 10,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      127
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21048,
+   "room": 254,
+   "verb": 34,
+   "noun": 88,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SAVE_GAME",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 21055,
+   "room": 254,
+   "verb": 42,
+   "noun": 29,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      15,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      2
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      15,
+      253
+     ]
+    },
+    {
+     "op": "PUT_OBJ",
+     "args": [
+      14,
+      254
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21072,
+   "room": 254,
+   "verb": 35,
+   "noun": 88,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "RESTORE_GAME",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 21079,
+   "room": 254,
+   "verb": 36,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 21086,
+   "room": 254,
+   "verb": 37,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "VIEW_IS",
+     "args": [
+      20
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      165
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21096,
+   "room": 254,
+   "verb": 37,
+   "noun": 254,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      141
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21104,
+   "room": 254,
+   "verb": 13,
+   "noun": 254,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      15
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21112,
+   "room": 254,
+   "verb": 38,
+   "noun": 70,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "INVENTORY",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 21119,
+   "room": 254,
+   "verb": 39,
+   "noun": 254,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      149
+     ]
+    },
+    {
+     "op": "QUIT",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 21128,
+   "room": 254,
+   "verb": 15,
+   "noun": 38,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      13,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      154
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21139,
+   "room": 254,
+   "verb": 15,
+   "noun": 38,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      155
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 21147,
+   "room": 254,
+   "verb": 41,
+   "noun": 254,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      159
+     ]
+    }
+   ]
+  }
+ ],
+ "turn_rules": [
+  {
+   "addr": 17408,
+   "room": 254,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      3,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      130
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17419,
+   "room": 254,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      3,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      3,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17431,
+   "room": 254,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "SUB_SWITCH",
+     "args": [
+      1,
+      3
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17440,
+   "room": 254,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "TURNS_GT",
+     "args": [
+      36
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      3,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "LAMP_OFF",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 17452,
+   "room": 254,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      18,
+      253
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      3,
+      0
+     ]
+    },
+    {
+     "op": "TURNS_GT",
+     "args": [
+      36
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      42
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17468,
+   "room": 254,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      18,
+      254
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "LAMP_ON",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 17478,
+   "room": 254,
+   "verb": 17,
+   "noun": 254,
+   "conditions": [],
+   "actions": [
+    {
+     "op": "RESET_VIEW",
+     "args": []
+    }
+   ]
+  },
+  {
+   "addr": 17485,
+   "room": 254,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "TURNS_GT",
+     "args": [
+      20
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      16,
+      0
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      7
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17498,
+   "room": 254,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "TURNS_GT",
+     "args": [
+      35
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "SET_SWITCH",
+     "args": [
+      16,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "addr": 17509,
+   "room": 1,
+   "verb": 254,
+   "noun": 254,
+   "conditions": [
+    {
+     "op": "OBJ_IN_ROOM",
+     "args": [
+      32,
+      254
+     ]
+    },
+    {
+     "op": "SWITCH_EQ",
+     "args": [
+      11,
+      1
+     ]
+    }
+   ],
+   "actions": [
+    {
+     "op": "MESSAGE",
+     "args": [
+      164
+     ]
+    },
+    {
+     "op": "GAME_OVER",
+     "args": []
+    }
+   ]
+  }
+ ],
+ "floor_slots": [
+  [
+   96,
+   112
+  ],
+  [
+   64,
+   112
+  ],
+  [
+   128,
+   112
+  ],
+  [
+   32,
+   112
+  ],
+  [
+   160,
+   112
+  ],
+  [
+   0,
+   112
+  ],
+  [
+   192,
+   112
+  ],
+  [
+   0,
+   80
+  ],
+  [
+   32,
+   80
+  ],
+  [
+   64,
+   80
+  ],
+  [
+   96,
+   80
+  ],
+  [
+   128,
+   80
+  ],
+  [
+   160,
+   80
+  ],
+  [
+   192,
+   80
+  ],
+  [
+   0,
+   48
+  ],
+  [
+   32,
+   48
+  ],
+  [
+   64,
+   48
+  ],
+  [
+   96,
+   48
+  ],
+  [
+   128,
+   48
+  ],
+  [
+   160,
+   48
+  ],
+  [
+   192,
+   48
+  ]
+ ]
+}

@@ -1,0 +1,39 @@
+address,name,type,comment
+# AUTO LOAD OBJ: the 1987 public-domain loader. It shows the Sierra title, offers the
+# instructions, then BRUNs ADVENTURE. It carries its own copy of the macro library at $1C00.
+0FFD,start,func,menu: G = game, I = instructions
+105A,show_instructions,func,eight pages of instructions and the cast of characters
+1B7B,run_adventure,func,PRINT CHR$(4)"BRUN ADVENTURE"
+2000,title_screen,label,hi-res page 1: the Sierra title picture
+1C00,rt_copy,func:X,copy X bytes: .word src, dst
+1C03,rt_add8,func:X,word at .word addr += X
+1C06,rt_add16,func,word at .word dst += word at .word src
+1C09,rt_compare,func:X,compare X bytes at (AWORK) with .word addr; cmp_result = 0 if equal
+1C0C,rt_args,func,rt_operands = the caller's inline operands
+1C0F,rt_return,func:X,return to the caller's caller skipping X inline operand bytes
+1C12,rt_inc16,func,word at .word addr += 1
+1C15,rt_print,func,print the inline $00-terminated text
+1C18,rt_mul8,func:X,mul_result = word at .word addr * X
+1C2C,rt_args_body,func,
+1C50,rt_return_body,func,
+1C66,rt_print_body,func,
+1C7D,rt_copy_body,func,
+1CA8,rt_add8_body,func,
+1CCD,rt_inc16_body,func,
+1CF0,rt_compare_body,func,
+1D2A,rt_add16_body,func,
+1D57,rt_mul8_body,func,
+# variables used by the macro library (same addresses as in ADVENTURE)
+0071,rt_operands,ptr,rt_args: pointer to the caller's inline operands
+0077,AWORK,ptr,rt_compare operand pointer
+007C,temp_7c,byte,
+007D,rt_ptr1,ptr,library scratch pointer (also dispatch target)
+0081,rt_ptr2,ptr,library scratch pointer
+0200,input_buffer,byte[256],monitor GETLN input line
+0851,cmp_result,byte,rt_compare result; also "rule matched" / end-of-table flag
+087D,msg_scratch,word,
+087F,mul_multiplicand,word,
+0881,mul_result,word,
+0883,mul_count,byte,
+0884,mul_carry,byte,
+0885,mul_dest,ptr,
