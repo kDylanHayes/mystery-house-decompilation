@@ -22,6 +22,7 @@ one change per line:
 The build starts from the base, applies the lines and writes the file. Object and room fields
 are found through the tables in the base, so they stay right if the tables change.
 """
+import pathlib
 import re
 import sys
 
@@ -34,7 +35,7 @@ RFIELDS = ['RROOMNO', 'RMSG', 'RN', 'RS', 'RE', 'RW', 'RU', 'RD', 'RBASEPIC', 'R
 
 def symbols(path):
     out = {}
-    for line in open(path).read().split('\n')[1:]:
+    for line in pathlib.Path(path).read_text().split('\n')[1:]:
         if not line:
             continue
         name, addr, kind, src = line.split(',', 4)[:4]
@@ -77,22 +78,22 @@ def resolve(target, syms, img):
 
 
 def build(src, startup, symf, out):
-    img = bytearray(open(startup, 'rb').read())
+    img = bytearray(pathlib.Path(startup).read_bytes())
     base = bytes(img)
     syms = symbols(symf)
-    for n, line in enumerate(open(src), 1):
+    for n, line in enumerate(pathlib.Path(src).read_text().splitlines(True), 1):
         line = line.split(';')[0].strip()
         if not line:
             continue
         target, _, value = line.rpartition('=')
         addr = resolve(target.strip(), syms, base)
         img[addr - LOAD] = int(value.strip().lstrip('$'), 16)
-    open(out, 'wb').write(img)
+    pathlib.Path(out).write_bytes(img)
 
 
 def extract(saved, startup, symf, out):
-    sv = open(saved, 'rb').read()
-    st = open(startup, 'rb').read()
+    sv = pathlib.Path(saved).read_bytes()
+    st = pathlib.Path(startup).read_bytes()
     syms = symbols(symf)
     by_addr = sorted((a, n) for n, a in syms.items())
     objs = {a: n for n, a in objects(st).items()}
@@ -115,7 +116,7 @@ def extract(saved, startup, symf, out):
             name, at = max(((n, x) for x, n in by_addr if x <= addr), key=lambda p: p[1])
             target = name + ('+%d' % (addr - at) if addr > at else '')
         lines.append('%-28s = $%02X    ; was $%02X' % (target, b, a))
-    open(out, 'w').write('\n'.join(lines) + '\n')
+    pathlib.Path(out).write_text('\n'.join(lines) + '\n')
 
 
 def main():

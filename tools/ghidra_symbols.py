@@ -8,12 +8,13 @@ and every address constant defined in the program's own .s file). symbols/<progr
 adds what Ghidra needs on top: data types and register parameters (func:X). symbols/apple2.csv
 names the ROM and I/O addresses. Output: address,name,type,comment for MysteryHouse.java.
 """
+import pathlib
 import sys
 
 
 def read(path, cols):
     rows = []
-    for line in open(path):
+    for line in pathlib.Path(path).read_text().splitlines(True):
         if line.startswith(('#', 'address,', 'name,')) or not line.strip():
             continue
         rows.append(line.rstrip('\n').split(',', cols - 1))

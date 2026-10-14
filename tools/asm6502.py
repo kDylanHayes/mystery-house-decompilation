@@ -27,6 +27,7 @@ Expressions: numbers ($hex, %binary, decimal, 'c'), labels, + - * / & |, parenth
 prefixes < (low byte) and > (high byte). Zero-page addressing is used when the operand's value is
 known in the first pass and below $100; anything defined later is assumed to be absolute.
 """
+import pathlib
 import os
 import re
 import sys
@@ -223,7 +224,9 @@ class Assembler:
     def read(self, path):
         lines = []
         block = []
-        for n, raw in enumerate(open(path, encoding='ascii'), 1):
+        with open(path, encoding='ascii') as f:
+            source = f.readlines()
+        for n, raw in enumerate(source, 1):
             line = raw.rstrip('\n')
             if line.startswith(';'):
                 block.append(line[1:].strip())
@@ -335,7 +338,8 @@ class Assembler:
                             emitted += bytes((v & 0xFF, (v >> 8) & 0xFF))
                     elif lw == '.incbin':
                         args = self.split_args(rest)
-                        blob = open(self.find(src, args[0][1:-1]), 'rb').read()
+                        with open(self.find(src, args[0][1:-1]), 'rb') as f:
+                            blob = f.read()
                         if len(args) > 1:
                             m2 = re.match(r'upto\s+(.+)$', args[1])
                             if not m2:
@@ -369,6 +373,9 @@ class Assembler:
         if mode in ('acc', 'imp'):
             return bytes([modes[mode]])
         v, known = self.value(e)
+        if mode != 'addr' and mode not in ('x', 'y', 'absx', 'absy') and mode not in modes:
+            raise AsmError('%s has no %s mode' % (mnem, {'imm': 'immediate', 'izx': '(zp,X)',
+                                                         'izy': '(zp),Y', 'ind': 'indirect'}.get(mode, mode)))
         if mode == 'imm':
             if self.final and not -128 <= v <= 255:
                 raise AsmError('immediate out of range')
@@ -403,9 +410,9 @@ def main():
         a.include_dirs.append(sys.argv[2])
         del sys.argv[1:3]
     org, data, listing = a.assemble(sys.argv[1])
-    open(sys.argv[2], 'wb').write(data)
+    pathlib.Path(sys.argv[2]).write_bytes(data)
     if len(sys.argv) > 3:
-        open(sys.argv[3], 'w').write('\n'.join(listing) + '\n')
+        pathlib.Path(sys.argv[3]).write_text('\n'.join(listing) + '\n')
     if len(sys.argv) > 4:
         with open(sys.argv[4], 'w') as f:
             f.write('name,address,kind,file,comment\n')

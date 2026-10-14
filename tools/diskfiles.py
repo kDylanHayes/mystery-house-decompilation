@@ -24,6 +24,7 @@ PIC_SIZES.bin, APPLESOFT.bin (tools/basic.py), and the assembler's adventure.sym
 verify checks each file of a built disk (as extracted by dos33.py) against disk/FILES.sha256,
 the hashes of the original disk's 30 files; compare checks against another extracted disk.
 """
+import pathlib
 import os
 import sys
 
@@ -49,16 +50,16 @@ FILES = [
 
 
 def make(b, src):
-    adv = open(os.path.join(b, 'ADVENTURE.bin'), 'rb').read()
+    adv = pathlib.Path(os.path.join(b, 'ADVENTURE.bin')).read_bytes()
 
     def entries(inc, kind):
-        return sum(1 for l in open(os.path.join(b, 'gen', inc)) if l.strip().startswith(kind))
+        return sum(1 for l in pathlib.Path(os.path.join(b, 'gen', inc)).read_text().splitlines(True) if l.strip().startswith(kind))
     dir_len = max(0x130, 3 * entries('pictures.inc', '.byte'))
     idx_len = max(0x150, 2 * entries('messages.inc', '.word'))
-    open(os.path.join(b, 'BLOCK_DIRECTORY.bin'), 'wb').write(adv[0x5300 - 0x800:0x5300 - 0x800 + dir_len])
-    open(os.path.join(b, 'MESSAGE_OBJECT.bin'), 'wb').write(adv[0x5500 - 0x800:0x5500 - 0x800 + idx_len])
+    pathlib.Path(os.path.join(b, 'BLOCK_DIRECTORY.bin')).write_bytes(adv[0x5300 - 0x800:0x5300 - 0x800 + dir_len])
+    pathlib.Path(os.path.join(b, 'MESSAGE_OBJECT.bin')).write_bytes(adv[0x5500 - 0x800:0x5500 - 0x800 + idx_len])
     base = os.path.join(b, 'adventure_state.bin')
-    open(base, 'wb').write(adv[0x0830 - 0x800:0x0830 - 0x800 + STATE])
+    pathlib.Path(base).write_bytes(adv[0x0830 - 0x800:0x0830 - 0x800 + STATE])
     syms = os.path.join(b, 'adventure.syms.csv')
     savefile.build(os.path.join(src, 'startup.txt'), base, syms, os.path.join(b, 'STARTUP.bin'))
     savefile.build(os.path.join(src, 'saved_game.txt'), os.path.join(b, 'STARTUP.bin'), syms,
@@ -67,14 +68,14 @@ def make(b, src):
         for disk_name, path, load, _ in FILES:
             full = os.path.join(b, path)
             if load is not None:
-                open(full + '.load', 'w').write('%04X' % load)
+                pathlib.Path(full + '.load').write_text('%04X' % load)
             put.write('%s=%s\n' % (disk_name, os.path.abspath(full)))
 
 
 def content(path, name):
     """A file's contents as extracted: a text file up to and including its $00 (the extracted
     copy is whole sectors), anything else as it is."""
-    data = open(path, 'rb').read()
+    data = pathlib.Path(path).read_bytes()
     return data[:data.index(b'\x00') + 1] if name.endswith('.txt.bin') else data
 
 
@@ -90,22 +91,22 @@ def verify(files_dir, sums):
     """Check each file of a built disk against the recorded hashes."""
     import hashlib
     want = {}
-    for line in open(sums):
+    for line in pathlib.Path(sums).read_text().splitlines(True):
         h, name = line.rstrip('\n').split('  ', 1)
         want[name] = h
     changed = [disk_name for disk_name, _, _, name in FILES
                if hashlib.sha256(content(os.path.join(files_dir, name), name)).hexdigest() != want.get(disk_name)]
     if changed:
         print('changed from the original: %s' % ', '.join(changed))
-    else:
-        print('all %d files match the original' % len(FILES))
+        sys.exit(1)
+    print('all %d files match the original' % len(FILES))
 
 
 def compare(built, orig):
     changed = []
     for disk_name, _, load, name in FILES:
-        new = open(os.path.join(built, name), 'rb').read()
-        old = open(os.path.join(orig, name), 'rb').read()
+        new = pathlib.Path(os.path.join(built, name)).read_bytes()
+        old = pathlib.Path(os.path.join(orig, name)).read_bytes()
         if name.endswith('.txt.bin'):
             # text files are extracted as whole sectors: compare up to the end of the text
             n = old.index(b'\x00') + 1

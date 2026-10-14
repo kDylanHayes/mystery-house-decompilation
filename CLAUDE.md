@@ -12,6 +12,9 @@ README.md covers the layout, NOTES.md explains how the engine works.
 match the original" and "build/mystery_house.do: matches disk/SHA256". The disk is the clean one
 (no stale third-party data; see `disk/README.md`), so its hash differs from the TOSEC original's.
 
+`./build.sh --check` fails unless everything matches (CI runs it). Run the tests with
+`python3 -m unittest discover -s tests`; add tests when a tool gains a feature or a bug is fixed.
+
 Ghidra (optional): with `GHIDRA_INSTALL_DIR=/path/to/ghidra_12.1.x` the
 build also regenerates the C pseudocode in `decomp/*.c`.
 
@@ -35,6 +38,9 @@ original disk image, no residue. Edit these, not generated files.
   tokenized bytes), recovered from the original disk; it is an archive and the build does not
   touch it; keep it.
 - Generated, don't hand-edit: `assets/`, `extracted/`, `decomp/`, `build/` (ignored).
+
+Licence: the game is public domain (1987 release); the project's own work is under the
+Unlicense (`LICENSE`); DOS 3.3 (`src/disk/dos33.bin`) is Apple's and excluded.
 
 ## Conventions
 

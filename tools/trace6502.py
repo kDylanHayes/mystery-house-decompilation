@@ -20,6 +20,7 @@ The macro library (a jump table of 9 entries at LIB) takes its operands inline a
   LIB+$15 print   inline text, high-bit ASCII, $00-terminated
   LIB+$18 mul8    word * X -> $0881    .word addr
 """
+import pathlib
 import json
 import sys
 
@@ -301,20 +302,20 @@ class Program:
 
 
 def main():
-    desc = json.load(open(sys.argv[1]))
-    data = open(sys.argv[2], 'rb').read()
+    desc = json.loads(pathlib.Path(sys.argv[1]).read_text())
+    data = pathlib.Path(sys.argv[2]).read_bytes()
     if len(sys.argv) > 5:
         # symbols CSV: address,name,type,comment
-        for line in open(sys.argv[5]):
+        for line in pathlib.Path(sys.argv[5]).read_text().splitlines(True):
             f = line.rstrip('\n').split(',', 3)
             if len(f) < 2 or line.startswith(('#', 'address,')) or not f[0].strip():
                 continue
             desc.setdefault('labels', {})[f[0].strip()] = f[1].strip()
     p = Program(desc, data)
     p.trace()
-    json.dump(p.plan(), open(sys.argv[3], 'w'))
+    pathlib.Path(sys.argv[3]).write_text(json.dumps(p.plan()))
     if len(sys.argv) > 4:
-        open(sys.argv[4], 'w').write(p.listing())
+        pathlib.Path(sys.argv[4]).write_text(p.listing())
     covered = sum(p.code.values()) + sum(ln for _, args in p.inline.values() for _, _, ln in args)
     print('%s: %d functions, %d instructions, %d inline-operand calls, %d/%d bytes code' % (
         desc['name'], len(p.funcs), len(p.code), len(p.inline), covered, len(data)))

@@ -10,6 +10,7 @@ Binary (B) files are written without their 4-byte load-address/length header; th
 recorded in <outdir>/CATALOG.txt. Applesoft (A) files are written both raw (.bas.bin) and
 listed (.bas, by tools/basic.py, which can also rebuild them). Text (T) files have their high bits stripped and CRs turned into newlines.
 """
+import pathlib
 import os
 import sys
 
@@ -148,16 +149,16 @@ def put(disk, name, load, payload):
 
 def main():
     if sys.argv[1] == 'put':
-        disk = bytearray(open(sys.argv[2], 'rb').read())
+        disk = bytearray(pathlib.Path(sys.argv[2]).read_bytes())
         for arg in sys.argv[4:]:
             name, path = arg.split('=', 1)
-            data = open(path, 'rb').read()
+            data = pathlib.Path(path).read_bytes()
             # binary files need their load address in <file>.load; text files have none
-            load = int(open(path + '.load').read(), 16) if os.path.exists(path + '.load') else None
+            load = int(pathlib.Path(path + '.load').read_text(), 16) if os.path.exists(path + '.load') else None
             put(disk, name, load, data)
-        open(sys.argv[3], 'wb').write(disk)
+        pathlib.Path(sys.argv[3]).write_bytes(disk)
         return
-    disk = open(sys.argv[1], 'rb').read()
+    disk = pathlib.Path(sys.argv[1]).read_bytes()
     outdir = sys.argv[2]
     os.makedirs(outdir, exist_ok=True)
     lines = ['type locked sectors  name                            load   length']
@@ -167,26 +168,26 @@ def main():
         load = length = None
         if ftype == 'B':
             load, length = raw[0] | raw[1] << 8, raw[2] | raw[3] << 8
-            open(fn + '.bin', 'wb').write(raw[4:4 + length])
+            pathlib.Path(fn + '.bin').write_bytes(raw[4:4 + length])
         elif ftype in 'AI':
             length = raw[0] | raw[1] << 8
             body = raw[2:2 + length]
-            open(fn + '.bas.bin', 'wb').write(body)
+            pathlib.Path(fn + '.bas.bin').write_bytes(body)
             lines, extra = (basic.list_applesoft if ftype == 'A' else basic.list_integer)(body)
-            open(fn + '.bas', 'w').write('\n'.join(lines) + '\n')
+            pathlib.Path(fn + '.bas').write_text('\n'.join(lines) + '\n')
         elif ftype == 'T':
             end = raw.find(b'\x00')
             body = raw if end < 0 else raw[:end]
-            open(fn + '.txt', 'w').write(''.join(
+            pathlib.Path(fn + '.txt').write_text(''.join(
                 '\n' if (b & 0x7F) == 0x0D else chr(b & 0x7F) for b in body))
-            open(fn + '.txt.bin', 'wb').write(raw)
+            pathlib.Path(fn + '.txt.bin').write_bytes(raw)
         else:
-            open(fn + '.raw', 'wb').write(raw)
+            pathlib.Path(fn + '.raw').write_bytes(raw)
         lines.append('%-4s %-6s %7d  %-30s  %-6s %s' % (
             ftype, '*' if locked else '', nsec, name,
             '$%04X' % load if load is not None else '',
             '$%04X' % length if length is not None else ''))
-    open(os.path.join(outdir, 'CATALOG.txt'), 'w').write('\n'.join(lines) + '\n')
+    pathlib.Path(os.path.join(outdir, 'CATALOG.txt')).write_text('\n'.join(lines) + '\n')
     print('\n'.join(lines))
 
 

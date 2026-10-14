@@ -30,8 +30,25 @@ Needs only python3. The build:
 7. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
 
 With unmodified source it must say "all 30 files match the original" and
-"build/mystery_house.do: matches disk/SHA256". Keep it that way for any change that is meant to be a cleanup (renames, comments,
-constants): those never change the bytes.
+"build/mystery_house.do: matches disk/SHA256". Keep it that way for any change that is meant
+to be a cleanup (renames, comments, constants): those never change the bytes.
+`./build.sh --check` turns a mismatch into an error.
+
+## Tests and CI
+
+```
+python3 -m unittest discover -s tests
+```
+
+`tests/` (standard library only) covers the tools: the assembler's addressing modes,
+expressions, directives and errors; the BASIC tokenizer's Applesoft rules and a round trip of
+every program; the message, picture and saved-state formats; the full build against the
+recorded hashes; and the disk writer (files growing, shrinking, the free-space map).
+
+`.github/workflows/build.yml` runs on every push and pull request: the tests, then
+`./build.sh --check`, then a check that the committed generated files (`assets/`,
+`extracted/`) are what the source produces (PNGs excepted: their compressed bytes depend on the
+zlib version). The built disk is attached to each run as an artifact.
 
 ## The source
 
@@ -149,6 +166,8 @@ grow or shrink, but adding or removing a file, or a new `BLOCK` file, is not sup
 | `disk/` | the hashes the build checks: each original file, and the clean disk image | reference |
 | `build.sh` | the build | hand |
 | `tools/` | the build tools (see `tools/README.md`) | hand |
+| `tests/` | tests for the tools and the build | hand |
+| `.github/workflows/` | CI: tests, matching build, generated files up to date | hand |
 | `ghidra_scripts/` | the Ghidra post-script for the optional pseudocode | hand |
 | `programs/` | code-tracing settings for the Ghidra step (see `programs/README.md`) | hand |
 | `symbols/` | Ghidra data types and register parameters (see `symbols/README.md`) | hand |

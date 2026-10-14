@@ -8,7 +8,8 @@ whole game database (rooms, objects, words, messages, rules and pictures) decode
 ![The front yard](assets/rooms/room_01.png)
 
 ```
-./build.sh
+./build.sh            # build everything; ./build.sh --check also fails unless it all matches
+python3 -m unittest discover -s tests
 ```
 
 Needs only python3. It builds every file of the game from source (the programs, the messages,
@@ -58,9 +59,15 @@ on tracks 0-2, is kept as a binary.
 ## Source and licence
 
 Built from the TOSEC dump *Hi-Res Adventure 1 - Mystery House (1980)(On-Line Systems)(PD).do*.
-Sierra On-Line released the game into the public domain in 1987, and the game is all this
-project holds: every one of its 30 files is rebuilt from source and checked byte for byte
-against the original. DOS 3.3 (Apple's) is kept as an untouched binary so the disk boots. The
-original image also carried stale fragments of other, copyrighted software in unused sectors;
-those were dropped, so the built disk is a clean copy with its own hash
+Sierra On-Line released the game into the public domain in 1987 (the release's own notice, in
+`src/basic/MYSTERY.HELLO.bas`, says so), and the game is all this project holds: every one of
+its 30 files is rebuilt from source and checked byte for byte against the original.
+
+This project's own work - the tools, the build, the names, comments and documentation, the
+source formats - is released into the public domain too, under the Unlicense (`LICENSE`).
+
+The one exception is DOS 3.3 (`src/disk/dos33.bin`, tracks 0-2 of the built disk), which is
+Apple's and is not covered by either: it is kept as an untouched binary only so the disk boots.
+The original image also carried stale fragments of other, copyrighted software in unused
+sectors; those were dropped, so the built disk is a clean copy with its own hash
 (`disk/README.md` explains why and records the original's).

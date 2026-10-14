@@ -13,6 +13,7 @@ text file, and writes:
   rules.txt         the turn and command rule scripts, decompiled to pseudocode
   gamedata.json     all of the above in machine-readable form
 """
+import pathlib
 import json
 import os
 import sys
@@ -92,8 +93,8 @@ ACTIONS = {
 
 class Game:
     def __init__(self, extracted):
-        self.d = open(os.path.join(extracted, 'ADVENTURE.bin'), 'rb').read()
-        self.msgfile = open(os.path.join(extracted, 'MESSAGES.txt.bin'), 'rb').read()
+        self.d = pathlib.Path(os.path.join(extracted, 'ADVENTURE.bin')).read_bytes()
+        self.msgfile = pathlib.Path(os.path.join(extracted, 'MESSAGES.txt.bin')).read_bytes()
 
     def b(self, a):
         return self.d[a - LOAD]
@@ -331,12 +332,12 @@ def main():
         return [{**r, 'conditions': [{'op': CONDITIONS[o][0], 'args': a} for o, a in r['conditions']],
                  'actions': [{'op': ACTIONS[o][0], 'args': a} for o, a in r['actions']]} for r in rules]
 
-    json.dump({
+    pathlib.Path(os.path.join(out, 'gamedata.json')).write_text(json.dumps({
         'verbs': verbs, 'nouns': nouns, 'messages': msgs, 'rooms': rooms, 'objects': objs,
         'pictures': {n: {'block': b, 'offset': o} for n, (b, o) in pics.items()},
         'command_rules': enc(cmd_rules), 'turn_rules': enc(turn_rules),
         'floor_slots': [(g.b(FLOOR_SLOTS + 2 * i), g.b(FLOOR_SLOTS + 2 * i + 1)) for i in range(21)],
-    }, open(os.path.join(out, 'gamedata.json'), 'w'), indent=1)
+    }, indent=1))
     print('%d verbs, %d nouns, %d messages, %d rooms, %d objects, %d pictures, %d command rules, '
           '%d turn rules' % (len(verbs), len(nouns), len(msgs), len(rooms), len(objs), len(pics),
                              len(cmd_rules), len(turn_rules)))

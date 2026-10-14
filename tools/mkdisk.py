@@ -21,6 +21,7 @@ extra sectors from the free ones; a smaller one keeps its sectors, as DOS does.
 
 residue.bin is a list of records: 3-byte image offset, 2-byte length, the bytes.
 """
+import pathlib
 import os
 import re
 import sys
@@ -44,7 +45,7 @@ def ts(text):
 
 def parse_layout(path):
     lay = {'files': []}
-    for n, raw in enumerate(open(path), 1):
+    for n, raw in enumerate(pathlib.Path(path).read_text().splitlines(True), 1):
         line = raw.split(';')[0].strip()
         if not line:
             continue
@@ -132,25 +133,25 @@ def skeleton(lay, dos, residue):
 def put_files(img, args):
     for arg in args:
         name, path = arg.split('=', 1)
-        data = open(path, 'rb').read()
-        load = int(open(path + '.load').read(), 16) if os.path.exists(path + '.load') else None
+        data = pathlib.Path(path).read_bytes()
+        load = int(pathlib.Path(path + '.load').read_text(), 16) if os.path.exists(path + '.load') else None
         dos33.put(img, name, load, data)
 
 
 def build(srcdir, out, args):
     lay = parse_layout(os.path.join(srcdir, 'layout.txt'))
-    dos = open(os.path.join(srcdir, 'dos33.bin'), 'rb').read()
+    dos = pathlib.Path(os.path.join(srcdir, 'dos33.bin')).read_bytes()
     rp = os.path.join(srcdir, 'residue.bin')
-    residue = open(rp, 'rb').read() if os.path.exists(rp) else b''
+    residue = pathlib.Path(rp).read_bytes() if os.path.exists(rp) else b''
     img = skeleton(lay, dos, residue)
     put_files(img, args)
-    open(out, 'wb').write(img)
+    pathlib.Path(out).write_bytes(img)
 
 
 def extract(disk_path, out):
-    disk = open(disk_path, 'rb').read()
+    disk = pathlib.Path(disk_path).read_bytes()
     os.makedirs(out, exist_ok=True)
-    open(os.path.join(out, 'dos33.bin'), 'wb').write(disk[:off(3, 0)])
+    pathlib.Path(os.path.join(out, 'dos33.bin')).write_bytes(disk[:off(3, 0)])
     vt = disk[off(17, 0):off(17, 1)]
     lines = ['; The disk\'s structure (see tools/mkdisk.py): DOS 3.3, 35 tracks x 16 sectors.',
              '; Files are listed in catalog order with the sectors they occupy.',
@@ -171,7 +172,7 @@ def extract(disk_path, out):
             name, ftype, 'locked ' if locked else '', ';'.join('%d,%d' % x for x in lists),
             ' '.join('%d,%d' % x for x in data)))
         files.append((name, ftype, t, s))
-    open(os.path.join(out, 'layout.txt'), 'w').write('\n'.join(lines) + '\n')
+    pathlib.Path(os.path.join(out, 'layout.txt')).write_text('\n'.join(lines) + '\n')
     # rebuild without residue, putting each file's own contents back, then keep what differs
     lay = parse_layout(os.path.join(out, 'layout.txt'))
     img = skeleton(lay, disk[:off(3, 0)], b'')
@@ -198,7 +199,7 @@ def extract(disk_path, out):
             j += 1
         res += bytes((i & 0xFF, i >> 8 & 0xFF, i >> 16, (j - i) & 0xFF, (j - i) >> 8)) + disk[i:j]
         i = j
-    open(os.path.join(out, 'residue.bin'), 'wb').write(res)
+    pathlib.Path(os.path.join(out, 'residue.bin')).write_bytes(res)
     print('%d files; residue %d bytes' % (len(files), len(res)))
 
 

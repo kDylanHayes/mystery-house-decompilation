@@ -17,6 +17,7 @@ Picture format (drawn by SUB_7A00): a list of (x, y) byte pairs. The pair 00 00 
 point starts a new line" (HPLOT x,y); any other pair continues the line (HPLOT TO x,y). FF FF ends
 the picture. Points are offset by the object position and clamped to x <= 255, y <= 160.
 """
+import pathlib
 import json
 import os
 import struct
@@ -162,9 +163,9 @@ def hires_color(mem):
 
 
 def main():
-    ext, gd, out = sys.argv[1], json.load(open(sys.argv[2])), sys.argv[3]
-    adv = open(os.path.join(ext, 'ADVENTURE.bin'), 'rb').read()
-    blocks = {n: open(os.path.join(ext, 'BLOCK%d.bin' % n), 'rb').read() for n in range(1, 20)}
+    ext, gd, out = sys.argv[1], json.loads(pathlib.Path(sys.argv[2]).read_text()), sys.argv[3]
+    adv = pathlib.Path(os.path.join(ext, 'ADVENTURE.bin')).read_bytes()
+    blocks = {n: pathlib.Path(os.path.join(ext, 'BLOCK%d.bin' % n)).read_bytes() for n in range(1, 20)}
     for sub in ('pictures', 'shapes', 'rooms', 'screens'):
         os.makedirs(os.path.join(out, sub), exist_ok=True)
 
@@ -219,7 +220,7 @@ def main():
                 draw_picture(cv, blocks[b2], o2, x, y)
         cv.save(os.path.join(out, 'rooms', 'room_%02d.png' % room['RROOMNO']), height=161)
 
-    auto = open(os.path.join(ext, 'AUTO_LOAD_OBJ.bin'), 'rb').read()
+    auto = pathlib.Path(os.path.join(ext, 'AUTO_LOAD_OBJ.bin')).read_bytes()
     png(os.path.join(out, 'screens', 'title_1987.png'), W * SCALE, H * SCALE,
         hires_color(auto[0x2000 - 0x0FFD:0x4000 - 0x0FFD]))
     png(os.path.join(out, 'screens', 'title_1980.png'), W * SCALE, H * SCALE,

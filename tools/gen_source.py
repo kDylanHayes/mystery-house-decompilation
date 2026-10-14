@@ -13,6 +13,7 @@ tables are written out structurally (rules with named opcodes, lengths computed 
 Leftover memory with no meaning (stale buffers, fill, screen images) becomes .incbin files in
 <data dir>. The output reassembles byte-for-byte; build.sh checks that.
 """
+import pathlib
 import json
 import os
 import sys
@@ -38,7 +39,7 @@ class Gen:
         self.syms = {}       # address -> name
         self.comments = {}   # address -> comment
         self.types = {}
-        for line in open(symfile):
+        for line in pathlib.Path(symfile).read_text().splitlines(True):
             if line.startswith(('#', 'address,')) or not line.strip():
                 continue
             f = line.rstrip('\n').split(',', 3)
@@ -228,7 +229,7 @@ class Gen:
             if run >= 128 and self.datadir and blob_ok:
                 blob = self.d[x - self.base:x - self.base + run]
                 name = '%s.bin' % self.labels[x] if x in self.labels else '%s_%04X.bin' % (self.prog, x)
-                open(os.path.join(self.datadir, name), 'wb').write(blob)
+                pathlib.Path(os.path.join(self.datadir, name)).write_bytes(blob)
                 if x in self.labels:
                     what = ''
                 elif all(c == 0 for c in blob) or all(blob[k] == blob[k % 4] for k in range(len(blob))):
@@ -441,8 +442,8 @@ def wrap(s, n=96):
 
 def main():
     prog, binf, planf, symf, out, datadir = sys.argv[1:7]
-    data = open(binf, 'rb').read()
-    plan = json.load(open(planf))
+    data = pathlib.Path(binf).read_bytes()
+    plan = json.loads(pathlib.Path(planf).read_text())
     os.makedirs(datadir, exist_ok=True)
     gen = Gen(prog, data, plan, symf)
     gen.extra = {}
@@ -455,7 +456,7 @@ def main():
         gen.setup_game()
         g = gen.g
         ext = os.path.dirname(binf)
-        g.msgfile = open(os.path.join(ext, 'MESSAGES.txt.bin'), 'rb').read()
+        g.msgfile = pathlib.Path(os.path.join(ext, 'MESSAGES.txt.bin')).read_bytes()
         gen.msgs = g.messages()
         gen.namer = gd.Namer(gen.verbs, gen.nouns, g.rooms(), g.objects(), gen.msgs)
         def table_end(s):
@@ -504,7 +505,7 @@ def main():
     for n, v in list(gen.consts.items()) + [(k, v) for k, v in INC_VALUES.items()]:
         gen.const_by_value.setdefault(v, []).append((n, v))
     text = gen.generate(structured, header, datadir)
-    open(out, 'w').write(text)
+    pathlib.Path(out).write_text(text)
     print('%s: %d lines' % (out, text.count('\n')))
 
 
@@ -513,7 +514,7 @@ INC_VALUES = {}
 
 
 def load_inc(path, values=True):
-    for line in open(path):
+    for line in pathlib.Path(path).read_text().splitlines(True):
         line = line.split(';')[0]
         if '=' in line:
             n, v = line.split('=')
@@ -547,7 +548,7 @@ def write_game_inc(gen, path):
     L.append('; nouns (noun_table)')
     for i, ws in enumerate(gen.nouns, 1):
         L.append('%-16s = %d    ; %s' % (gen.nname[i], i, ', '.join(w or '(blank)' for w in ws)))
-    open(path, 'w').write('\n'.join(L) + '\n')
+    pathlib.Path(path).write_text('\n'.join(L) + '\n')
     load_inc(path, values=False)
 
 

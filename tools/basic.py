@@ -17,6 +17,7 @@ $00 $00. A keyword spelled inside a variable name is tokenized too, exactly as o
 Integer BASIC (.int): only what the disk's APPLESOFT file uses: PRINT "string" and END. Lines
 are [length] [line number] [tokens] and, in this file, end with $00.
 """
+import pathlib
 import re
 import sys
 
@@ -48,7 +49,7 @@ def unesc(s):
 
 def read_source(path):
     lines, extra = [], b''
-    for n, raw in enumerate(open(path, encoding='ascii'), 1):
+    for n, raw in enumerate(pathlib.Path(path).read_text(encoding='ascii').splitlines(True), 1):
         line = raw.rstrip('\n')
         if not line.strip() or line.startswith(';'):
             continue
@@ -228,9 +229,9 @@ def main():
         src, out = sys.argv[2:4]
         lines, extra = read_source(src)
         data = build_integer(lines, extra) if src.endswith('.int') else build_applesoft(lines, extra)
-        open(out, 'wb').write(data)
+        pathlib.Path(out).write_bytes(data)
     elif sys.argv[1] == 'list':
-        prog = open(sys.argv[2], 'rb').read()
+        prog = pathlib.Path(sys.argv[2]).read_bytes()
         lines, extra = (list_integer if sys.argv[3] == 'integer' else list_applesoft)(prog)
         with open(sys.argv[4], 'w') as f:
             f.write('\n'.join(lines) + '\n')

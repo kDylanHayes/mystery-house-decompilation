@@ -17,6 +17,7 @@ with their comments. Each source line is stored as
 characters, ': ', followed by the line's statement. The opcode tokens were identified by
 matching each fragment against the assembled handlers in this binary.
 """
+import pathlib
 import os
 import sys
 
@@ -69,7 +70,7 @@ def render(lines):
 
 
 def main():
-    d = open(sys.argv[1], 'rb').read()
+    d = pathlib.Path(sys.argv[1]).read_bytes()
     frags = []
     p = 0
     while p < len(d):
@@ -84,7 +85,7 @@ def main():
     for p, lines in frags:
         last_p, kind, v = lines[-1]
         end = last_p + (11 if kind == 'label' else d[last_p] + 1)
-        open(os.path.join(out, 'raw', 'fragment_%04X.bin' % (p + LOAD)), 'wb').write(d[p:end])
+        pathlib.Path(os.path.join(out, 'raw', 'fragment_%04X.bin' % (p + LOAD))).write_bytes(d[p:end])
     with open(os.path.join(out, 'fragments.s'), 'w') as f:
         f.write('; Fragments of the original ADVENTURE source, recovered from stale memory saved inside\n'
                 '; the ADVENTURE binary (see tools/source_fragments.py). The text between fragments\n'

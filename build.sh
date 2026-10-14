@@ -1,7 +1,9 @@
 #!/bin/sh
 # Build Mystery House from source.
 #
-# usage: ./build.sh
+# usage: ./build.sh [--check]
+#        --check: exit with an error unless every file and the disk image match the recorded
+#        hashes (for CI and for cleanups that must not change the bytes)
 # needs: python3 only. If GHIDRA_INSTALL_DIR points at Ghidra 12.1.x, the C pseudocode in
 #        decomp/ is regenerated as well (optional).
 #
@@ -9,6 +11,8 @@
 # bootable), checks each file against the original disk's (disk/FILES.sha256) and the image
 # against disk/SHA256, extracts the built disk into extracted/ and regenerates the assets.
 set -eu
+CHECK=0
+[ "${1:-}" = "--check" ] && CHECK=1
 HERE=$(cd "$(dirname "$0")" && pwd)
 B="$HERE/build"
 G="$B/gen"
@@ -35,10 +39,18 @@ python3 -I "$HERE/tools/dos33.py" "$B/mystery_house.do" "$HERE/extracted" > /dev
 
 # check: each file against the original disk's (disk/FILES.sha256), the image against the clean
 # disk's hash (disk/SHA256)
-python3 -I "$HERE/tools/diskfiles.py" verify "$HERE/extracted" "$HERE/disk/FILES.sha256"
-[ "$(shasum -a 256 "$B/mystery_house.do" | cut -d' ' -f1)" = "$(cat "$HERE/disk/SHA256")" ] \
-	&& echo "build/mystery_house.do: matches disk/SHA256" \
-	|| echo "build/mystery_house.do: differs from disk/SHA256"
+MATCH=1
+python3 -I "$HERE/tools/diskfiles.py" verify "$HERE/extracted" "$HERE/disk/FILES.sha256" || MATCH=0
+if [ "$(python3 -I -c "import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],'rb').read()).hexdigest())" "$B/mystery_house.do")" = "$(cat "$HERE/disk/SHA256")" ]; then
+	echo "build/mystery_house.do: matches disk/SHA256"
+else
+	echo "build/mystery_house.do: differs from disk/SHA256"
+	MATCH=0
+fi
+if [ $CHECK = 1 ] && [ $MATCH = 0 ]; then
+	echo "check failed: the build does not match the recorded hashes" >&2
+	exit 1
+fi
 
 # assets come from the built disk, so edits show up in them
 python3 -I "$HERE/tools/gamedata.py" "$HERE/extracted" "$HERE/assets/text"

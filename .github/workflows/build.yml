@@ -1,0 +1,34 @@
+# Every push and pull request: run the tests, build everything with the strict check (each file
+# must match the original's hash and the disk must match disk/SHA256), and make sure the
+# committed generated files are what the source produces.
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Matching build
+        run: ./build.sh --check
+
+      - name: Generated files are up to date
+        # PNGs are left out: zlib versions differ between platforms, so the compressed bytes
+        # can differ while the images are the same
+        run: git diff --stat --exit-code -- . ':(exclude)*.png'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mystery_house.do
+          path: build/mystery_house.do
