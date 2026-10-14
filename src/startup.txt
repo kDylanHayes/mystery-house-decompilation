@@ -1,0 +1,63 @@
+; STARTUP: the state "play again" loads, as the bytes that differ from ADVENTURE ($0830-$10FE).
+; It looks like it was made with SAVE GAME at the start of a game: the last command parsed is
+; verb 34 (SAVE), noun 88 (GAME), and the file then saved under (or renamed to) STARTUP.
+; The bytes that differ from the base image (see tools/savefile.py). Variables are
+; named as in src/adventure.s; objects and rooms by number and field (src/game.inc).
+
+input_len                    = $09    ; was $01
+parse_pos                    = $09    ; was $00
+word_id                      = $58    ; was $19
+verb                         = $22    ; was $01
+noun                         = $58    ; was $19
+cond_value                   = $FD    ; was $26
+find_id                      = $20    ; was $27
+shown_picture                = $03    ; was $35
+cmp_result                   = $01    ; was $FF
+turns                        = $03    ; was $01
+verb_word                    = $D3    ; was $C7
+verb_word+1                  = $C1    ; was $CF
+verb_word+2                  = $D6    ; was $A0
+verb_word+3                  = $C5    ; was $A0
+noun_word                    = $C7    ; was $C4
+old_var_085E                 = $C1    ; was $CF
+old_var_085F                 = $CD    ; was $CF
+old_var_085F+1               = $C5    ; was $D2
+word_buf                     = $C7    ; was $C4
+word_buf+1                   = $C1    ; was $CF
+word_buf+2                   = $CD    ; was $CF
+word_buf+3                   = $C5    ; was $D2
+msg_scratch                  = $99    ; was $D9
+mul_result                   = $09    ; was $A2
+room_index                   = $0A    ; was $1E
+pic_block                    = $01    ; was $0E
+pic_offset                   = $A6    ; was $BE
+pic_offset+1                 = $00    ; was $02
+action_ptr                   = $38    ; was $14
+action_ptr+1                 = $52    ; was $44
+act_word1                    = $C8    ; was $1E
+act_word1+1                  = $00    ; was $0D
+act_word2                    = $C8    ; was $1E
+act_word2+1                  = $0D    ; was $00
+actions_left                 = $01    ; was $00
+act_arg1                     = $01    ; was $20
+msg_no_delay                 = $00    ; was $54
+pic_cache                    = $03    ; was $49
+pic_cache+1                  = $00    ; was $4F
+pic_cache+2                  = $01    ; was $4E
+pic_cache+3                  = $00    ; was $20
+pic_cache+4                  = $00    ; was $41
+pic_cache+5                  = $00    ; was $44
+pic_cache+6                  = $00    ; was $44
+pic_cache+7                  = $00    ; was $52
+pic_cache+8                  = $00    ; was $45
+pic_cache+9                  = $00    ; was $53
+pic_cache+10                 = $00    ; was $53
+pic_cache+11                 = $00    ; was $0D
+pic_cache+12                 = $00    ; was $08
+pic_cache+13                 = $00    ; was $D0
+pic_cache+14                 = $00    ; was $01
+pic_cache+15                 = $00    ; was $41
+pic_cache+16                 = $00    ; was $57
+pic_cache+17                 = $00    ; was $4F
+pic_cache+18                 = $00    ; was $52
+pic_cache+19                 = $00    ; was $4B

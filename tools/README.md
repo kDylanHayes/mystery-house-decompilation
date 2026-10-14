@@ -8,7 +8,9 @@ Everything is python3 with the standard library only. Each script's docstring ha
 | `msgfile.py` | build | builds the `MESSAGES` file and the message index from `src/messages.txt` (`extract` made the source) |
 | `picfile.py` | build | builds `BLOCK1`-`BLOCK19` and the picture directory from `src/pictures/` (`extract` made the source) |
 | `basic.py` | build | tokenizes the BASIC programs in `src/basic/` (Applesoft, and the Integer BASIC subset the disk uses); `list` made the sources |
-| `diskfiles.py` | build | collects the rebuilt files, cuts the two table copies from `ADVENTURE`, builds `STARTUP` (the "play again" state) with `ADVENTURE`'s object and room tables, compares everything with the originals |
+| `savefile.py` | build | builds `STARTUP` and `SAVED GAME` from `src/startup.txt` and `src/saved_game.txt` (changes to a base image) |
+| `diskfiles.py` | build | makes the files derived from other built files (table copies, `STARTUP`, `SAVED GAME`) and the list for the disk; `compare` checks a built disk's files against the original |
+| `mkdisk.py` | build | builds the disk image from `src/disk/` and the built files; `extract` made `src/disk/` |
 | `dos33.py` | build | extracts a DOS 3.3 disk (lists BASIC as text), and `put` writes binary, text and BASIC files back into one (keeping each file's sectors, as DOS does) |
 | `gamedata.py` | build | decodes the game database (vocabulary, rooms, objects, messages, rules) into `assets/text/` |
 | `pictures.py` | build | renders the pictures, shapes, rooms and title screens into `assets/` |

@@ -11,23 +11,25 @@ How the project fits together and how to change the game. For how the engine wor
 
 Needs only python3. The build:
 
-1. extracts the original disk (`disk/mystery_house.do`) into `extracted/`;
-2. builds the `MESSAGES` file from `src/messages.txt` (`tools/msgfile.py`) and the 19 `BLOCK`
+1. builds the `MESSAGES` file from `src/messages.txt` (`tools/msgfile.py`), the 19 `BLOCK`
    picture files from `src/pictures/` (`tools/picfile.py`), with the tables `ADVENTURE` includes
-   for them (`build/gen/messages.inc`, `pictures.inc`);
-3. assembles `src/adventure.s` and `src/autoload.s` into `build/` with `tools/asm6502.py`;
-4. checks all 29 rebuilt files against the originals (`tools/diskfiles.py`; this includes
-   `BLOCK DIRECTORY` and `MESSAGE OBJECT`, the disk's copies of two `ADVENTURE` tables, and
-   `STARTUP`, the starting state "play again" loads, which takes `ADVENTURE`'s object and room
-   tables, and the four BASIC programs built from `src/basic/` with `tools/basic.py`) and
-   writes them into a copy of the disk, `build/mystery_house.do`, which boots in any Apple II
-   emulator, then reports whether the disk is identical to the original;
-5. regenerates `assets/` (text, pictures, rooms) from the built files, so edits show up there,
-   and `original_source/` from the original binary;
-6. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
+   for them (`build/gen/messages.inc`, `pictures.inc`), and the four BASIC programs from
+   `src/basic/` (`tools/basic.py`);
+2. assembles `src/adventure.s` and `src/autoload.s` into `build/` with `tools/asm6502.py`;
+3. makes the files derived from those (`tools/diskfiles.py`): `BLOCK DIRECTORY` and
+   `MESSAGE OBJECT`, the disk's copies of two `ADVENTURE` tables; `STARTUP`, the state "play
+   again" loads, and `SAVED GAME`, from `src/startup.txt` and `src/saved_game.txt`
+   (`tools/savefile.py`);
+4. builds the disk image `build/mystery_house.do` around all 30 files from `src/disk/`
+   (`tools/mkdisk.py`: the catalog, the free-space map, each file's sectors, and DOS 3.3 on
+   tracks 0-2); it boots in any Apple II emulator;
+5. if the original disk image is in `disk/`, checks every file and the whole image against it,
+   and recovers `original_source/` from it (without it, the build still works);
+6. regenerates `assets/` (text, pictures, rooms) from the built disk, so edits show up there;
+7. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
 
-With unmodified source it must say "all 29 rebuilt files match the original" and "identical to
-the original disk". Keep it that way for any change that is meant to be a cleanup (renames, comments,
+With unmodified source it must say "all 30 files match the original" and "identical to the
+original disk". Keep it that way for any change that is meant to be a cleanup (renames, comments,
 constants): those never change the bytes.
 
 ## The source
@@ -103,6 +105,18 @@ does (spaces outside strings are dropped, keywords are found even inside names).
 `#extra` line keeps the byte the original SAVE wrote after each program. The Integer BASIC
 builder only knows `PRINT "..."` and `END`.
 
+**The starting state and the saved game.** `src/startup.txt` (what "play again" loads) and
+`src/saved_game.txt` (the saved game on the disk) list the bytes that differ from a base: the
+assembled `ADVENTURE` for `STARTUP`, and `STARTUP` for the saved game. Each line names what it
+changes, by variable name or by object/room number and field:
+
+```
+room_no                      = $12
+object 13 OROOM              = $FE
+```
+
+Edits to the object and room tables in `src/adventure.s` reach both files automatically.
+
 **A picture.** `src/pictures/blockNN.txt` holds the pictures stored in file `BLOCKNN`, in order;
 pictures are numbered across all the blocks. Each `line` row is one polyline:
 
@@ -128,15 +142,15 @@ bytes; nothing calls it).
 
 | Path | What | Made by |
 |---|---|---|
-| `src/` | the source: programs, `messages.txt`, `pictures/` (see `src/data/README.md` for the binary pieces) | hand |
-| `disk/` | the original disk image and its SHA-256 | input |
+| `src/` | the source: programs, `messages.txt`, `pictures/`, `basic/`, `startup.txt`, `saved_game.txt`, `disk/` (see `src/data/README.md` and `src/disk/README.md` for the binary pieces) | hand |
+| `disk/` | the original disk image and its SHA-256, used only to check the build | reference |
 | `build.sh` | the build | hand |
 | `tools/` | the build tools (see `tools/README.md`) | hand |
 | `ghidra_scripts/` | the Ghidra post-script for the optional pseudocode | hand |
 | `programs/` | code-tracing settings for the Ghidra step (see `programs/README.md`) | hand |
 | `symbols/` | Ghidra data types and register parameters (see `symbols/README.md`) | hand |
 | `original_source/` | the 1980 source fragments found in the binary | build |
-| `extracted/` | every file from the original disk | build |
+| `extracted/` | every file from the original disk, to compare with | build |
 | `assets/` | game text, pictures, rooms, shapes, title screens | build |
 | `decomp/` | C pseudocode (see `decomp/README.md`) | build, with Ghidra |
 | `build/` | built binaries, listings, symbol tables, the disk image (not committed) | build |

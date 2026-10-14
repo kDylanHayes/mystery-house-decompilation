@@ -287,6 +287,13 @@ Besides the source fragments, the image holds pieces of older builds that nothin
   one, so these are traces of earlier, bigger versions. `tools/dos33.py put` keeps them the same
   way, which is why a rebuilt disk is identical to the original.
 
+* `STARTUP` looks like it was made with SAVE GAME at the start of a game: its saved variables
+  say the last command parsed was verb 34 (SAVE), noun 88 (GAME).
+* The disk's free sectors hold fragments of other software that was on the disk before the
+  1987 master was copied: Bob Bishop's *Dung Beetles*, cracking-group title screens, a fast
+  loader and pieces of DOS. The build keeps them (`src/disk/residue.bin`) only so the image is
+  identical.
+
 These are decompiled with the rest (`dead_*` in `decomp/adventure.c`) because they show how
 the engine changed between builds.
 

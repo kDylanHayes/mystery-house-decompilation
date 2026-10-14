@@ -5,18 +5,20 @@ README.md covers the layout, NOTES.md explains how the engine works.
 
 ## Build
 
-`./build.sh` needs only python3. It builds the messages, pictures and programs from `src/`, checks all 29 files against the originals,
-writes `build/mystery_house.do` (bootable) and regenerates `assets/` and `extracted/`. Run it after
-every change; for unmodified source it must report "all 29 rebuilt files match the original" and
-"identical to the original disk".
+`./build.sh` needs only python3. It builds every file of the game and the disk image
+(`build/mystery_house.do`, bootable) from `src/`, checks them against the original disk in
+`disk/` when it is there, and regenerates `assets/` and `extracted/`. Run it after every change;
+for unmodified source it must report "all 30 files match the original" and "identical to the
+original disk".
 
 Ghidra (optional): with `GHIDRA_INSTALL_DIR=/path/to/ghidra_12.1.x` the
 build also regenerates the C pseudocode in `decomp/*.c`.
 
 ## Where things live
 
-- `src/adventure.s`, `src/autoload.s`, `src/messages.txt`, `src/pictures/`, `src/basic/`: the
-  source of truth (programs, text, pictures, BASIC). Edit these, not generated files.
+- Everything in `src/` is the source of truth: the programs (`*.s`), `messages.txt`,
+  `pictures/`, `basic/`, `startup.txt`, `saved_game.txt` and `disk/` (layout, DOS 3.3 binary,
+  residue). The original disk image in `disk/` is only a reference for the check. Edit these, not generated files.
 - `src/game.inc`: verb/noun/condition/action constants used by the rule tables.
 - Names and routine comments live only in `src/`. Rename or document there; the Ghidra step takes
   them from the assembler's symbol table. `symbols/*.csv` only adds Ghidra data types and register
