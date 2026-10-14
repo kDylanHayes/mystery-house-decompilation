@@ -2,7 +2,9 @@
 """Extract every file from an Apple II DOS 3.3 disk image (.do / .dsk, DOS sector order).
 
 usage: dos33.py <disk.do> <outdir>                       extract every file
-       dos33.py put <disk.do> <out.do> NAME=file.bin ...    replace binary files' contents
+       dos33.py put <disk.do> <out.do> NAME=file ...        replace files' contents
+                (a binary file needs file.load holding its hex load address; a text file's
+                data must end with $00)
 
 Binary (B) files are written without their 4-byte load-address/length header; the header is
 recorded in <outdir>/CATALOG.txt. Applesoft (A) files are written both raw (.bas.bin) and
@@ -156,7 +158,8 @@ def allocate(disk):
 
 
 def put(disk, name, load, payload):
-    """Replace binary file `name` with `payload` loaded at `load`. The file's existing sectors
+    """Replace file `name` with `payload`: a binary file loaded at `load`, or a text file
+    when `load` is None. The file's existing sectors
     are reused in order (and bytes past the end of the data are left alone), so writing the
     original contents back reproduces the original image exactly."""
     vtoc = sector(disk, 17, 0)
@@ -168,19 +171,27 @@ def put(disk, name, load, payload):
             e = disk[eo:eo + 35]
             if e[0] in (0x00, 0xFF) or bytes(b & 0x7F for b in e[3:33]).decode().rstrip() != name:
                 continue
-            body = bytes([load & 0xFF, load >> 8, len(payload) & 0xFF, len(payload) >> 8]) + payload
+            if load is None:
+                # text file: the raw data, ended by $00 (the payload includes it)
+                if e[2] & 0x7F != 0x00:
+                    raise SystemExit('%s is not a text file; give its load address' % name)
+                body = payload
+            else:
+                if e[2] & 0x7F != 0x04:
+                    raise SystemExit('%s is not a binary file' % name)
+                body = bytes([load & 0xFF, load >> 8, len(payload) & 0xFF, len(payload) >> 8]) + payload
             lists, data = file_sectors(disk, e[0], e[1])
-            nd = (len(body) + SECTOR - 1) // SECTOR
-            nl = (nd + 121) // 122
-            for t, s in data[nd:] + lists[nl:]:
-                bitmap(disk, t, s, True)
-            data, lists = data[:nd], lists[:nl]
+            # Like DOS 3.3, a file never gives sectors back: saving a smaller file over a larger
+            # one keeps the old sectors listed (the original disk has several such files). It only
+            # gets new sectors when it grows.
+            nd = max(len(data), (len(body) + SECTOR - 1) // SECTOR)
+            nl = max(len(lists), (nd + 121) // 122)
             while len(data) < nd:
                 data.append(allocate(disk))
             while len(lists) < nl:
                 lists.append(allocate(disk))
             for k, (t, s) in enumerate(data):
-                chunk = body[k * SECTOR:(k + 1) * SECTOR]
+                chunk = body[k * SECTOR:(k + 1) * SECTOR]   # empty for sectors past the data
                 o = (t * 16 + s) * SECTOR
                 disk[o:o + len(chunk)] = chunk
             for k, (t, s) in enumerate(lists):
@@ -204,9 +215,8 @@ def main():
         for arg in sys.argv[4:]:
             name, path = arg.split('=', 1)
             data = open(path, 'rb').read()
+            # binary files need their load address in <file>.load; text files have none
             load = int(open(path + '.load').read(), 16) if os.path.exists(path + '.load') else None
-            if load is None:
-                raise SystemExit('%s.load (hex load address) is missing' % path)
             put(disk, name, load, data)
         open(sys.argv[3], 'wb').write(disk)
         return

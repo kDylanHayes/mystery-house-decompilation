@@ -282,6 +282,11 @@ Besides the source fragments, the image holds pieces of older builds that nothin
   `HPLOT0` (`$6A7A`), `XDRAW` (`$6C9A`) and two command wrappers (`$6D31`, `$6D44`) are never
   called.
 
+* On the disk, several files own more sectors than their data needs (`BLOCK19` holds 268
+  bytes in three data sectors). DOS 3.3 never frees sectors when a file is saved over a larger
+  one, so these are traces of earlier, bigger versions. `tools/dos33.py put` keeps them the same
+  way, which is why a rebuilt disk is identical to the original.
+
 These are decompiled with the rest (`dead_*` in `decomp/adventure.c`) because they show how
 the engine changed between builds.
 

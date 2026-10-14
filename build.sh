@@ -5,34 +5,35 @@
 # needs: python3 only. If GHIDRA_INSTALL_DIR points at Ghidra 12.1.x, the C pseudocode in
 #        decomp/ is regenerated as well (optional).
 #
-# Assembles src/*.s, checks the binaries against the originals, writes them into a copy of the
-# disk image (build/mystery_house.do, bootable), and regenerates the assets from the result.
+# Builds every file of the game from src/ (the two programs, the MESSAGES file and the 19 picture
+# files, plus the two table copies), checks them against the originals, writes them into a copy
+# of the disk image (build/mystery_house.do, bootable) and regenerates the assets from them.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 DISK=${1:-"$HERE/disk/mystery_house.do"}
 B="$HERE/build"
+G="$B/gen"
 rm -rf "$B" "$HERE/extracted" "$HERE/assets"
-mkdir -p "$B"
+mkdir -p "$G"
 
 python3 -I "$HERE/tools/dos33.py" "$DISK" "$HERE/extracted" > /dev/null
 
-python3 -I "$HERE/tools/asm6502.py" "$HERE/src/adventure.s" "$B/ADVENTURE.bin" "$B/adventure.lst" "$B/adventure.syms.csv"
+# messages and pictures first: they generate the tables ADVENTURE includes
+python3 -I "$HERE/tools/msgfile.py" build "$HERE/src/messages.txt" "$G/MESSAGES.bin" "$G/messages.inc"
+python3 -I "$HERE/tools/picfile.py" build "$HERE/src/pictures" "$G" "$G/pictures.inc"
+python3 -I "$HERE/tools/asm6502.py" -I "$G" "$HERE/src/adventure.s" "$B/ADVENTURE.bin" "$B/adventure.lst" "$B/adventure.syms.csv"
 python3 -I "$HERE/tools/asm6502.py" "$HERE/src/autoload.s" "$B/AUTO_LOAD_OBJ.bin" "$B/autoload.lst" "$B/autoload.syms.csv"
-printf 0800 > "$B/ADVENTURE.bin.load"
-printf 0FFD > "$B/AUTO_LOAD_OBJ.bin.load"
-for f in ADVENTURE AUTO_LOAD_OBJ; do
-	if cmp -s "$B/$f.bin" "$HERE/extracted/$f.bin"; then echo "$f: matches the original"
-	else echo "$f: differs from the original (modified source)"; fi
-done
-python3 -I "$HERE/tools/dos33.py" put "$DISK" "$B/mystery_house.do" \
-	"ADVENTURE=$B/ADVENTURE.bin" "AUTO LOAD OBJ=$B/AUTO_LOAD_OBJ.bin"
+
+# compare with the originals, then write everything into a copy of the disk
+python3 -I "$HERE/tools/diskfiles.py" "$B" "$HERE/extracted"
+set --
+while IFS= read -r f; do set -- "$@" "$f"; done < "$B/put.txt"
+python3 -I "$HERE/tools/dos33.py" put "$DISK" "$B/mystery_house.do" "$@"
 [ "$(shasum -a 256 "$B/mystery_house.do" | cut -d' ' -f1)" = "$(cat "$HERE/disk/SHA256")" ] \
 	&& echo "build/mystery_house.do: identical to the original disk" \
 	|| echo "build/mystery_house.do: modified disk"
 
-# assets come from the built files, so edits to the tables show up in them
-cp -R "$HERE/extracted" "$B/files"
-cp "$B/ADVENTURE.bin" "$B/AUTO_LOAD_OBJ.bin" "$B/files/"
+# assets come from the built files, so edits show up in them
 python3 -I "$HERE/tools/gamedata.py" "$B/files" "$HERE/assets/text"
 python3 -I "$HERE/tools/pictures.py" "$B/files" "$HERE/assets/text/gamedata.json" "$HERE/assets"
 # the original source left in memory: always taken from the original binary, so it is kept even

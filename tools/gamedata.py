@@ -128,7 +128,9 @@ class Game:
 
     # --- messages ---------------------------------------------------------------------
     def messages(self):
-        count = 0x150 // 2
+        # one index entry per message in the MESSAGES file (its records end with $8D; $00 ends it)
+        end = self.msgfile.index(b'\x00') if b'\x00' in self.msgfile else len(self.msgfile)
+        count = self.msgfile[:end].count(b'\x8d') + 1
         out = {}
         for n in range(1, count):
             off = self.w(MSGINDEX + 2 * n)

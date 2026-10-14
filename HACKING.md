@@ -12,28 +12,34 @@ How the project fits together and how to change the game. For how the engine wor
 Needs only python3. The build:
 
 1. extracts the original disk (`disk/mystery_house.do`) into `extracted/`;
-2. assembles `src/adventure.s` and `src/autoload.s` into `build/` with `tools/asm6502.py`
-   and reports whether each matches the original file;
-3. writes both into a copy of the disk, `build/mystery_house.do`, which boots in any Apple II
-   emulator, and reports whether the disk is identical to the original;
-4. regenerates `assets/` (text, pictures, rooms) from the built files, so edits to the tables
-   show up there, and `original_source/` from the original binary;
-5. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
+2. builds the `MESSAGES` file from `src/messages.txt` (`tools/msgfile.py`) and the 19 `BLOCK`
+   picture files from `src/pictures/` (`tools/picfile.py`), with the tables `ADVENTURE` includes
+   for them (`build/gen/messages.inc`, `pictures.inc`);
+3. assembles `src/adventure.s` and `src/autoload.s` into `build/` with `tools/asm6502.py`;
+4. checks all 24 rebuilt files against the originals (`tools/diskfiles.py`; this includes
+   `BLOCK DIRECTORY` and `MESSAGE OBJECT`, the disk's copies of two `ADVENTURE` tables) and
+   writes them into a copy of the disk, `build/mystery_house.do`, which boots in any Apple II
+   emulator, then reports whether the disk is identical to the original;
+5. regenerates `assets/` (text, pictures, rooms) from the built files, so edits show up there,
+   and `original_source/` from the original binary;
+6. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
 
-With unmodified source it must say "matches the original" twice and "identical to the original
-disk". Keep it that way for any change that is meant to be a cleanup (renames, comments,
+With unmodified source it must say "all 24 rebuilt files match the original" and "identical to
+the original disk". Keep it that way for any change that is meant to be a cleanup (renames, comments,
 constants): those never change the bytes.
 
 ## The source
 
-`src/adventure.s` is the whole game: variables, data tables and engine, in address order, with
-a memory map at the top. `src/game.inc` holds the constants for the data (vocabulary ids
+`src/adventure.s` is the program: variables, data tables and engine, in address order, with
+a memory map at the top. `src/messages.txt` and `src/pictures/` are the game's text and
+pictures, which live in separate files on the disk. `src/game.inc` holds the constants for the data (vocabulary ids
 `V_*`/`N_*`, rule opcodes `C_*`/`A_*`, record field offsets, message numbers) and
 `src/apple2.inc` the hardware, Monitor and DOS addresses. `src/autoload.s` is the 1987 loader.
 
 Assembler syntax (see `tools/asm6502.py`): `label:`, `name = value`, `.org`, `.byte`, `.word`,
-`.hiasc "text"` (Apple II high-bit text), `.incbin`, `.include`, and `a:` to force absolute
-addressing. Expressions take `+ - * / & |`, `<` (low byte) and `>` (high byte).
+`.hiasc "text"` (Apple II high-bit text), `.incbin` (with `, upto addr` to cut it short so it
+fits before a table), `.include` (also searched in `-I` directories), and `a:` to force
+absolute addressing. Expressions take `+ - * / & |`, `<` (low byte) and `>` (high byte).
 
 Conventions:
 
@@ -73,16 +79,44 @@ in the comment above each table and in `src/game.inc`.
 each, high-bit text. A group's position is its id, so add new groups at the end of a table
 (before the `$FF`) and add a matching `V_`/`N_` constant to `src/game.inc`.
 
-**Messages and pictures** live in other files on the disk (`MESSAGES`, `BLOCK1`-`BLOCK19`) and
-the build copies them from the original disk unchanged; there is no tool yet to rebuild them.
-The engine finds message *n* through `message_index` and picture *n* through
-`picture_directory`.
+**A message.** `src/messages.txt` has one message per line, numbered from 1 in order:
+
+```
+2 OK
+129 IT IS OPEN
+```
+
+Edit the text, or add new numbers at the end and use them from a rule (`A_MESSAGE, 168`). Text
+is upper case; quote a message that starts or ends with a space (`167 " "`). Messages 7, 37, 127
+and 137 are never shown: `print_message` prints built-in text for those numbers. The build
+writes the `MESSAGES` file and the offset table the engine uses (`message_index`) from it.
+
+**A picture.** `src/pictures/blockNN.txt` holds the pictures stored in file `BLOCKNN`, in order;
+pictures are numbered across all the blocks. Each `line` row is one polyline:
+
+```
+picture 1
+  line 14,7 253,7 253,149 13,149 13,7
+  line 14,104 253,104
+```
+
+A `cont` row carries on from the last point without lifting the pen (long rows are wrapped this
+way). The picture area is 255 x 160. Add pictures at the end of `block19.txt` (it uses 264 of
+the 1280 bytes a block may have: each block must fit a $500-byte cache slot). New block files
+are not supported: the disk writer only replaces files that are already on the disk. `assets/pictures/` shows every picture after a build. Rooms and
+objects refer to pictures by number (`RBASEPIC`, `OPIC`, `ORPICSTA`).
+
+Adding messages or pictures makes their tables in `ADVENTURE` longer; the leftover bytes after
+them shrink to make room (`.incbin ..., upto`), so no other change is needed until that space
+runs out: about 70 more pictures, and about 10 more messages. For more messages, delete the
+dead code that follows the message index (`dead_init_tail` to `dead_disk_error`, about 150
+bytes; nothing calls it).
 
 ## Layout
 
 | Path | What | Made by |
 |---|---|---|
-| `src/` | the source (see `src/data/README.md` for the binary pieces) | hand |
+| `src/` | the source: programs, `messages.txt`, `pictures/` (see `src/data/README.md` for the binary pieces) | hand |
 | `disk/` | the original disk image and its SHA-256 | input |
 | `build.sh` | the build | hand |
 | `tools/` | the build tools (see `tools/README.md`) | hand |

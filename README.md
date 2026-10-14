@@ -11,8 +11,9 @@ whole game database (rooms, objects, words, messages, rules and pictures) decode
 ./build.sh
 ```
 
-Needs only python3. It assembles the source, checks the result against the original files,
-writes a bootable disk (`build/mystery_house.do`) and regenerates the assets.
+Needs only python3. It builds every file of the game from source (the programs, the messages
+and the pictures), checks them against the originals, writes a bootable disk
+(`build/mystery_house.do`) and regenerates the assets.
 
 ## Documentation
 
@@ -30,6 +31,8 @@ writes a bootable disk (`build/mystery_house.do`) and regenerates the assets.
 |---|---|
 | `src/adventure.s` | the game: engine and data, **reassemblable**, byte-identical to `ADVENTURE` |
 | `src/autoload.s` | the 1987 loader and instructions (`AUTO LOAD OBJ`) |
+| `src/messages.txt` | the game's 167 messages, one per line; builds the `MESSAGES` file |
+| `src/pictures/` | the 97 pictures as editable point lists; build the `BLOCK1`-`BLOCK19` files |
 | `src/game.inc`, `src/apple2.inc` | named constants: vocabulary, rule opcodes, record layouts; hardware and ROM |
 | `original_source/` | 313 lines of the **original 1980 source**, recovered from stale memory inside the binary |
 | `assets/text/rules.txt` | the game logic: all 358 rules in plain words |

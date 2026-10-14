@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """A small two-pass 6502 assembler for the sources in src/.
 
-usage: asm6502.py <source.s> <out.bin> [listing.txt [symbols.csv]]
+usage: asm6502.py [-I dir]... <source.s> <out.bin> [listing.txt [symbols.csv]]
+
+-I adds a directory to search for .include and .incbin files after the including file's own.
 
 symbols.csv lists every label and every constant defined outside game.inc (name,address,kind,file),
 with the comment block written directly above each label; build.sh feeds it to Ghidra.
@@ -15,6 +17,8 @@ Syntax (a subset of the common ca65/Merlin conventions):
   .hiasc "text", ...     ASCII with bit 7 set, as the Apple II prints it; \\r and \\xNN escapes
   .word expr, ...        little-endian words
   .incbin "file"         raw bytes, path relative to the source file
+  .incbin "file", upto expr   as much of the file as fits before address expr: leftover bytes in
+                         front of a table that is generated (and may grow) shrink to make room
   .include "file"        another source file, relative to this one
   LDA a:expr             force absolute addressing for a zero-page address
   ; comment
@@ -79,6 +83,7 @@ class Assembler:
         self.symbols = {}
         self.final = False
         self.defined = {}     # name -> ('label' | 'const', source file)
+        self.include_dirs = []
         self.notes = {}       # label -> comment block above it
 
     # ---- expressions ----------------------------------------------------------------
@@ -208,6 +213,13 @@ class Assembler:
                 i += 1
         return out
 
+    def find(self, including, name):
+        for d in [os.path.dirname(including)] + self.include_dirs:
+            p = os.path.join(d, name)
+            if os.path.exists(p):
+                return p
+        raise AsmError('cannot find %s' % name)
+
     def read(self, path):
         lines = []
         block = []
@@ -232,7 +244,7 @@ class Assembler:
             line = line.rstrip()
             m = re.match(r'\s*\.include\s+"(.+)"\s*$', line)
             if m:
-                lines += self.read(os.path.join(os.path.dirname(path), m.group(1)))
+                lines += self.read(self.find(path, m.group(1)))
             elif line.strip():
                 lines.append((path, n, line))
         return lines
@@ -322,8 +334,15 @@ class Assembler:
                             v, _ = self.value(a, 0)
                             emitted += bytes((v & 0xFF, (v >> 8) & 0xFF))
                     elif lw == '.incbin':
-                        name = self.split_args(rest)[0][1:-1]
-                        emitted += open(os.path.join(os.path.dirname(src), name), 'rb').read()
+                        args = self.split_args(rest)
+                        blob = open(self.find(src, args[0][1:-1]), 'rb').read()
+                        if len(args) > 1:
+                            m2 = re.match(r'upto\s+(.+)$', args[1])
+                            if not m2:
+                                raise AsmError('expected: .incbin "file", upto address')
+                            limit, _ = self.value(m2.group(1), pc + len(blob))
+                            blob = blob[:max(0, limit - pc)]
+                        emitted += blob
                     else:
                         emitted = self.instruction(word.upper(), rest, pc)
                     out += emitted
@@ -380,6 +399,9 @@ class Assembler:
 
 def main():
     a = Assembler()
+    while len(sys.argv) > 2 and sys.argv[1] == '-I':
+        a.include_dirs.append(sys.argv[2])
+        del sys.argv[1:3]
     org, data, listing = a.assemble(sys.argv[1])
     open(sys.argv[2], 'wb').write(data)
     if len(sys.argv) > 3:
