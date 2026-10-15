@@ -16,14 +16,18 @@ move); without it, it uses the original addresses. It writes:
   gamedata.json     all of the above in machine-readable form, plus what a port needs: each
                     picture's strokes, each shape's vectors, the floor slots, the state a new
                     game starts in, the disk's saved game, the loader's menu and
-                    instruction pages, and the two title pictures as 280 x 192 bitmaps
-                    (PORTING.md describes every field)
+                    instruction pages, the two title pictures as 280 x 192 bitmaps, and
+                    what HELLO and MYSTERY.HELLO show before the loader, as a timeline
+                    (boot.py; PORTING.md describes every field)
 """
 import pathlib
 import json
 import os
 import re
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import boot  # noqa: E402 (tools/ is not on the path under python3 -I)
 
 LOAD = 0x0800
 
@@ -585,6 +589,8 @@ def main():
         'saved_game': g.saved_state('SAVED_GAME.bin'),
         # the 1987 and 1980 title pictures (PORTING.md, "Before the game")
         'titles': g.titles(),
+        # HELLO and MYSTERY.HELLO as a timeline of screen changes (boot.py)
+        'boot': boot.timeline(sys.argv[1]).steps,
         'addresses': {k: globals()[k] for k in sorted(TABLE_SYMBOLS.values())},
     }))
     print('%d verbs, %d nouns, %d messages, %d rooms, %d objects, %d pictures, %d command rules, '

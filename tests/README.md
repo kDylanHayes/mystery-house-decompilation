@@ -15,6 +15,7 @@ tests that need it.
 | `test_asm6502.py` | the assembler: addressing modes, expressions, directives, errors |
 | `test_ca65.py` | ca65 and ld65 build the same programs (skipped without cc65) |
 | `test_basic.py` | the BASIC tokenizer, and every program listing back to its source |
+| `test_boot.py` | `boot.py`'s text routines (windows, scrolling, the rows a wide window spills into), the screens HELLO and MYSTERY.HELLO make, and `gamedata.json`'s `boot` timeline replaying to them |
 | `test_formats.py` | the message, picture and saved-state formats round trip |
 | `test_disk.py` | the full build against the recorded hashes; the disk writer, and a stale-data residue showing only in free sectors |
 | `test_play.py` | each script in `play/` gives the recorded transcript and screens (`intro.txt` from the 1987 loader); together they exercise the recorded code and rules (`play/coverage.expected.txt`) |
