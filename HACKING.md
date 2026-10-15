@@ -1,7 +1,7 @@
 # Working on the source
 
 How the project fits together and how to change the game. For how the engine works, see
-[NOTES.md](NOTES.md).
+[NOTES.md](NOTES.md); for the checks and rules a change has to pass, [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Build and check
 
@@ -200,7 +200,7 @@ grow or shrink, but adding or removing a file, or a new `BLOCK` file, is not sup
 | `ghidra_scripts/` | the Ghidra post-script for the optional pseudocode | hand |
 | `programs/` | code-tracing settings for the Ghidra step (see `programs/README.md`) | hand |
 | `symbols/` | Ghidra data types and register parameters (see `symbols/README.md`) | hand |
-| `original_source/` | the 1980 source fragments found in the binary (an archive) | once |
+| `original_source/` | the 1980 source fragments found in the binary, in LISA's tokenized format (an archive) | once |
 | `extracted/` | every file from the built disk; BASIC listed as text | build |
 | `assets/` | game text, pictures, rooms, shapes, title screens | build |
 | `decomp/` | C pseudocode (see `decomp/README.md`) | build, with Ghidra |

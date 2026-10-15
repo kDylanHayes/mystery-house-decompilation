@@ -34,7 +34,8 @@ original disk image, no residue. Edit these, not generated files.
 - The source is standard ca65 syntax; keep it that way (`tools/ca65_check.sh`, needs cc65, must
   report both programs byte for byte; CI runs it). A label inside a routine is
   `routine__local` (`draw_picture__next_point`). Every label has a name; keep it that way.
-- HACKING.md is the guide to the source, the build and editing the game; each folder has a
+- HACKING.md is the guide to the source, the build and editing the game; CONTRIBUTING.md the
+  checks and rules for changes; each folder has a
   README.md. Update them when something they describe changes.
 - `tools/gen_source.py` produced `src/` once from the original binary; don't rerun it over
   hand edits.

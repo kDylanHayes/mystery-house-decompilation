@@ -22,6 +22,7 @@ on tracks 0-2, is kept as a binary.
 ## Documentation
 
 * [HACKING.md](HACKING.md): the source, the build, and how to change the game
+* [CONTRIBUTING.md](CONTRIBUTING.md): the checks, conventions and rules for changes
 * [NOTES.md](NOTES.md): how the engine works: the rule interpreter, data formats, graphics,
   messages, the original source found in the binary, bugs and leftovers
 * a README.md in each folder: [`src/data`](src/data/README.md), [`tools`](tools/README.md),
@@ -41,7 +42,7 @@ on tracks 0-2, is kept as a binary.
 | `src/disk/` | the disk's layout, DOS 3.3 (binary) and the stale bytes left on it |
 | `src/basic/` | the disk's BASIC programs (start-up credits, title loader, a developer tool) |
 | `src/game.inc`, `src/apple2.inc` | named constants: vocabulary, rule opcodes, record layouts; hardware and ROM |
-| `original_source/` | 313 lines of the **original 1980 source**, recovered from stale memory inside the binary |
+| `original_source/` | 313 lines of the **original 1980 source** (written with the LISA assembler), recovered from stale memory inside the binary |
 | `assets/text/rules.txt` | the game logic: all 358 rules in plain words |
 | `assets/text/map.txt` | every room's exits and the passages rules make |
 | `tests/play/walkthrough.txt` | a complete solution, played by the tests on an emulated 6502 |

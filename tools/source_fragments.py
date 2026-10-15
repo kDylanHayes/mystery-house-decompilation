@@ -14,19 +14,34 @@ with their comments. Each source line is stored as
 
 (length counts the bytes after itself, up to and including the $0D). A comment-only line is
 [length] ';' text $0D, and a label is a 10-byte prefix record: $0A, the label padded to 8
-characters, ': ', followed by the line's statement. The opcode tokens were identified by
-matching each fragment against the assembled handlers in this binary.
+characters, ': ', followed by the line's statement.
+
+The format is that of LISA (Lazer's Interactive Symbolic Assembler, Randall Hyde), which
+On-Line Systems itself sold from 1980: every opcode token found here ($CD LDA, $CB JSR,
+$D8 ADR, ...) has LISA v2's value, and so do the line layout (length byte, token, operand-mode
+byte, $BB before the comment, $0D) and the 8-character labels. The tokens were first worked out
+by matching the fragments against the assembled handlers, then found to agree with LISA's
+table. The separate label record differs from LISA v2's files (label inline); this is a 1980
+in-memory buffer, from an earlier version or the editor's own layout. NOTES.md has the detail.
 """
 import pathlib
 import os
 import sys
 
 LOAD = 0x0800
-TOKENS = {
-    0x86: 'BNE', 0x87: 'BEQ', 0x96: 'BRK', 0x99: 'CLC', 0xAC: 'TAX', 0xAD: 'TAY', 0xC0: 'ADC',
-    0xC4: 'CMP', 0xCA: 'JMP', 0xCB: 'JSR', 0xCD: 'LDA', 0xCE: 'LDX', 0xCF: 'LDY', 0xD0: 'STA',
-    0xD1: 'STX', 0xD2: 'STY', 0xD8: '.DA',
-}
+# LISA v2's mnemonic tokens, $80 + index (from the LISA v2 table in CiderPress II's
+# FileConv/Code/LisaAsm.cs). '___' marks an unused token.
+LISA_MNEMONICS = (
+    'BGE BLT BMI BCC BCS BPL BNE BEQ BVS BVC BSB BNM BM1 BNZ BIZ BIM '   # $80
+    'BIP BIC BNC BRA BTR BFL BRK BKS CLV CLC CLD CLI DEX DEY INX INY '   # $90
+    'NOP PHA PLA PHP PLP RTS RTI RSB RTN SEC SEI SED TAX TAY TSX TXA '   # $A0
+    'TXS TYA ADD CPR DCR INR SUB LDD POP PPD STD STP LDR STO SET ___ '   # $B0
+    'ADC AND ORA BIT CMP CPX CPY DEC EOR INC JMP JSR ___ LDA LDX LDY '   # $C0
+    'STA STX STY XOR LSR ROR ROL ASL ADR EQU ORG OBJ EPZ STR DCM ASC '   # $D0
+    'ICL END LST NLS HEX BYT HBY PAU DFS DCI ... PAG INV BLK DBY TTL '   # $E0
+    'SBC ___ LET .IF .EL .FI =   PHS DPH .DA GEN NOG USR ___ ___ ___'    # $F0
+).split()
+TOKENS = {0x80 + i: m for i, m in enumerate(LISA_MNEMONICS) if m != '___'}
 
 
 def parse(d, p):

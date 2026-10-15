@@ -9,7 +9,7 @@ The "leftover" blobs can be deleted (or shortened) to make room: everything afte
 |---|---|---|
 | `title_1980.bin` | `$2000-$3FFF` | hi-res page 1 inside ADVENTURE: the original On-Line Systems title screen, on screen while the file loads (`assets/screens/title_1980.png`) |
 | `title_1987.bin` | `$2000-$3FFF` | hi-res page 1 inside AUTO LOAD OBJ: the Sierra title screen of the 1987 release (`assets/screens/title_1987.png`) |
-| `adventure_0B9D.bin` | `$0B9D-$0CFF` | after the object table: tokenized original source (the action handler table, `.DA AC3100` ...); included with `incbin_upto` to `ROOMBASE`, so it shrinks if the object table grows |
+| `adventure_0B9D.bin` | `$0B9D-$0CFF` | after the object table: tokenized original source (the action handler table, `ADR AC3100` ...); included with `incbin_upto` to `ROOMBASE`, so it shrinks if the object table grows |
 | `adventure_0EA4.bin` | `$0EA4-$16FF` | after the room table: tokenized original source (inventory, AC1410 ...; decoded in `original_source/`) |
 | `adventure_1C61.bin` | `$1C61-$1FFF` | after the noun table: tokenized original source (AC2810 ... AC3000); included with `incbin_upto` to `$2000`, so it shrinks if the noun table grows |
 | `adventure_4343.bin` | `$4343-$43FF` | after the verb table: part of the assembler's symbol table (AC1300 ... with their addresses) |

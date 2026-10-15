@@ -12,14 +12,14 @@
 ;
 
 ; ---- fragment at $0BA3 ----
-         .DA  AC3200
-         .DA  AC3300
-         .DA  AC3400
-         .DA  AC3500
-         .DA  AC3600
-         .DA  AC3700
-         .DA  AC3800
-         .DA  AC3900
+         ADR  AC3200
+         ADR  AC3300
+         ADR  AC3400
+         ADR  AC3500
+         ADR  AC3600
+         ADR  AC3700
+         ADR  AC3800
+         ADR  AC3900
 ;
 ;
 ;
@@ -61,7 +61,7 @@ AC1420   LDY  #ONEXT
          LDA  (ZAWORK),Y
          TAX
          JSR  BUMPIT
-         .DA  ZAWORK
+         ADR  ZAWORK
          JMP  AC1410
 ;
 ; LIST THE MESSAGE FOR THE OBJECT
@@ -106,7 +106,7 @@ AC1520   CMP  AWORK1               ;THIS OBJECT
          LDA  (ZAWORK),Y           ;POINT TO NEXT
          TAX
          JSR  BUMPIT
-         .DA  ZAWORK
+         ADR  ZAWORK
          JMP  AC1510               ;GO LOOP
 AC1540   ;
 ; OK-WE'VE FOUND IT
@@ -144,13 +144,13 @@ AC1600   ;
 ;
          LDX  #RTBLSIZ
          JSR  MULTIPLY
-         .DA  AWORK3
+         ADR  AWORK3
 ;
 ; NOW ADD IT TO THE ROOM BASE
 ;
          JSR  BUMP16
-         .DA  AWORK3
-         .DA  AWORK2
+         ADR  AWORK3
+         ADR  AWORK2
 ;
 ;WORK2 NOW HAS THE ROOM BASE
 ;
@@ -223,7 +223,7 @@ AC2100   ;
          LDA  (ZAWORK),Y
          TAX
          JSR  BUMPIT
-         .DA  ZAWORK
+         ADR  ZAWORK
          JMP  AC2810
 ;
 AC2820   ;
@@ -276,7 +276,7 @@ AC2920   CMP  AY                   ;FOUND IT?
          LDA  (ZAWORK),Y
          TAX
          JSR  BUMPIT
-         .DA  ZAWORK
+         ADR  ZAWORK
          JMP  AC2910
 ;
 AC2930   ;

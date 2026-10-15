@@ -8,9 +8,11 @@ source buffer. These are the pieces that survived, recovered from the original b
 | `fragments.s` | the 313 surviving lines, decoded to text: the action handlers `AC1100`-`AC3000` with the author's comments (`; MOVE TO ROOM X`, `; WOOPEE! WE'VE GOT IT!`, ...) and labels (`CUROOM`, `ROOMBASE`, `ZWORK`, `LAMPSTAT`, ...) |
 | `raw/fragment_XXXX.bin` | each fragment's bytes exactly as stored in the binary, still tokenized; `XXXX` is the run-time address |
 
-The text between fragments was overwritten before the file was saved. The tokenized format and
-the opcode token table are described in `tools/source_fragments.py` and NOTES.md ("Original
-source").
+The text between fragments was overwritten before the file was saved. The source is in the
+tokenized format of **LISA** (Lazer's Interactive Symbolic Assembler, by Randall Hyde, sold by
+On-Line Systems from 1980). Every opcode token matches LISA's table, so the listing uses LISA's
+mnemonics (`ADR` for a word, `/LABEL` for a high byte). NOTES.md ("The assembler: LISA") gives
+the evidence; `tools/source_fragments.py` documents the format.
 
 This is an archive: `build.sh` does not touch it. It was recovered from the original `ADVENTURE`
 with `tools/source_fragments.py`, which works on any copy of the file that still has those bytes

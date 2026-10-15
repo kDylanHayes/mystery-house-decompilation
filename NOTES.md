@@ -69,7 +69,7 @@ nine-entry jump table:
 | `$7618` | `MULTIPLY` | `mul_result` = word * X | `.word addr` |
 
 The names `BUMPIT`, `BUMP16` and `MULTIPLY` are the original ones: the source fragments call
-them (`JSR BUMPIT / .DA ZAWORK`, `JSR MULTIPLY / .DA AWORK3`, `JSR BUMP16 / .DA AWORK3 / .DA AWORK2`).
+them (`JSR BUMPIT / ADR ZAWORK`, `JSR MULTIPLY / ADR AWORK3`, `JSR BUMP16 / ADR AWORK3 / ADR AWORK2`).
 The others' original names did not survive.
 
 Engine routines can use the same convention by calling `rt_args` and leaving through
@@ -286,7 +286,8 @@ The naming is consistent: a `Z` prefix for zero-page pointers, `A` for absolute 
 
 ## Original source
 
-When `ADVENTURE` was saved, memory still held the author's tools:
+When `ADVENTURE` was saved, memory still held the author's tools, here the LISA assembler's
+source buffer and symbol table (see "The assembler" below):
 
 * **Tokenized source** (`$0880-$2000`, where the room table and nouns don't cover it): the action
   handlers `AC1100`-`AC3000` with comments such as `; MOVE TO ROOM X`,
@@ -299,9 +300,40 @@ When `ADVENTURE` was saved, memory still held the author's tools:
 
 The stale symbol addresses are one byte lower than the shipped handlers (`AC1300` = `$65A7`,
 the handler is at `$65A8`), so the source in memory was from a slightly earlier assembly. The
-fragments match the shipped code instruction for instruction otherwise. The opcode tokens
-(`$CD` LDA, `$D0` STA, `$CB` JSR, `$D8` `.DA`, ...) were identified by lining fragments up
-with the assembled code.
+fragments match the shipped code instruction for instruction otherwise.
+
+### The assembler: LISA
+
+The source was written with **LISA** (Lazer's Interactive Symbolic Assembler, by Randall Hyde).
+The opcode tokens were first worked out by lining the fragments up with the assembled code;
+they then turned out to match LISA's tokenized format exactly:
+
+* **Every token agrees.** All 17 found here have the values in LISA v2's mnemonic table
+  (`$86` BNE, `$87` BEQ, `$96` BRK, `$99` CLC, `$AC` TAX, `$AD` TAY, `$C0` ADC, `$C4` CMP,
+  `$CA` JMP, `$CB` JSR, `$CD` LDA, `$CE` LDX, `$CF` LDY, `$D0` STA, `$D1` STX, `$D2` STY,
+  `$D8` ADR). The table is ordered by LISA's own mnemonic list (it has LISA-only entries such
+  as `BSB`, `RTN` and the SWEET16 opcodes), so a chance match with another assembler is not
+  plausible.
+* **The line layout agrees.** Each line is a length byte, the mnemonic token, an operand-mode
+  byte (`$00` none, `$01` absolute, `$02` immediate, `$05` `(zp),Y`, `$07` `abs,Y`,
+  `$20` literal), the operand as text, `$BB` (high-ASCII `;`) before a comment, then `$0D`.
+  Labels are padded to 8 characters.
+* **The syntax agrees.** It is LISA's: `/` takes an address's high byte (`LDA /ROOMBASE`), and
+  `ADR` emits a word (the action table, the inline operands after `JSR BUMPIT`).
+* **The history agrees.** LISA was first sold by Programma International. When Programma
+  closed in 1980, On-Line Systems, the Williamses' company, took it over; On-Line's own manual
+  for LISA 2.5 survives (1982).
+
+There is one difference. A label here is a separate 10-byte record (`$0A`, the name padded to
+8, `: `) ahead of its statement. LISA v2's saved files keep the label inline in the line. What
+survived in `ADVENTURE` is LISA's memory buffer from early 1980, not a saved file, and possibly
+from an earlier version (1.x), so the identification rests on the token table, which matches
+exactly. `tools/source_fragments.py` decodes with LISA's full table.
+
+References: the LISA v2 format notes and decoder in CiderPress II
+(`FileConv/Code/LisaAsm-notes.md`, `LisaAsm.cs`); the LISA 2.5 manual published by On-Line
+Systems (Internet Archive, *LISAAssemblerVersion2.5ManualPhotocopySource*); the LISA history
+at programma.applearchives.com.
 
 ## Quirks found along the way
 
