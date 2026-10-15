@@ -9,6 +9,11 @@ whole game database (rooms, objects, words, messages, rules and pictures) decode
 
 ![The front yard](assets/rooms/room_01.png)
 
+To just play it, download a bootable disk image from the
+[latest release](https://github.com/kDylanHayes/mystery-house-decompilation/releases/latest) (the
+original game, or the same game with its documented bugs fixed) and boot it in any Apple II
+emulator. To build it yourself:
+
 ```
 ./build.sh            # build everything; ./build.sh --check also fails unless it all matches
 ./build.sh --bugfix   # the same game with its documented bugs fixed, in build/bugfix/
