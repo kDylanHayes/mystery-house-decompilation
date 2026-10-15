@@ -19,7 +19,8 @@ No Apple ROMs are needed: ADVENTURE only calls three Monitor routines and DOS, a
 stood in for here:
   COUT ($FDED)            print a character; a line starting with CTRL-D is a DOS command
   GETLN ($FD6A), GETLN1   read a line into $0200: the next command, or the next line of the
-                          file DOS is READing
+                          file DOS is READing. GETLN first prints the prompt character at
+                          $33 (the game sets '?'); GETLN1 does not
   WAIT ($FCA8)            a delay: returns at once
   DOS commands            OPEN, READ MESSAGES,B$xxxx, BLOAD name[,A$xxxx], BSAVE name,A$xxxx,
                           L$xxxx, served from <files dir> (BSAVE keeps the file in memory)
@@ -172,6 +173,8 @@ class Machine:
             text = data[off:end]
             self.reading = (data, end + 1)
         else:
+            if prompt:
+                self.cout(self.mem[0x33])   # GETLN prints $33; GETLN1 does not
             if self.line.strip():
                 self.out.append(self.line.rstrip())
             self.line = ''

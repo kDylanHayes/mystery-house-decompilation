@@ -79,8 +79,10 @@ library at `$1C00`.
 
 ## Parser
 
-`get_line` reads a line with the Monitor's GETLN. Pressing RETURN on an empty line flips between
-the picture and a full-screen text page so you can review earlier messages. `next_word` takes
+`get_line` reads a line with the Monitor's GETLN. GETLN prints the prompt character in `$33`,
+which the game sets to `?`, so the question mark sits on the `ENTER COMMAND` line. Pressing
+RETURN on an empty line flips between the picture and a full-screen text page so you can review
+earlier messages. `next_word` takes
 the next blank-separated word and keeps its first 8 characters. `lookup_word` walks a word table:
 
 ```

@@ -23,7 +23,7 @@ A faithful port keeps them, and may offer the fixes `./build.sh --bugfix` makes 
 ## The screen
 
 An Apple II in hi-res mixed mode:
-- **Picture:** a 280 x 160 monochrome area; everything the game draws is white on black.
+- **Picture:** a 280 x 160 monochrome area, with y = 0 at the top. Everything the game draws is white on black.
 - **Text:** four 40-column lines below the picture.
 
 The game draws only in white, so a port can treat the picture as one bit per pixel. The real
@@ -73,9 +73,11 @@ from stays at the shape's `(x, y)`; `Canvas` keeps both positions.
 Before every command prompt, the screen is cleared. If the light is on (`LAMPSTAT` = 0),
 `draw_room` then draws:
 1. The room's current picture (`RCURPIC`).
-2. Each object in the current room, in object-table order:
-   - an `OMOVED` object (one that was taken and dropped) is drawn at the next of the 21
-     `floor_slots`, and only when the room shows its permanent view (`RCURPIC` = `RBASEPIC`);
+2. Each object in the current room, in `objects` order:
+   - an `OMOVED` object (one that was taken and dropped) is drawn in a floor slot when the
+     room shows its permanent view (`RCURPIC` = `RBASEPIC`). A close-up skips these objects.
+     Every redraw starts at the first of the 21 `floor_slots` and gives the next slot to each
+     dropped object in the room, in that same order;
    - any other object is drawn at `(OXCOORD, OYCOORD)` when `RCURPIC` is in its `ORPICSTA`
      list;
    - in both cases it is drawn as picture `OPIC`, or as shape `OPIC` when `shape` is true.
@@ -89,12 +91,16 @@ and compare it with the game's pixels.
 - **Messages:** printed by number from `messages`. Lines break at spaces so the first line
   is at most 39 characters (`word_wrap`). Its margin then grows by the previous margin plus
   one, a latent bug: no message is long enough to show it.
-- **Built-in messages:** 7, 37, 127 and 137 are built into the code (`MESSLSTR`), not read from
-  the `MESSAGES` file; their text is in `messages` too.
+- **Built-in messages:** 7, 37, 127 and 137 are built into the code (`MESSLSTR`). `messages`
+  holds the lines the game prints. The `MESSAGES` file words 37, 127 and 137 differently, and
+  those file lines are never shown (7 happens to match).
 - **Room description:** printed after the picture every turn (`RMSG`).
-- **Prompt:** `--------------- ENTER COMMAND` on its own line, then the player types a line.
-  The real machine shows no prompt character; the transcripts show the typed command as
-  `> COMMAND`.
+- **Prompt:** `print_prompt` prints `--------------- ENTER COMMAND` with no carriage return.
+  `get_line` then calls `GETLN`, which prints the monitor prompt in `$33`. The game sets
+  that to `?`, so the line on screen is `--------------- ENTER COMMAND?` and the typed
+  command follows the question mark. `GETLN1` (the play-again question, and reading a
+  message) prints no prompt. The transcripts flush that line and record the typed command
+  as `> COMMAND`. They do not repeat the keys the monitor echoes after the question mark.
 - **Start of a game:** five empty lines, then the first room.
 - **DOS commands:** the lines the game prints to DOS (`BLOAD ...`, `READ MESSAGES...`,
   starting with Ctrl-D) are not shown, and a port has none.
@@ -112,20 +118,23 @@ repeat:
 ```
 
 **Reading a command** (`read_command`):
-- The line is split at spaces, and only the first 8 letters of a word count.
+- The line is split at spaces. The first 8 letters of a word are kept and padded with spaces
+  to 8, and that whole key has to equal the dictionary entry. `NOR` and `NORTH` are different
+  words.
 - The first word must be a verb and the second a noun; NOUN VERB is not accepted. Words after
-  the second are ignored.
+  the second are ignored. Verb 1 is `verbs[0]` and noun 1 is `nouns[0]`.
 - A missing noun is noun 70, eight spaces.
 - If the verb is unknown, the game prints `I DONT KNOW HOW TO <word> SOMETHING` and asks again.
   If the noun is unknown, it prints `I DONT KNOW HOW TO <verb> A <noun>` and asks again.
-  Each word is padded with spaces to 8 letters, as typed, upper case. Neither counts as a turn,
-  and the screen is not redrawn.
+  Each word is padded with spaces to 8 letters, as typed, upper case. Neither counts as a turn.
+  The game asks again from the same screen, without another room description.
 - An empty line flips between the picture and a full text page (the port may treat it as a
   no-op that asks again).
 
 **Rules** (`run_command_rules`, `run_turn_rules`):
 - A rule matches when its room, verb and noun each equal the current room, verb and noun, or
-  are 254 (any). Its conditions must then all hold.
+  are 254 (any). Its conditions must then all hold. Room 1 is `rooms[0]`. Switch 0 is the first
+  of the 20 switches. An object id is that entry's `OBJECTNO`.
 - Conditions:
 
 | Op | Holds when |
@@ -153,18 +162,21 @@ repeat:
 | `SET_OBJ_PIC x y` | object y's picture = x |
 | `MESSAGE x` | print message x |
 | `LAMP_ON`, `LAMP_OFF` | the light (draws or hides the pictures) |
-| `GO_N` ... `GO_D` | leave by that exit: the room left goes back to its permanent view; if the exit is 0, print message 137. Either way, the rest of the rule's actions are skipped |
-| `GET` | take the object named by the noun. Look for an object with that noun in the current room: if it is `OFIXED`, message 151; if it is `OMOVED`, or the current picture is in its `ORPICSTA`, it is carried and becomes `OMOVED`; otherwise keep looking. Not found: message 152 |
+| `GO_N` ... `GO_D` | leave by that exit. Exit 0 prints message 137 and the current picture stays as it is. Any other exit returns the room being left to its permanent view, then makes the exit's room the current one. Either way, the rest of the rule's actions are skipped |
+| `GET` | take the object named by the noun, walking `objects` in order. An object counts when its noun matches and its room is the current room. `OFIXED` prints message 151 and ends the search. `OMOVED`, or an `ORPICSTA` list that contains the room's current picture, is carried, becomes `OMOVED`, and ends the search. Any other match is passed over. Nothing taken: message 152 |
 | `DROP` | the first carried object with that noun goes to this room as `OMOVED`; none carried: message 37 |
 | `SAVE_GAME`, `RESTORE_GAME` | save or load the state (below); RESTORE also takes back the turn counter, which the turn's `+1` then advances |
 | `GAME_OVER` | print `WOULD YOU LIKE TO PLAY AGAIN` and read a line: `N...` prints message 140 and the game ends; anything else restores the starting objects and rooms, prints `PRESS RETURN TO BEGIN PLAY` (it does not wait), and starts a new game at `init_game` |
 | `QUIT` | print message 140; the game ends |
 
 `gamedata.json` gives each rule as `room`, `verb`, `noun`, `conditions` and `actions`, with
-the operation names above.
+the operation names above. Each `args` list is those operands in the order written here:
+`SUB_SWITCH` 1, 3 subtracts 1 from switch 3, and `SET_OBJ_PIC` 97, 10 sets object 10's picture
+to 97.
 
 **Darkness and the timers** are not in the engine; they are turn rules (`assets/text/rules.txt`,
-`$4400`-`$4465`). The engine only draws nothing while the light is off.
+`$4400`-`$4465`). While the light is off the picture area stays black. `GET` still uses the
+room's current picture.
 
 ## Saving
 

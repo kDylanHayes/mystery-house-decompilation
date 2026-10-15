@@ -3555,9 +3555,9 @@ print_prompt:
         .byte $00
         RTS
 
-; Read a line into input_buffer with the Monitor's GETLN (no prompt character). RETURN on its
-; own toggles between the picture (mixed mode) and a full text page, so earlier messages can be
-; reread.
+; Read a line into input_buffer. GETLN prints the prompt in $33, set here to '?', so the
+; question mark follows ENTER COMMAND on the same line. RETURN on an empty line toggles
+; between the picture (mixed mode) and a full text page, so earlier messages can be reread.
 get_line:
         LDA #$BF
         STA prompt_char
@@ -4061,7 +4061,7 @@ AC2800__found:
         LDX #4
         JMP AC9000
 
-; action 19: make picture X the shape for object Y
+; action 19: object Y's picture = X (OPIC only)
 AC2900:
         LDY #ARG_X
         LDA (ZWORK),Y

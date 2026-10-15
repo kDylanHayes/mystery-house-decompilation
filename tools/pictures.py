@@ -68,10 +68,12 @@ class Canvas:
         self.set(x, y)
 
     def line(self, x1, y1):
-        """HPLOT TO x1,y1 (Applesoft HGLIN): |dx| + |dy| single steps from the screen pen, each
-        one pixel across or one pixel down/up, plotting the start again and every pixel after:
-        a step goes across while the error term (starting at |dx|, less |dy| for each step
-        across, plus |dx| for each step down) is not negative."""
+        """HPLOT TO x1,y1 (Applesoft HGLIN): |dx| + |dy| single steps from the screen pen.
+
+        Each step is one pixel across or one pixel up or down, and the start is plotted
+        again. err starts at dx - dy; the step goes across while err >= 0 (then err -= dy)
+        and up or down otherwise (then err += dx). dx and dy are measured from the logical
+        pen. DRAW moves only the screen pen, so a following line starts there."""
         dx, dy = abs(x1 - self.x), abs(y1 - self.y)
         step_x = -1 if x1 < self.x else 1
         step_y = 1 if y1 > self.y else -1
