@@ -63,6 +63,10 @@ class Stop(Exception):
 
 
 class Machine:
+    __slots__ = ('files', 'mem', 'a', 'x', 'y', 'sp', 'n', 'v', 'd', 'i', 'z', 'c', 'pc', 'out',
+                 'line', 'commands', 'reading', 'saved', 'steps', 'prompts', 'on_prompt',
+                 'screens', 'executed', 'hooks')
+
     def __init__(self, files):
         self.files = files
         self.mem = bytearray(0x10000)
@@ -79,6 +83,8 @@ class Machine:
         self.prompts = 0
         self.on_prompt = None
         self.screens = []          # hash of the hi-res page at each prompt
+        self.executed = None       # a set to record every executed address in (gamecov.py)
+        self.hooks = {}            # address -> function(machine), called while recording
 
     # ---- memory ------------------------------------------------------------------------
     def rd(self, a):
@@ -202,186 +208,145 @@ class Machine:
         self.i, self.z, self.c = p >> 2 & 1, p >> 1 & 1, p & 1
 
     def run(self, max_steps):
-        rd, wr, mem = self.rd, self.wr, self.mem
-        traps = {COUT, GETLN, GETLN1, WAIT, HOME, DOS_WARM, APPLESOFT_ERROR}
-        while True:
-            pc = self.pc
-            if pc in traps or pc >= 0xD000:
-                self.trap()
-                continue
-            self.steps += 1
-            if self.steps > max_steps:
-                raise Stop('step limit reached at $%04X' % pc)
-            op = mem[pc]
-            if op not in OPS:
-                raise Stop('undocumented opcode $%02X at $%04X' % (op, pc))
-            m, mode = OPS[op]
-            # operand address
-            if mode == 'imp' or mode == 'acc':
-                self.pc = pc + 1
-                ea = None
-            elif mode == 'imm':
-                ea = pc + 1
-                self.pc = pc + 2
-            elif mode == 'zp':
-                ea = mem[pc + 1]
-                self.pc = pc + 2
-            elif mode == 'zpx':
-                ea = (mem[pc + 1] + self.x) & 0xFF
-                self.pc = pc + 2
-            elif mode == 'zpy':
-                ea = (mem[pc + 1] + self.y) & 0xFF
-                self.pc = pc + 2
-            elif mode == 'abs':
-                ea = mem[pc + 1] | mem[pc + 2] << 8
-                self.pc = pc + 3
-            elif mode == 'abx':
-                ea = ((mem[pc + 1] | mem[pc + 2] << 8) + self.x) & 0xFFFF
-                self.pc = pc + 3
-            elif mode == 'aby':
-                ea = ((mem[pc + 1] | mem[pc + 2] << 8) + self.y) & 0xFFFF
-                self.pc = pc + 3
-            elif mode == 'izx':
-                z = (mem[pc + 1] + self.x) & 0xFF
-                ea = mem[z] | mem[(z + 1) & 0xFF] << 8
-                self.pc = pc + 2
-            elif mode == 'izy':
-                z = mem[pc + 1]
-                ea = ((mem[z] | mem[(z + 1) & 0xFF] << 8) + self.y) & 0xFFFF
-                self.pc = pc + 2
-            elif mode == 'ind':
-                a = mem[pc + 1] | mem[pc + 2] << 8
-                ea = mem[a] | mem[(a & 0xFF00) | ((a + 1) & 0xFF)] << 8
-                self.pc = pc + 3
-            else:  # rel
-                r = mem[pc + 1]
-                ea = (pc + 2 + (r - 256 if r > 127 else r)) & 0xFFFF
-                self.pc = pc + 2
-            self.execute(m, mode, ea, rd, wr)
+        m, handlers = self.mem, HANDLERS
+        special = bytearray(0x10000)   # 1 where the emulator steps in instead of running code
+        special[0xD000:] = b'\x01' * 0x3000
+        for a in (COUT, GETLN, GETLN1, WAIT, HOME, DOS_WARM, APPLESOFT_ERROR):
+            special[a] = 1
+        executed, hooks = self.executed, self.hooks
+        steps = self.steps
+        try:
+            while True:
+                pc = self.pc
+                if special[pc]:
+                    self.steps = steps
+                    self.trap()
+                    continue
+                if executed is not None:
+                    executed.add(pc)
+                    if pc in hooks:
+                        hooks[pc](self)
+                steps += 1
+                if steps > max_steps:
+                    raise Stop('step limit reached at $%04X' % pc)
+                h = handlers[m[pc]]
+                if h is None:
+                    raise Stop('undocumented opcode $%02X at $%04X' % (m[pc], pc))
+                h(self, m, pc)
+        finally:
+            self.steps = steps
 
-    def nz(self, v):
-        self.n = v >> 7
-        self.z = 1 if v == 0 else 0
-        return v
 
-    def execute(self, m, mode, ea, rd, wr):
-        if m == 'LDA':
-            self.a = self.nz(rd(ea))
-        elif m == 'STA':
-            wr(ea, self.a)
-        elif m == 'LDX':
-            self.x = self.nz(rd(ea))
-        elif m == 'LDY':
-            self.y = self.nz(rd(ea))
-        elif m == 'STX':
-            wr(ea, self.x)
-        elif m == 'STY':
-            wr(ea, self.y)
-        elif m in ('BNE', 'BEQ', 'BPL', 'BMI', 'BCC', 'BCS', 'BVC', 'BVS'):
-            take = {'BNE': not self.z, 'BEQ': self.z, 'BPL': not self.n, 'BMI': self.n,
-                    'BCC': not self.c, 'BCS': self.c, 'BVC': not self.v, 'BVS': self.v}[m]
-            if take:
-                self.pc = ea
-        elif m == 'JSR':
-            ret = (self.pc - 1) & 0xFFFF
-            self.push(ret >> 8)
-            self.push(ret & 0xFF)
-            self.pc = ea
-        elif m == 'RTS':
-            self.rts()
-        elif m == 'JMP':
-            self.pc = ea
-        elif m in ('ADC', 'SBC'):
-            if self.d:
-                raise Stop('decimal mode is not emulated')
-            v = rd(ea)
-            if m == 'SBC':
-                v ^= 0xFF
-            r = self.a + v + self.c
-            self.v = 1 if (~(self.a ^ v) & (self.a ^ r) & 0x80) else 0
-            self.c = r >> 8
-            self.a = self.nz(r & 0xFF)
-        elif m in ('CMP', 'CPX', 'CPY'):
-            reg = {'CMP': self.a, 'CPX': self.x, 'CPY': self.y}[m]
-            r = reg - rd(ea)
-            self.c = 1 if r >= 0 else 0
-            self.nz(r & 0xFF)
-        elif m == 'AND':
-            self.a = self.nz(self.a & rd(ea))
-        elif m == 'ORA':
-            self.a = self.nz(self.a | rd(ea))
-        elif m == 'EOR':
-            self.a = self.nz(self.a ^ rd(ea))
-        elif m == 'BIT':
-            v = rd(ea)
-            self.n, self.v = v >> 7, v >> 6 & 1
-            self.z = 1 if (self.a & v) == 0 else 0
-        elif m in ('ASL', 'LSR', 'ROL', 'ROR'):
-            v = self.a if mode == 'acc' else rd(ea)
-            if m == 'ASL':
-                self.c, v = v >> 7, (v << 1) & 0xFF
-            elif m == 'LSR':
-                self.c, v = v & 1, v >> 1
-            elif m == 'ROL':
-                self.c, v = v >> 7, ((v << 1) | self.c) & 0xFF
-            else:
-                self.c, v = v & 1, (v >> 1) | (self.c << 7)
-            self.nz(v)
-            if mode == 'acc':
-                self.a = v
-            else:
-                wr(ea, v)
-        elif m in ('INC', 'DEC'):
-            v = self.nz((rd(ea) + (1 if m == 'INC' else -1)) & 0xFF)
-            wr(ea, v)
-        elif m == 'INX':
-            self.x = self.nz((self.x + 1) & 0xFF)
-        elif m == 'INY':
-            self.y = self.nz((self.y + 1) & 0xFF)
-        elif m == 'DEX':
-            self.x = self.nz((self.x - 1) & 0xFF)
-        elif m == 'DEY':
-            self.y = self.nz((self.y - 1) & 0xFF)
-        elif m == 'TAX':
-            self.x = self.nz(self.a)
-        elif m == 'TAY':
-            self.y = self.nz(self.a)
-        elif m == 'TXA':
-            self.a = self.nz(self.x)
-        elif m == 'TYA':
-            self.a = self.nz(self.y)
-        elif m == 'TSX':
-            self.x = self.nz(self.sp)
-        elif m == 'TXS':
-            self.sp = self.x
-        elif m == 'PHA':
-            self.push(self.a)
-        elif m == 'PLA':
-            self.a = self.nz(self.pull())
-        elif m == 'PHP':
-            self.push(self.flags() | 0x10)
-        elif m == 'PLP':
-            self.setflags(self.pull())
-        elif m == 'CLC':
-            self.c = 0
-        elif m == 'SEC':
-            self.c = 1
-        elif m == 'CLD':
-            self.d = 0
-        elif m == 'SED':
-            self.d = 1
-        elif m == 'CLI':
-            self.i = 0
-        elif m == 'SEI':
-            self.i = 1
-        elif m == 'CLV':
-            self.v = 0
-        elif m == 'NOP':
-            pass
-        elif m == 'BRK':
-            raise Stop('BRK at $%04X' % ((self.pc - 1) & 0xFFFF))
-        else:
-            raise Stop('%s is not emulated' % m)
+# ---- the CPU: one generated function per opcode -------------------------------------------
+# Each handler(machine, mem, pc) works out the operand address, steps the PC past the
+# instruction, then does the operation. Reads of $C000-$C0FF (I/O) give 0 and writes there are
+# dropped, as on the machine without its cards.
+
+MODES = {  # mode: (operand address code, instruction length)
+    'imp': ('', 1), 'acc': ('', 1),
+    'imm': ('ea = pc + 1', 2),
+    'zp': ('ea = m[pc + 1]', 2),
+    'zpx': ('ea = (m[pc + 1] + c.x) & 0xFF', 2),
+    'zpy': ('ea = (m[pc + 1] + c.y) & 0xFF', 2),
+    'abs': ('ea = m[pc + 1] | m[pc + 2] << 8', 3),
+    'abx': ('ea = ((m[pc + 1] | m[pc + 2] << 8) + c.x) & 0xFFFF', 3),
+    'aby': ('ea = ((m[pc + 1] | m[pc + 2] << 8) + c.y) & 0xFFFF', 3),
+    'izx': ('z = (m[pc + 1] + c.x) & 0xFF\nea = m[z] | m[(z + 1) & 0xFF] << 8', 2),
+    'izy': ('z = m[pc + 1]\nea = ((m[z] | m[(z + 1) & 0xFF] << 8) + c.y) & 0xFFFF', 2),
+    'ind': ('a = m[pc + 1] | m[pc + 2] << 8\nea = m[a] | m[(a & 0xFF00) | ((a + 1) & 0xFF)] << 8', 3),
+    'rel': ('r = m[pc + 1]\nea = (pc + 2 + (r - 256 if r > 127 else r)) & 0xFFFF', 2),
+}
+READ = 'v = m[ea] if ea < 0xC000 or ea >= 0xC100 else 0'
+WRITE = 'if ea < 0xC000 or ea >= 0xC100:\n    m[ea] = v'
+NZ = 'c.n = v >> 7\nc.z = 1 if v == 0 else 0'
+PUSH = 'm[0x100 + c.sp] = v\nc.sp = (c.sp - 1) & 0xFF'
+PULL = 'c.sp = (c.sp + 1) & 0xFF\nv = m[0x100 + c.sp]'
+BRANCH = {'BNE': 'not c.z', 'BEQ': 'c.z', 'BPL': 'not c.n', 'BMI': 'c.n',
+          'BCC': 'not c.c', 'BCS': 'c.c', 'BVC': 'not c.v', 'BVS': 'c.v'}
+FLAG_OPS = {'CLC': 'c.c = 0', 'SEC': 'c.c = 1', 'CLD': 'c.d = 0', 'SED': 'c.d = 1',
+            'CLI': 'c.i = 0', 'SEI': 'c.i = 1', 'CLV': 'c.v = 0', 'NOP': ''}
+SHIFTS = {'ASL': 'c.c = v >> 7\nv = (v << 1) & 0xFF',
+          'LSR': 'c.c = v & 1\nv >>= 1',
+          'ROL': 'o = c.c\nc.c = v >> 7\nv = ((v << 1) | o) & 0xFF',
+          'ROR': 'o = c.c\nc.c = v & 1\nv = (v >> 1) | (o << 7)'}
+
+
+def operation(op, mode):
+    """The Python for one operation, after the operand address (ea) is known."""
+    if op in ('LDA', 'LDX', 'LDY'):
+        return '\n'.join([READ, 'c.%s = v' % op[2].lower(), NZ])
+    if op in ('STA', 'STX', 'STY'):
+        return 'v = c.%s\n%s' % (op[2].lower(), WRITE)
+    if op in BRANCH:
+        return 'if %s:\n    c.pc = ea' % BRANCH[op]
+    if op == 'JSR':
+        return 'r = (c.pc - 1) & 0xFFFF\nv = r >> 8\n%s\nv = r & 0xFF\n%s\nc.pc = ea' % (PUSH, PUSH)
+    if op == 'RTS':
+        return 'c.rts()'
+    if op == 'JMP':
+        return 'c.pc = ea'
+    if op in ('ADC', 'SBC'):
+        return '\n'.join(["if c.d:\n    raise Stop('decimal mode is not emulated')", READ,
+                          'v ^= 0xFF' if op == 'SBC' else '',
+                          'a = c.a\nr = a + v + c.c', 'c.v = 1 if (~(a ^ v) & (a ^ r) & 0x80) else 0',
+                          'c.c = r >> 8\nv = r & 0xFF\nc.a = v', NZ])
+    if op in ('CMP', 'CPX', 'CPY'):
+        reg = {'CMP': 'a', 'CPX': 'x', 'CPY': 'y'}[op]
+        return '\n'.join([READ, 'r = c.%s - v' % reg, 'c.c = 1 if r >= 0 else 0', 'v = r & 0xFF', NZ])
+    if op in ('AND', 'ORA', 'EOR'):
+        sym = {'AND': '&', 'ORA': '|', 'EOR': '^'}[op]
+        return '\n'.join([READ, 'v = c.a %s v' % sym, 'c.a = v', NZ])
+    if op == 'BIT':
+        return '\n'.join([READ, 'c.n = v >> 7\nc.v = v >> 6 & 1', 'c.z = 1 if (c.a & v) == 0 else 0'])
+    if op in SHIFTS:
+        if mode == 'acc':
+            return '\n'.join(['v = c.a', SHIFTS[op], NZ, 'c.a = v'])
+        return '\n'.join([READ, SHIFTS[op], NZ, WRITE])
+    if op in ('INC', 'DEC'):
+        return '\n'.join([READ, 'v = (v %s 1) & 0xFF' % ('+' if op == 'INC' else '-'), NZ, WRITE])
+    if op in ('INX', 'INY', 'DEX', 'DEY'):
+        reg = op[2].lower()
+        return '\n'.join(['v = (c.%s %s 1) & 0xFF' % (reg, '+' if op[0] == 'I' else '-'), 'c.%s = v' % reg, NZ])
+    if op in ('TAX', 'TAY', 'TXA', 'TYA', 'TSX'):
+        src, dst = {'TAX': ('a', 'x'), 'TAY': ('a', 'y'), 'TXA': ('x', 'a'), 'TYA': ('y', 'a'),
+                    'TSX': ('sp', 'x')}[op]
+        return '\n'.join(['v = c.%s' % src, 'c.%s = v' % dst, NZ])
+    if op == 'TXS':
+        return 'c.sp = c.x'
+    if op == 'PHA':
+        return 'v = c.a\n' + PUSH
+    if op == 'PHP':
+        return 'v = c.flags() | 0x10\n' + PUSH
+    if op == 'PLA':
+        return '\n'.join([PULL, 'c.a = v', NZ])
+    if op == 'PLP':
+        return PULL + '\nc.setflags(v)'
+    if op in FLAG_OPS:
+        return FLAG_OPS[op]
+    if op == 'BRK':
+        return "raise Stop('BRK at $%04X' % pc)"
+    return "raise Stop('%s is not emulated')" % op
+
+
+def compile_handlers():
+    handlers = [None] * 256
+    for code, (op, mode) in OPS.items():
+        addr, length = MODES[mode]
+        body = '\n'.join(l for l in (addr, 'c.pc = pc + %d' % length, operation(op, mode)) if l)
+        src = 'def op_%02X(c, m, pc):\n' % code + '\n'.join('    ' + l for l in body.split('\n'))
+        scope = {'Stop': Stop}
+        exec(src, scope)
+        handlers[code] = scope['op_%02X' % code]
+    return handlers
+
+
+HANDLERS = compile_handlers()
+
+
+def read_commands(path):
+    """A command script: one command per line, '#' starts a comment, blank lines skipped."""
+    lines = [l.split('#')[0].strip() for l in pathlib.Path(path).read_text().splitlines()]
+    return [l for l in lines if l]
 
 
 def read_files(d):
@@ -400,9 +365,13 @@ def read_files(d):
     return files
 
 
-def play(files_dir, commands, max_steps=200_000_000, screens=None):
+def play(files_dir, commands, max_steps=200_000_000, screens=None, setup=None):
+    """Run the game on commands; setup(machine), if given, runs first (gamecov.py uses it
+    to start recording)."""
     m = Machine(read_files(files_dir))
     m.commands = list(commands)
+    if setup:
+        setup(m)
     m.load('ADVENTURE')
     m.pc = 0x0800
     if screens:
@@ -433,8 +402,7 @@ def main():
             opts[k] = args[i + 1]
             del args[i:i + 2]
     files_dir, cmd_file = args
-    commands = [l.split('#')[0].strip() for l in pathlib.Path(cmd_file).read_text().splitlines()]
-    commands = [c for c in commands if c]
+    commands = read_commands(cmd_file)
     m, reason = play(files_dir, commands, int(opts.get('--max-steps', 200_000_000)), opts.get('--screens'))
     text = '\n'.join(m.out) + '\n'
     if '--screen-hashes' in opts:

@@ -47,3 +47,18 @@ def build(src=SRC):
     tool('dos33.py', os.path.join(b, 'mystery_house.do'), os.path.join(b, 'files'))
     _built[src] = b
     return b
+
+
+PLAY = os.path.join(ROOT, 'tests', 'play')
+SCRIPTS = ['walkthrough', 'errors', 'house', 'deaths']    # the command scripts in tests/play
+_played = {}
+
+
+def played(name):
+    """Play tests/play/<name>.txt on the build of src/ (once per test run), recording what runs;
+    returns (machine, stop reason, executed addresses, addresses of the rules that ran)."""
+    if name not in _played:
+        import gamecov
+        b = build()
+        _played[name] = gamecov.play_recorded(b, os.path.join(b, 'files'), os.path.join(PLAY, name + '.txt'))
+    return _played[name]

@@ -1,6 +1,7 @@
 """The source is shiftable: insert padding in front of the tables and the engine, so nearly
 everything after the hi-res page moves to a new address, and the game must still play exactly
 the same. This is what lets the code and data grow without being pinned in place."""
+import json
 import os
 import shutil
 import tempfile
@@ -8,7 +9,11 @@ import unittest
 
 import helpers
 import play
-from test_play import commands, expected
+from test_play import expected
+
+
+def commands(name):
+    return play.read_commands(os.path.join(helpers.PLAY, name))
 
 PAD = 37                               # odd, so nothing stays aligned to a page or a word
 BEFORE = ['noun_table:', 'verb_table:', 'command_rules:', '; ==== the engine', 'draw_picture:']
@@ -61,6 +66,20 @@ class Shifted(unittest.TestCase):
         # the replies are patched into text inside read_command, which moves too
         m, reason = play.play(os.path.join(self.shifted, 'files'), commands('errors.txt'))
         self.assertEqual(m.out, expected('errors.expected.txt'))
+
+    def test_the_game_data_decodes_the_same(self):
+        # gamedata.py finds the tables through the symbol table; only the addresses differ
+        def decoded(build_dir):
+            out = tempfile.mkdtemp(prefix='mh-gamedata-')
+            helpers.tool('gamedata.py', os.path.join(build_dir, 'files'), out,
+                         os.path.join(build_dir, 'adventure.syms.csv'))
+            with open(os.path.join(out, 'gamedata.json')) as f:
+                data = json.load(f)
+            del data['addresses']
+            for rule in data['command_rules'] + data['turn_rules']:
+                del rule['addr']
+            return data
+        self.assertEqual(decoded(self.original), decoded(self.shifted))
 
     def test_the_game_plays_the_same(self):
         self.assertEqual(self.reason, 'quit to DOS')

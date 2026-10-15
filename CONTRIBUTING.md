@@ -46,8 +46,9 @@ the build stops matching, the change replaced a value with something that is not
 **Fixing or changing the game:** rules, text, pictures or engine code. The hashes will no longer
 match, so this kind of change does not belong on `main` as it stands. Open an issue first, and
 put the work on a branch or a fork. HACKING.md ("Changing the game") shows how. Check it with
-`tools/play.py`, and update the expected transcripts in `tests/play/` only when the difference
-is the one you meant to make.
+`tools/play.py`, and update the expected files in `tests/play/` (its README has the commands)
+only when the difference is the one you meant to make. New behaviour should come with commands
+in a play script that exercise it; `tools/gamecov.py` shows what a script reaches.
 
 **Tools and tests:** when a tool gains a feature or a bug is fixed, add a test to `tests/`
 (standard library `unittest` only, no extra dependencies).

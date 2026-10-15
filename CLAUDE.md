@@ -14,9 +14,10 @@ match the original" and "build/mystery_house.do: matches disk/SHA256". The disk 
 
 `./build.sh --check` fails unless everything matches (CI runs it). Run the tests with
 `python3 -m unittest discover -s tests`; add tests when a tool gains a feature or a bug is fixed. The play-through test
-(`tests/test_play.py`) plays the solution on the emulated game; `tools/play.py` plays any
-command script against the built game, which is the way to check a change to the engine or the
-rules.
+(`tests/test_play.py`) plays the scripts in `tests/play/` (solution, room tour, deaths) on the
+emulated game against recorded transcripts and screens, and checks what they exercise against
+`tests/play/coverage.expected.txt` (`tools/gamecov.py`); `tools/play.py` plays any command
+script against the built game, which is the way to check a change to the engine or the rules.
 
 Ghidra (optional): with `GHIDRA_INSTALL_DIR=/path/to/ghidra_12.1.x` the
 build also regenerates the C pseudocode in `decomp/*.c`.

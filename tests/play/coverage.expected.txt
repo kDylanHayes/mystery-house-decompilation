@@ -1,0 +1,28 @@
+instructions: 1855 of 2120 executed (87.5%)
+command rules: 347 of 348 ran
+turn rules: 10 of 10 ran
+
+routines never entered: 20
+  dead_init_tail (24 instructions)
+  dead_disk_error (2 instructions)
+  dead_read_message (27 instructions)
+  dead_read_message_cmd (1 instructions)
+  old_read_digits (11 instructions)
+  dead_offset_to_hex (16 instructions)
+  dead_split_nibbles (11 instructions)
+  dead_nibbles_to_ascii (9 instructions)
+  disk_error_handler (1 instructions)
+  messages_open (1 instructions)
+  AC1100 (13 instructions)
+  AC2200 (1 instructions)
+  AC2400 (1 instructions)
+  hplot0 (1 instructions)
+  xdraw_move_ud_plot (12 instructions)
+  hlinrl (6 instructions)
+  xdraw0 (52 instructions)
+  hcolor_bkgnd (2 instructions)
+  xdraw_shape (5 instructions)
+  quantity_error (1 instructions)
+
+rules that never ran: 1
+  rule_4F56  in room 40 (IN A STORAGE ROOM) and verb OPEN and noun TRUNK | if object 44 (TRUNK) is in room 40 (IN A STORAGE ROOM) | say msg 129 "IT IS OPEN"

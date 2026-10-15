@@ -1,0 +1,42 @@
+# Play scripts
+
+Command scripts played on the built game by `tests/test_play.py`, through the 6502 emulator in
+`tools/play.py`. One command per line; `#` starts a comment.
+
+| Script | What it plays |
+|---|---|
+| `walkthrough.txt` | the complete solution, ending with the winning message |
+| `errors.txt` | words the game does not know (the replies are patched into text in the code) |
+| `house.txt` | a tour of every room trying its rules: doors and gates in each state, the refusals, water, the trunk, the hidden wall, the tunnel and the forest |
+| `deaths.txt` | every death and ending, darkness and the match, the first visit to the hall, SAVE GAME and RESTORE GAME (including the saved game on the disk) |
+
+For each script, `<name>.expected.txt` is the transcript and `<name>.screens.txt` a short hash
+of the hi-res screen at every prompt. `coverage.expected.txt` is what the scripts exercise
+together (`tools/gamecov.py`): the counts, and the routines and rules that never run. Everything
+listed there cannot run in the shipped game (NOTES.md, "Test coverage"), so a change that stops
+some code or rule running, or a new script that reaches more, changes the report.
+
+Things to know when writing a script:
+
+* Many rules test the picture on screen. Looking at something (`LOOK SINK`, `READ NOTE`, ...)
+  shows its picture instead of the room's, so the door rules stop matching until `LOOK ROOM`
+  or a move. After turn 36 without a light the room is not drawn either, so light the candle
+  early.
+* `GET` takes only what the current picture shows: the matches after `LOOK CABINET`, the
+  pitcher after `LOOK REFRIGERATOR`, the key after `LOOK HOLE`.
+* After a death `Y` starts a new game; `RESTORE GAME` before any `SAVE GAME` loads the disk's
+  saved game (the cemetery, turn 121, most things carried).
+
+When a change is meant to alter what the game does, regenerate the expected files and read the
+difference:
+
+```bash
+for s in walkthrough errors house deaths; do python3 tools/play.py extracted tests/play/$s.txt --transcript tests/play/$s.expected.txt --screen-hashes tests/play/$s.screens.txt; done
+```
+
+```bash
+python3 tools/gamecov.py build extracted tests/play/walkthrough.txt tests/play/errors.txt tests/play/house.txt tests/play/deaths.txt --rules assets/text/rules.txt > tests/play/coverage.expected.txt
+```
+
+Add a new script to `SCRIPTS` in `tests/helpers.py`, a test for it in `tests/test_play.py`,
+and to the coverage command above.

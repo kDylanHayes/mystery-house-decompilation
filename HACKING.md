@@ -41,24 +41,30 @@ to be a cleanup (renames, comments, constants): those never change the bytes.
 python3 -m unittest discover -s tests
 ```
 
-`tests/` (standard library only) covers the tools: the assembler's addressing modes,
-expressions, directives and errors; the BASIC tokenizer's Applesoft rules and a round trip of
-every program; the message, picture and saved-state formats; the full build against the
-recorded hashes; the disk writer (files growing, shrinking, the free-space map); and a full
-play-through: `tests/test_play.py` runs the built game on the 6502 emulator in
-`tools/play.py` with the walkthrough in `tests/play/`, and checks it wins with the recorded
-transcript and the same hi-res screen after every command.
+`tests/` (standard library only; `tests/README.md` lists the files) covers the tools: the
+assembler's addressing modes, expressions, directives and errors; the BASIC tokenizer's
+Applesoft rules and a round trip of every program; the message, picture and saved-state
+formats; the full build against the recorded hashes; the disk writer (files growing,
+shrinking, the free-space map); `gamedata.py`, `trace6502.py` and `source_fragments.py`
+against the symbol table, the listing and `original_source/`; and the game itself.
 
-To play the built game from a script yourself:
+`tests/test_play.py` plays the scripts in `tests/play/` on the built game with the 6502
+emulator in `tools/play.py`: the solution, a tour of every room, every death and ending, and
+unknown words. Each must give the recorded transcript and the same hi-res screen after every
+command. `tools/gamecov.py` records what they run together, and the test compares it with
+`tests/play/coverage.expected.txt`: 347 of the 348 command rules, all turn rules, and every
+instruction except the code that cannot run (NOTES.md, "Test coverage").
+
+To play the built game from a script yourself, or measure what a script exercises:
 
 ```
 python3 tools/play.py extracted tests/play/walkthrough.txt
 python3 tools/play.py extracted my_commands.txt --screens /tmp/screens   # PNG per prompt
+python3 tools/gamecov.py build extracted my_commands.txt --rules assets/text/rules.txt --detail
 ```
 
-If a change is meant to alter what the game prints or draws, regenerate the expected files with
-`--transcript tests/play/walkthrough.expected.txt --screen-hashes
-tests/play/walkthrough.screens.txt` and check the difference.
+If a change is meant to alter what the game prints or draws, regenerate the expected files
+(`tests/play/README.md` has the commands) and check the difference.
 
 `.github/workflows/build.yml` runs on every push and pull request: the tests, then
 `./build.sh --check`, then `tools/ca65_check.sh` (ca65 and ld65 must build the same programs),

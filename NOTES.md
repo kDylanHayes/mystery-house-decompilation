@@ -363,6 +363,23 @@ at programma.applearchives.com.
 * Shapes 1 and 5 in the shape table are never used. `hgr_collisions` (`$032A`) is written but
   never read; so is `done_word` (`$0865`).
 
+Found by the play scripts (`tests/play/`):
+
+* Jumping out of the storage-room window (`rule_4FEB`) prints `YOU ARE DEAD.` but the game
+  carries on: unlike the same rule in the attic (`rule_4F16`), it has no "ask to play again".
+* `OPEN TRUNK` on the open trunk answers `IT IS LOCKED`: `rule_4F4B` ("if unlocked, say it is
+  locked") comes before `rule_4F56` ("if the open trunk is here, say it is open"), and the trunk
+  can only be open once it is unlocked, so `rule_4F56` never runs.
+* `WITH DAGGER` in the cemetery without the dagger (`rule_4ADD`) says `YOU ARE NOT CARRYING
+  IT` and also removes object 26, the dots that are Joe's open eyes (they become X's when he is
+  killed), so he is drawn without them from then on.
+* Rules that test the picture on screen (most doors and gates) depend on what was shown last:
+  after `LOOK SINK`, `READ NOTE` and the like the close-up is the current picture, and the door
+  rules no longer match until `LOOK ROOM` or a move. In the dark (after turn 36 without a lit
+  match or candle) the room is not drawn at all, so those doors can be neither opened nor used.
+* `GET` only takes what the current picture shows: the matches after `LOOK CABINET`, the
+  pitcher after `LOOK REFRIGERATOR`, the trunk key after `LOOK HOLE`.
+
 ## Dead code and other leftovers
 
 Besides the source fragments, the image holds pieces of older builds that nothing reaches:
@@ -404,6 +421,21 @@ disassembler that ends the string at the first `$00` stops in the middle of the 
 the code after it (the cache bookkeeping at `$734A` and the `$0200` save/restore at `$751E`).
 `programs/adventure.json` gives those strings their real length; listings show the patched
 digits as `#`.
+
+## Test coverage
+
+`tests/play/` plays the solution, a tour of every room, every death and ending, and the unknown
+words on the emulated game, and `tools/gamecov.py` records what runs (the report is
+`tests/play/coverage.expected.txt`). Together they run 347 of the 348 command rules, all 10
+turn rules and 1855 of the 2120 instructions. What never runs cannot run in the shipped game:
+
+* `rule_4F56`, which the trunk quirk above makes unreachable;
+* the dead code: `dead_*` and `old_read_digits` (see "Dead code and other leftovers");
+* `disk_error_handler` and the `messages_open` byte after it, which run only on a disk error;
+* `AC1100` (add to a switch: no rule uses action 1) and `AC2200`/`AC2400`, the `BRK`s that
+  stand for the unused actions 12 and 14;
+* the parts of the Applesoft hi-res copy the game does not use (`hplot0`, `hlinrl`, `xdraw0`
+  and the XDRAW plot, `hcolor_bkgnd`, `hfind`), and `quantity_error`, its bad-argument exit.
 
 ## Cross-check
 

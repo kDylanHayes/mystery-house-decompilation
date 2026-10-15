@@ -28,7 +28,7 @@ on tracks 0-2, is kept as a binary.
 * [NOTES.md](NOTES.md): how the engine works: the rule interpreter, data formats, graphics,
   messages, the original source found in the binary, bugs and leftovers
 * a README.md in each folder: [`src/data`](src/data/README.md), [`tools`](tools/README.md),
-  [`programs`](programs/README.md), [`symbols`](symbols/README.md),
+  [`programs`](programs/README.md), [`symbols`](symbols/README.md), [`tests`](tests/README.md),
   [`decomp`](decomp/README.md), [`original_source`](original_source/README.md),
   [`src/disk`](src/disk/README.md), [`disk`](disk/README.md)
 
@@ -48,6 +48,7 @@ on tracks 0-2, is kept as a binary.
 | `assets/text/rules.txt` | the game logic: all 358 rules in plain words |
 | `assets/text/map.txt` | every room's exits and the passages rules make |
 | `tests/play/walkthrough.txt` | a complete solution, played by the tests on an emulated 6502 |
+| `tests/play/` | also a tour of every room and every death: together they run 347 of the 348 command rules and all the turn rules |
 | `assets/text/` | rooms, objects, vocabulary, messages; `gamedata.json` has all of it |
 | `assets/pictures/` | the 97 vector pictures as PNG and SVG |
 | `assets/rooms/` | each of the 41 rooms as first seen, with its objects |

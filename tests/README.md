@@ -1,0 +1,22 @@
+# Tests
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+Standard library only; run from the repository root as shown (a test file run on its own cannot
+import `helpers.py`). The whole suite takes a little over a minute, most of it playing the
+scripts in `play/` on the emulator. `helpers.py` builds every game file from `src/` into a
+temporary directory once per run, and plays each script once, recording what runs, for the
+tests that need it.
+
+| File | Checks |
+|---|---|
+| `test_asm6502.py` | the assembler: addressing modes, expressions, directives, errors |
+| `test_ca65.py` | ca65 and ld65 build the same programs (skipped without cc65) |
+| `test_basic.py` | the BASIC tokenizer, and every program listing back to its source |
+| `test_formats.py` | the message, picture and saved-state formats round trip |
+| `test_disk.py` | the full build against the recorded hashes; the disk writer |
+| `test_play.py` | each script in `play/` gives the recorded transcript and screens; together they exercise the recorded code and rules (`play/coverage.expected.txt`) |
+| `test_shift.py` | padding the source moves the code and tables, and the game plays and decodes the same |
+| `test_analysis.py` | `gamedata.py` against the symbol table, `trace6502.py` against the listing and what the game executes, `source_fragments.py` against `original_source/` |
