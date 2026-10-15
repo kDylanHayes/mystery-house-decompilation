@@ -4,6 +4,7 @@
 # generates the message and picture tables (build/gen/) that ADVENTURE includes.
 #
 # usage: tools/ca65_check.sh            (needs ca65 and ld65 on PATH)
+# If build/bugfix/ exists (./build.sh --bugfix), the bug-fix ADVENTURE is checked too.
 set -eu
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 B="$HERE/build"
@@ -23,4 +24,14 @@ for p in adventure:ADVENTURE:0x0800 autoload:AUTO_LOAD_OBJ:0x0FFD; do
 		status=1
 	fi
 done
+if [ -f "$B/bugfix/ADVENTURE.bin" ]; then
+	ca65 -D BUGFIX -I "$HERE/src" -I "$B/bugfix/gen" --bin-include-dir "$HERE/src" -o "$O/bugfix.o" "$HERE/src/adventure.s"
+	ld65 -C "$HERE/src/ld65.cfg" -S 0x0800 -o "$O/ADVENTURE.bugfix.bin" "$O/bugfix.o"
+	if cmp -s "$O/ADVENTURE.bugfix.bin" "$B/bugfix/ADVENTURE.bin"; then
+		echo "ADVENTURE (bug-fix build): ca65 + ld65 build it byte for byte"
+	else
+		echo "ADVENTURE (bug-fix build): ca65 + ld65 output differs from the build" >&2
+		status=1
+	fi
+fi
 exit $status

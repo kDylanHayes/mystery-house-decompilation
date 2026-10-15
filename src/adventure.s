@@ -1662,9 +1662,14 @@ rule_4ACC:
 
 ; room 18 (IN A SMALL FENCED CEMETARY), WITH, DAGGER
 rule_4ADD:
+.ifdef BUGFIX
+        .byte 18, V_WITH, N_DAGGER, rule_4AE8-rule_4ADD, 0, 1
+        .byte A_MESSAGE, 132     ; say msg 132 "YOU ARE NOT CARRYING IT"
+.else
         .byte 18, V_WITH, N_DAGGER, rule_4AE8-rule_4ADD, 0, 2
         .byte A_MESSAGE, 132     ; say msg 132 "YOU ARE NOT CARRYING IT"
-        .byte A_PUT_OBJ, 26, 253     ; put object 26 (DOTS) in nowhere
+        .byte A_PUT_OBJ, 26, 253     ; put object 26 (DOTS) in nowhere (bug: Joe loses his eyes)
+.endif
 
 ; room 18 (IN A SMALL FENCED CEMETARY), WITH, GUN
 rule_4AE8:
@@ -2331,7 +2336,11 @@ rule_4F39:
 rule_4F4B:
         .byte 40, V_OPEN, N_TRUNK, rule_4F56-rule_4F4B, 1, 1
         .byte C_SWITCH_EQ, SW_TRUNK_UNLOCKED, 1     ; if SW_TRUNK_UNLOCKED == 1
-        .byte A_MESSAGE, 82     ; say msg 82 "IT IS LOCKED"
+.ifdef BUGFIX
+        .byte A_MESSAGE, 129    ; say msg 129 "IT IS OPEN" (bug fix: the trunk is open here)
+.else
+        .byte A_MESSAGE, 82     ; say msg 82 "IT IS LOCKED" (bug: only the open trunk gets here)
+.endif
 
 ; room 40 (IN A STORAGE ROOM), OPEN, TRUNK
 rule_4F56:
@@ -2410,9 +2419,16 @@ rule_4FDD:
 
 ; room 40 (IN A STORAGE ROOM), GO, WINDOW
 rule_4FEB:
-        .byte 40, V_GO, N_WINDOW, rule_4FF5-rule_4FEB, 0, 2
+.ifdef BUGFIX
+        .byte 40, V_GO, N_WINDOW, rule_4FF5-rule_4FEB, 0, 3
+.else
+        .byte 40, V_GO, N_WINDOW, rule_4FF5-rule_4FEB, 0, 2   ; bug: the game goes on after
+.endif
         .byte A_MESSAGE, 147     ; say msg 147 "YOU FALL TO EARTH. LUCKILY YOU HAVE ONLY MINOR INJURIES."
         .byte A_MESSAGE, 148     ; say msg 148 "UNFORTUNATELY THE AMBULANCE DRIVER SMASHS INTO A VOLKWAGEN. NO SURVIVORS. YOU ARE DEAD."
+.ifdef BUGFIX
+        .byte A_GAME_OVER     ; ask to play again (bug fix: as the attic window does)
+.endif
 
 ; room 41 (IN THE TOWER), GO, TRAPDOOR
 rule_4FF5:
@@ -3206,7 +3222,11 @@ cond_turns_gt:
         LDA turns+1
         LDX #1
         CMP #$00
-        BNE cond_fail
+.ifdef BUGFIX
+        BNE cond_pass             ; bug fix: from turn 256 the count is above any N
+.else
+        BNE cond_fail             ; bug: from turn 256 "turn > N" is never true again
+.endif
         LDY #ARG_X
         LDA (WORK),Y
         CMP turns
@@ -3964,9 +3984,13 @@ AC2600__clear_cache:
         BNE AC2600__clear_cache
         STA pic_cache
         LDA ZAWORK
-        STA AWORK             ; bug: both bytes go to the low byte
+        STA AWORK
         LDA ZAWORK+1
+.ifdef BUGFIX
+        STA AWORK+1           ; bug fix: the high byte goes to the high byte
+.else
         STA AWORK             ; bug: both bytes go to the low byte
+.endif
         LDX #0
         JMP AC9000
 

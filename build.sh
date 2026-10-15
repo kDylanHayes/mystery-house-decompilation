@@ -1,9 +1,14 @@
 #!/bin/sh
 # Build Mystery House from source.
 #
-# usage: ./build.sh [--check]
+# usage: ./build.sh [--check | --bugfix]
 #        --check: exit with an error unless every file and the disk image match the recorded
 #        hashes (for CI and for cleanups that must not change the bytes)
+#        --bugfix: build the game with its documented bugs fixed (the .ifdef BUGFIX blocks in
+#        src/adventure.s; NOTES.md, "Bug-fix build") into build/bugfix/: the disk image
+#        build/bugfix/mystery_house.do and its files in build/bugfix/files. It does not match
+#        the original, so nothing is checked and the normal build, extracted/ and assets/ are
+#        left alone.
 # needs: python3 only. If GHIDRA_INSTALL_DIR points at Ghidra 12.1.x, the C pseudocode in
 #        decomp/ is regenerated as well (optional).
 #
@@ -12,11 +17,24 @@
 # against disk/SHA256, extracts the built disk into extracted/ and regenerates the assets.
 set -eu
 CHECK=0
-[ "${1:-}" = "--check" ] && CHECK=1
+BUGFIX=0
+case "${1:-}" in
+--check) CHECK=1 ;;
+--bugfix) BUGFIX=1 ;;
+"") ;;
+*) echo "usage: ./build.sh [--check | --bugfix]" >&2; exit 2 ;;
+esac
 HERE=$(cd "$(dirname "$0")" && pwd)
-B="$HERE/build"
+if [ $BUGFIX = 1 ]; then
+	B="$HERE/build/bugfix"
+	DEFINE="-D BUGFIX"
+	rm -rf "$B"
+else
+	B="$HERE/build"
+	DEFINE=""
+	rm -rf "$B" "$HERE/assets"
+fi
 G="$B/gen"
-rm -rf "$B" "$HERE/assets"
 mkdir -p "$G"
 
 # messages, pictures and BASIC first: the first two generate tables ADVENTURE includes
@@ -26,7 +44,7 @@ for f in HELLO MYSTERY.HELLO PIC_SIZES; do
 	python3 -I "$HERE/tools/basic.py" build "$HERE/src/basic/$f.bas" "$G/$f.bin"
 done
 python3 -I "$HERE/tools/basic.py" build "$HERE/src/basic/APPLESOFT.int" "$G/APPLESOFT.bin"
-python3 -I "$HERE/tools/asm6502.py" -I "$G" "$HERE/src/adventure.s" "$B/ADVENTURE.bin" "$B/adventure.lst" "$B/adventure.syms.csv"
+python3 -I "$HERE/tools/asm6502.py" -I "$G" $DEFINE "$HERE/src/adventure.s" "$B/ADVENTURE.bin" "$B/adventure.lst" "$B/adventure.syms.csv"
 python3 -I "$HERE/tools/asm6502.py" "$HERE/src/autoload.s" "$B/AUTO_LOAD_OBJ.bin" "$B/autoload.lst" "$B/autoload.syms.csv"
 
 # the files made from other built files (STARTUP, SAVED GAME, the table copies), then the disk
@@ -34,6 +52,11 @@ python3 -I "$HERE/tools/diskfiles.py" make "$B" "$HERE/src"
 set --
 while IFS= read -r f; do set -- "$@" "$f"; done < "$B/put.txt"
 python3 -I "$HERE/tools/mkdisk.py" build "$HERE/src/disk" "$B/mystery_house.do" "$@"
+if [ $BUGFIX = 1 ]; then
+	python3 -I "$HERE/tools/dos33.py" "$B/mystery_house.do" "$B/files" > /dev/null
+	echo "build/bugfix/mystery_house.do: the game with its documented bugs fixed (not the original)"
+	exit 0
+fi
 rm -rf "$HERE/extracted"
 python3 -I "$HERE/tools/dos33.py" "$B/mystery_house.do" "$HERE/extracted" > /dev/null
 

@@ -23,10 +23,12 @@ def tool(*args):
 _built = {}
 
 
-def build(src=SRC):
-    """Build everything from a source tree (once per test run); returns the build directory."""
-    if src in _built:
-        return _built[src]
+def build(src=SRC, defines=()):
+    """Build everything from a source tree (once per test run), with the names in defines
+    given to the assembler (-D, as build.sh --bugfix does); returns the build directory."""
+    key = (src, tuple(defines))
+    if key in _built:
+        return _built[key]
     SRC = src
     b = tempfile.mkdtemp(prefix='mh-test-')
     g = os.path.join(b, 'gen')
@@ -37,7 +39,8 @@ def build(src=SRC):
     for f in ('HELLO', 'MYSTERY.HELLO', 'PIC_SIZES'):
         tool('basic.py', 'build', os.path.join(SRC, 'basic', f + '.bas'), os.path.join(g, f + '.bin'))
     tool('basic.py', 'build', os.path.join(SRC, 'basic', 'APPLESOFT.int'), os.path.join(g, 'APPLESOFT.bin'))
-    tool('asm6502.py', '-I', g, os.path.join(SRC, 'adventure.s'), os.path.join(b, 'ADVENTURE.bin'),
+    flags = [a for d in defines for a in ('-D', d)]
+    tool('asm6502.py', '-I', g, *flags, os.path.join(SRC, 'adventure.s'), os.path.join(b, 'ADVENTURE.bin'),
          os.path.join(b, 'adventure.lst'), os.path.join(b, 'adventure.syms.csv'))
     tool('asm6502.py', os.path.join(SRC, 'autoload.s'), os.path.join(b, 'AUTO_LOAD_OBJ.bin'))
     tool('diskfiles.py', 'make', b, SRC)
@@ -45,7 +48,7 @@ def build(src=SRC):
         put = [l.rstrip('\n') for l in f]
     tool('mkdisk.py', 'build', os.path.join(SRC, 'disk'), os.path.join(b, 'mystery_house.do'), *put)
     tool('dos33.py', os.path.join(b, 'mystery_house.do'), os.path.join(b, 'files'))
-    _built[src] = b
+    _built[key] = b
     return b
 
 

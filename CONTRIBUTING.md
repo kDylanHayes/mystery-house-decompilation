@@ -14,7 +14,8 @@ You need python3 and nothing else. These are optional:
 
 ## Before you open a pull request
 
-Run these three checks:
+Run these checks, in this order (`./build.sh --check` clears `build/`, so the bug-fix build
+comes after it):
 
 ```bash
 ./build.sh --check
@@ -25,14 +26,20 @@ python3 -m unittest discover -s tests
 ```
 
 ```bash
+./build.sh --bugfix
+```
+
+```bash
 tools/ca65_check.sh
 ```
 
 1. `./build.sh --check` must say "all 30 files match the original" and
    "build/mystery_house.do: matches disk/SHA256".
-2. The tests take about 45 seconds. Run them from the repository root as shown; running a
-   single test file directly cannot import `tests/helpers.py`.
-3. `tools/ca65_check.sh` needs cc65; skip it if you don't have it, CI will run it.
+2. The tests take about a minute and a half. Run them from the repository root as shown;
+   running a single test file directly cannot import `tests/helpers.py`.
+3. `./build.sh --bugfix` builds the game with the documented bugs fixed into `build/bugfix/`.
+4. `tools/ca65_check.sh` checks both builds with ca65 and ld65. It needs cc65; skip it if you
+   don't have it, CI will run it.
 
 Commit the regenerated `assets/` and `extracted/` along with the source change: CI fails if they
 are not what the source produces. Never edit them by hand, and the same goes for `decomp/` and
@@ -43,9 +50,14 @@ are not what the source produces. Never edit them by hand, and the same goes for
 **Cleanups:** names, comments, constants and documentation. These must never change a byte. If
 the build stops matching, the change replaced a value with something that is not equal to it.
 
-**Fixing or changing the game:** rules, text, pictures or engine code. The hashes will no longer
-match, so this kind of change does not belong on `main` as it stands. Open an issue first, and
-put the work on a branch or a fork. HACKING.md ("Changing the game") shows how. Check it with
+**Fixing a bug in the game:** put the fix in an `.ifdef BUGFIX` block with the original code in
+its `.else` (HACKING.md, "Changing the game"). The default build still matches, and
+`./build.sh --bugfix` builds the fixed game. Document the bug in NOTES.md and show the fix in
+`tests/play/bugfix.txt` and `tests/test_bugfix.py`.
+
+**Changing the game** in other ways: rules, text, pictures or engine code. The hashes will no
+longer match, so this kind of change does not belong on `main` as it stands. Open an issue
+first, and put the work on a branch or a fork. HACKING.md ("Changing the game") shows how. Check it with
 `tools/play.py`, and update the expected files in `tests/play/` (its README has the commands)
 only when the difference is the one you meant to make. New behaviour should come with commands
 in a play script that exercise it; `tools/gamecov.py` shows what a script reaches.

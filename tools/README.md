@@ -4,7 +4,7 @@ Everything is python3 with the standard library only. Each script's docstring ha
 
 | Tool | Used by | Does |
 |---|---|---|
-| `asm6502.py` | build | the 6502 assembler for `src/` (the subset of ca65 syntax it uses); also writes a listing and the symbol table |
+| `asm6502.py` | build | the 6502 assembler for `src/` (the subset of ca65 syntax it uses, with `-D` and `.ifdef` for the bug-fix build); also writes a listing and the symbol table |
 | `ca65_check.sh` | CI | assembles `src/` with ca65 + ld65 and checks the programs are byte-identical to the build's |
 | `msgfile.py` | build | builds the `MESSAGES` file and the message index from `src/messages.txt` (`extract` made the source) |
 | `picfile.py` | build | builds `BLOCK1`-`BLOCK19` and the picture directory from `src/pictures/` (`extract` made the source) |

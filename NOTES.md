@@ -437,6 +437,24 @@ turn rules and 1855 of the 2120 instructions. What never runs cannot run in the 
 * the parts of the Applesoft hi-res copy the game does not use (`hplot0`, `hlinrl`, `xdraw0`
   and the XDRAW plot, `hcolor_bkgnd`, `hfind`), and `quantity_error`, its bad-argument exit.
 
+## Bug-fix build
+
+`./build.sh --bugfix` assembles the `.ifdef BUGFIX` blocks in `src/adventure.s`, which fix the
+bugs above that change what the game does, each next to the original code:
+
+| Bug | Fix |
+|---|---|
+| `cond_turns_gt` fails from turn 256, so the dark lifts and "turn > N" rules stop | a non-zero high byte passes the test |
+| `AC2600` (restore game) writes both bytes of the action pointer into its low byte | the high byte goes to `AWORK+1` |
+| The storage-room window (`rule_4FEB`) says `YOU ARE DEAD` and play goes on | the rule ends the game, as the attic window does |
+| `OPEN TRUNK` on the open trunk (`rule_4F4B`) says `IT IS LOCKED` | it says `IT IS OPEN` |
+| `WITH DAGGER` at Joe without the dagger (`rule_4ADD`) erases his eyes | the rule only says `YOU ARE NOT CARRYING IT` |
+
+`tests/test_bugfix.py` plays `tests/play/bugfix.txt` on both builds and checks each one. Left as
+they are: the disk-error handler that returns into the flag byte (what a clean return should
+do depends on DOS, which the tests do not run), and quirks that change nothing a player sees
+(the `CUROOM` low byte after a move, the unreachable `OFF` synonym, the unused actions).
+
 ## Cross-check
 
 An independent write-up of the same binary (`DECOMP.md`, supplied separately) agrees with these

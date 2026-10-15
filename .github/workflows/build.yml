@@ -1,7 +1,7 @@
 # Every push and pull request: run the tests, build everything with the strict check (each file
 # must match the original's hash and the disk must match disk/SHA256), check that the standard
-# cc65 tools (ca65 + ld65) build the same programs from the same source, and make sure the
-# committed generated files are what the source produces.
+# cc65 tools (ca65 + ld65) build the same programs from the same source (the bug-fix build
+# too), and make sure the committed generated files are what the source produces.
 name: build
 
 on:
@@ -27,6 +27,9 @@ jobs:
       - name: Matching build
         run: ./build.sh --check
 
+      - name: Bug-fix build
+        run: ./build.sh --bugfix
+
       - name: The standard assembler builds the same programs
         run: tools/ca65_check.sh
 
@@ -39,3 +42,8 @@ jobs:
         with:
           name: mystery_house.do
           path: build/mystery_house.do
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mystery_house_bugfix.do
+          path: build/bugfix/mystery_house.do

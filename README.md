@@ -11,6 +11,7 @@ whole game database (rooms, objects, words, messages, rules and pictures) decode
 
 ```
 ./build.sh            # build everything; ./build.sh --check also fails unless it all matches
+./build.sh --bugfix   # the same game with its documented bugs fixed, in build/bugfix/
 python3 -m unittest discover -s tests
 ```
 

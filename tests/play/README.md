@@ -9,6 +9,7 @@ Command scripts played on the built game by `tests/test_play.py`, through the 65
 | `errors.txt` | words the game does not know (the replies are patched into text in the code) |
 | `house.txt` | a tour of every room trying its rules: doors and gates in each state, the refusals, water, the trunk, the hidden wall, the tunnel and the forest |
 | `deaths.txt` | every death and ending, darkness and the match, the first visit to the hall, SAVE GAME and RESTORE GAME (including the saved game on the disk) |
+| `bugfix.txt` | played on the bug-fix build and the original by `tests/test_bugfix.py` (not part of the coverage) |
 
 For each script, `<name>.expected.txt` is the transcript and `<name>.screens.txt` a short hash
 of the hi-res screen at every prompt. `coverage.expected.txt` is what the scripts exercise
@@ -32,6 +33,10 @@ difference:
 
 ```bash
 for s in walkthrough errors house deaths; do python3 tools/play.py extracted tests/play/$s.txt --transcript tests/play/$s.expected.txt --screen-hashes tests/play/$s.screens.txt; done
+```
+
+```bash
+python3 tools/play.py build/bugfix/files tests/play/bugfix.txt --transcript tests/play/bugfix.expected.txt --screen-hashes tests/play/bugfix.screens.txt
 ```
 
 ```bash

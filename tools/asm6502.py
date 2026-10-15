@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """A small two-pass 6502 assembler for the sources in src/.
 
-usage: asm6502.py [-I dir]... <source.s> <out.bin> [listing.txt [symbols.csv]]
+usage: asm6502.py [-I dir]... [-D name]... <source.s> <out.bin> [listing.txt [symbols.csv]]
 
 The sources are standard ca65 syntax (cc65 2.18+): ca65 + ld65 build the same bytes (see
 tools/ca65_check.sh). This assembler implements the subset they use, so the build needs only
 python3.
 
 -I adds a directory to search for .include and .incbin files after the including file's own.
+-D defines a name for .ifdef, as ca65's -D does (build.sh --bugfix passes -D BUGFIX).
 
 symbols.csv lists every label and every constant defined outside game.inc (name,address,kind,file),
 with the comment block written directly above each label; build.sh feeds it to Ghidra.
@@ -23,6 +24,8 @@ Syntax (the subset of ca65 the sources use):
   .include "file"        another source file
   .assert expr[, error | warning][, "message"]   checked when the final addresses are known
   .feature ...           accepted and ignored (macros.inc turns on ca65's string escapes)
+  .ifdef name / .ifndef name / .else / .endif
+                         conditional assembly; the name must be one given with -D
   .macro / .endmacro     skipped: the two macros the sources define are built in:
     hiasc "text", ...                   ASCII with bit 7 set, as the Apple II prints it; \\r and
                                         \\xNN escapes
@@ -94,6 +97,7 @@ class Assembler:
         self.final = False
         self.defined = {}     # name -> ('label' | 'const', source file)
         self.include_dirs = []
+        self.defines = set()  # names given with -D, for .ifdef
         self.notes = {}       # label -> comment block above it
 
     # ---- expressions ----------------------------------------------------------------
@@ -246,18 +250,35 @@ class Assembler:
         with open(path, encoding='ascii') as f:
             source = f.readlines()
         in_macro = False
+        conds = []            # one entry per open .ifdef: is its current branch assembled?
         for n, raw in enumerate(source, 1):
             line = raw.rstrip('\n')
+            word = line.split(';')[0].split()[:2]
+            directive = word[0].lower() if word else ''
             # ca65 macro definitions: the two the sources use (hiasc, incbin_upto) are built in
-            word = line.split(';')[0].split()[:1]
-            if word and word[0].lower() == '.macro':
-                in_macro = True
-                continue
             if in_macro:
-                if word and word[0].lower() == '.endmacro':
+                if directive == '.endmacro':
                     in_macro = False
                 continue
-            if word and word[0].lower() == '.feature':
+            if directive in ('.ifdef', '.ifndef'):
+                if len(word) < 2:
+                    raise AsmError('%s:%d: %s needs a name' % (path, n, directive))
+                conds.append((word[1] in self.defines) == (directive == '.ifdef'))
+                continue
+            if directive in ('.else', '.endif'):
+                if not conds:
+                    raise AsmError('%s:%d: %s without .ifdef' % (path, n, directive))
+                if directive == '.else':
+                    conds[-1] = not conds[-1]
+                else:
+                    conds.pop()
+                continue
+            if not all(conds):
+                continue
+            if directive == '.macro':
+                in_macro = True
+                continue
+            if directive == '.feature':
                 continue
             if line.startswith(';'):
                 block.append(line[1:].strip())
@@ -281,6 +302,8 @@ class Assembler:
                 lines += self.read(self.find(path, m.group(1)))
             elif line.strip():
                 lines.append((path, n, line))
+        if conds:
+            raise AsmError('%s: .ifdef without .endif' % path)
         return lines
 
     def operand(self, mnem, op):
@@ -457,8 +480,11 @@ class Assembler:
 
 def main():
     a = Assembler()
-    while len(sys.argv) > 2 and sys.argv[1] == '-I':
-        a.include_dirs.append(sys.argv[2])
+    while len(sys.argv) > 2 and sys.argv[1] in ('-I', '-D'):
+        if sys.argv[1] == '-I':
+            a.include_dirs.append(sys.argv[2])
+        else:
+            a.defines.add(sys.argv[2])
         del sys.argv[1:3]
     org, data, listing = a.assemble(sys.argv[1])
     pathlib.Path(sys.argv[2]).write_bytes(data)

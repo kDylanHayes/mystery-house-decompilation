@@ -7,7 +7,7 @@ import helpers  # noqa: F401  (puts tools/ on the path)
 import asm6502
 
 
-def assemble(text, files=None, include_dirs=()):
+def assemble(text, files=None, include_dirs=(), defines=()):
     d = tempfile.mkdtemp()
     for name, data in (files or {}).items():
         with open(os.path.join(d, name), 'wb' if isinstance(data, bytes) else 'w') as f:
@@ -17,6 +17,7 @@ def assemble(text, files=None, include_dirs=()):
         f.write(text)
     a = asm6502.Assembler()
     a.include_dirs = list(include_dirs)
+    a.defines = set(defines)
     org, data, _ = a.assemble(path)
     return org, data
 
@@ -109,6 +110,31 @@ class Directives(unittest.TestCase):
     def test_comments_do_not_cut_strings(self):
         _, b = assemble(' .org $1000\n .hiasc "A;B"   ; comment\n')
         self.assertEqual(b, bytes([0xC1, 0xBB, 0xC2]))
+
+
+class Conditionals(unittest.TestCase):
+    SRC = (' .org $1000\n'
+           '.ifdef FIX\n LDA #1\n.else\n LDA #2\n.endif\n'
+           '.ifndef FIX\n NOP\n.endif\n'
+           '.ifdef FIX\n.ifdef OTHER\n BRK\n.endif\n.endif\n'
+           ' RTS\n')
+
+    def test_without_the_name(self):
+        _, b = assemble(self.SRC)
+        self.assertEqual(b, bytes([0xA9, 0x02, 0xEA, 0x60]))
+
+    def test_with_the_name(self):
+        _, b = assemble(self.SRC, defines=['FIX'])
+        self.assertEqual(b, bytes([0xA9, 0x01, 0x60]))
+
+    def test_nested(self):
+        _, b = assemble(self.SRC, defines=['FIX', 'OTHER'])
+        self.assertEqual(b, bytes([0xA9, 0x01, 0x00, 0x60]))
+
+    def test_unbalanced(self):
+        for text in (' .org $1000\n.ifdef FIX\n NOP\n', ' .org $1000\n.endif\n', ' .org $1000\n.else\n'):
+            with self.assertRaises(asm6502.AsmError):
+                assemble(text)
 
 
 class CurrentAddressAndAssert(unittest.TestCase):

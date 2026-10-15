@@ -35,6 +35,14 @@ With unmodified source it must say "all 30 files match the original" and
 to be a cleanup (renames, comments, constants): those never change the bytes.
 `./build.sh --check` turns a mismatch into an error.
 
+`./build.sh --bugfix` builds the game with its documented bugs fixed instead: the source's
+`.ifdef BUGFIX` blocks are assembled (`-D BUGFIX`, as ca65 takes it), and the result goes to
+`build/bugfix/` (`build/bugfix/mystery_house.do`, bootable, and its files in
+`build/bugfix/files`). It does not match the original, so nothing is checked against the
+hashes and `extracted/` and `assets/` are left alone. NOTES.md ("Bug-fix build") lists the
+fixes; `tests/test_bugfix.py` plays `tests/play/bugfix.txt` on both builds and checks that each
+bug is present in the one and fixed in the other.
+
 ## Tests and CI
 
 ```
@@ -113,6 +121,19 @@ Conventions:
 
 After any change, `./build.sh` makes a new `build/mystery_house.do` to boot in an emulator, and
 `assets/` shows the result (`assets/text/rules.txt`, `assets/rooms/`, `assets/pictures/`).
+
+To fix a bug without losing the matching build, put the fix in an `.ifdef BUGFIX` block with
+the original in its `.else`, as the existing fixes do:
+
+```
+.ifdef BUGFIX
+        BNE cond_pass             ; bug fix: from turn 256 the count is above any N
+.else
+        BNE cond_fail             ; bug: from turn 256 "turn > N" is never true again
+.endif
+```
+
+and add commands to `tests/play/bugfix.txt` and a check to `tests/test_bugfix.py` that show it.
 
 **A rule.** Rules are in `command_rules` (tried in order, first match wins) and `turn_rules`
 (all matches run). Each is
