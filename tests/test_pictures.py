@@ -84,6 +84,20 @@ class Drawing(unittest.TestCase):
         pictures.draw_picture(cv, self.blocks[p['block']], p['offset'], dx, dy)
         return cv
 
+    def test_colours_are_applesofts(self):
+        # a row filled as Applesoft's HCOLOR fills it: a byte holds 7 dots, so the pattern
+        # alternates between even and odd bytes to keep its dots in every other column. Dots in
+        # the even columns ($55, $2A, ...) are violet, in the odd ones ($2A, $55, ...) green;
+        # with bit 7 set ($D5, $AA / $AA, $D5) blue and orange.
+        violet, green, blue, orange = (255, 68, 253), (20, 245, 60), (20, 207, 253), (255, 106, 60)
+        for pair, colour in (((0x55, 0x2A), violet), ((0x2A, 0x55), green),
+                             ((0xD5, 0xAA), blue), ((0xAA, 0xD5), orange)):
+            page = bytearray(0x2000)
+            page[0:40] = bytes(pair) * 20                      # row 0
+            row = pictures.hires_color(bytes(page))[0]
+            lit = {tuple(row[i:i + 3]) for i in range(0, len(row), 3) if any(row[i:i + 3])}
+            self.assertEqual(lit, {colour}, [hex(b) for b in pair])
+
     def test_every_picture(self):
         for n in range(1, len(self.gd['pictures']) + 1):
             self.assertSame(self.picture(n, 0, 0), 'picture %d' % n)

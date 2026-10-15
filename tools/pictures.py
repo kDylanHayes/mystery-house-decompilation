@@ -178,9 +178,12 @@ def draw_shape(cv, table, n, x, y):
 
 
 def hires_color(mem):
-    """Decode an 8 KB hi-res page with the usual NTSC artifact-colour approximation."""
-    colors = {(0, 0): (0, 0, 0), (0, 1): (20, 245, 60), (0, 2): (255, 68, 253),
-              (1, 1): (255, 106, 60), (1, 2): (20, 207, 253)}
+    """Decode an 8 KB hi-res page with the usual NTSC artifact-colour approximation: a lone
+    dot in an even column is violet (blue with the byte's bit 7 set), in an odd column green
+    (orange), as Applesoft's HCOLOR bytes have it ($55 violet, $2A green, $D5 blue, $AA orange);
+    two dots side by side are white."""
+    colors = {(0, 0): (0, 0, 0), (0, 1): (255, 68, 253), (0, 2): (20, 245, 60),
+              (1, 1): (20, 207, 253), (1, 2): (255, 106, 60)}
     rows = []
     for y in range(H):
         base = (y & 7) * 0x400 + ((y >> 3) & 7) * 0x80 + (y >> 6) * 0x28
