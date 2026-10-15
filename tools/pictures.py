@@ -50,7 +50,11 @@ class Canvas:
     from) and a screen position (where the next point is plotted). They differ only after DRAW,
     which moves the screen position alone. pen_up is the game's flag: set by a 00 00 pair in a
     picture, it makes the next point an HPLOT rather than a line, and it carries over from one
-    picture to the next (only picture 92 starts without 00 00)."""
+    picture to the next (only picture 92 starts without 00 00).
+
+    A pixel off the screen is dropped; the Apple's routines would wrap the pen round to the
+    other side instead. The game never draws there (pictures are clamped to 255 x 160 and the
+    shapes sit well inside), so the difference never shows."""
 
     def __init__(self):
         self.px = bytearray(W * H)

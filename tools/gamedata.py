@@ -38,6 +38,7 @@ PICDIR = 0x5300       # picture directory: (block, offset) triples, picture numb
 MSGINDEX = 0x5500     # message index: byte offsets into MESSAGES, numbers from 1
 SHAPES = 0x5700       # Applesoft shape table used for small objects
 FLOOR_SLOTS = 0x70FF  # (x, y) positions for dropped objects, in order of drawing
+INIT_SWITCHES = 0x61FF  # the 20 switches as init_game sets them for a new game
 
 ROOM_FIELDS = ['RROOMNO', 'RMSG', 'RN', 'RS', 'RE', 'RW', 'RU', 'RD', 'RBASEPIC', 'RCURPIC']
 DIRS = ['north', 'south', 'east', 'west', 'up', 'down']
@@ -58,7 +59,8 @@ BUILTIN_MESSAGES = {
 TABLE_SYMBOLS = {'verb_table': 'VERBS', 'noun_table': 'NOUNS', 'OBJBASE': 'OBJBASE',
                  'ROOMBASE': 'ROOMBASE', 'SWITCH': 'SWITCH', 'turn_rules': 'TURN_RULES',
                  'command_rules': 'CMD_RULES', 'picture_directory': 'PICDIR',
-                 'message_index': 'MSGINDEX', 'shape_table': 'SHAPES', 'floor_slots': 'FLOOR_SLOTS'}
+                 'message_index': 'MSGINDEX', 'shape_table': 'SHAPES', 'floor_slots': 'FLOOR_SLOTS',
+                 'init_switches': 'INIT_SWITCHES'}
 
 
 def use_symbols(path):
@@ -379,6 +381,17 @@ def short(s, n=40):
     return s if len(s) <= n else s[:n - 3] + '...'
 
 
+def compact_json(data):
+    """JSON indented by one space, but with each list of numbers on one line, and each list of
+    such lists (a picture's stroke, a shape's vectors) too, so the picture data stays small."""
+    text = json.dumps(data, indent=1)
+    nums = re.compile(r'\[\s+(-?\d+(?:,\s+-?\d+)*)\s+\]')
+    text = nums.sub(lambda m: '[' + re.sub(r'\s+', '', m.group(1)).replace(',', ', ') + ']', text)
+    lists = re.compile(r'\[\s+(\[[-\d, ]*\](?:,\s+\[[-\d, ]*\])*)\s+\]')
+    text = lists.sub(lambda m: '[' + re.sub(r',\s+\[', ', [', m.group(1)) + ']', text)
+    return text
+
+
 def main():
     if len(sys.argv) > 3:
         use_symbols(sys.argv[3])
@@ -463,15 +476,18 @@ def main():
         return [{**r, 'conditions': [{'op': CONDITIONS[o][0], 'args': a} for o, a in r['conditions']],
                  'actions': [{'op': ACTIONS[o][0], 'args': a} for o, a in r['actions']]} for r in rules]
 
-    pathlib.Path(os.path.join(out, 'gamedata.json')).write_text(json.dumps({
+    pathlib.Path(os.path.join(out, 'gamedata.json')).write_text(compact_json({
         'verbs': verbs, 'nouns': nouns, 'messages': msgs, 'rooms': rooms, 'objects': objs,
         'pictures': {n: {'block': b, 'offset': o, **g.picture(b, o)} for n, (b, o) in pics.items()},
         'shapes': g.shapes(),
         'command_rules': enc(cmd_rules), 'turn_rules': enc(turn_rules),
         'floor_slots': [(g.b(FLOOR_SLOTS + 2 * i), g.b(FLOOR_SLOTS + 2 * i + 1)) for i in range(21)],
-        'start': {'room': 1, 'turn': 1, 'switches': [0] * 20, 'light': True},   # init_game
+        # a new game (init_game): room 1, turn 1, light on, switches from init_switches
+        # (tests/test_analysis.py checks this against the game at its first prompt)
+        'start': {'room': 1, 'turn': 1, 'switches': [g.b(INIT_SWITCHES + i) for i in range(20)],
+                  'light': True},
         'addresses': {k: globals()[k] for k in sorted(TABLE_SYMBOLS.values())},
-    }, indent=1))
+    }))
     print('%d verbs, %d nouns, %d messages, %d rooms, %d objects, %d pictures, %d command rules, '
           '%d turn rules' % (len(verbs), len(nouns), len(msgs), len(rooms), len(objs), len(pics),
                              len(cmd_rules), len(turn_rules)))

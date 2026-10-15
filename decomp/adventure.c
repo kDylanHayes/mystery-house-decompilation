@@ -576,9 +576,9 @@ void print_prompt(void)
 
 // 63db
 
-/* Read a line into input_buffer with the Monitor's GETLN (no prompt character). RETURN on its own
-toggles between the picture (mixed mode) and a full text page, so earlier messages can be reread.
-*/
+/* Read a line into input_buffer. GETLN prints the prompt in $33, set here to '?', so the question
+mark follows ENTER COMMAND on the same line. RETURN on an empty line toggles between the picture
+(mixed mode) and a full text page, so earlier messages can be reread. */
 
 void get_line(byte param_1)
 
@@ -1070,7 +1070,7 @@ void AC2800(void)
 // 67dd
 
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
-/* action 19: make picture X the shape for object Y */
+/* action 19: object Y's picture = X (OPIC only) */
 
 void AC2900(void)
 

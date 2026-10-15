@@ -59,6 +59,24 @@ class GameData(unittest.TestCase):
         self.assertIn('    GO TREE -> 5\n', self.text('map.txt'))
         self.assertIn('-> 19', self.text('map.txt'))      # the hole the sledgehammer makes
 
+    def test_start_is_how_the_game_starts(self):
+        # the state init_game leaves, read from the game waiting at its first prompt
+        import play
+        m, reason = play.play(os.path.join(helpers.build(), 'files'), [])
+        self.assertEqual(reason, 'end of commands')
+        at = lambda name, n=1: list(m.mem[self.syms[name]:self.syms[name] + n])
+        start = self.data['start']
+        self.assertEqual(at('CURONO'), [start['room']])
+        self.assertEqual(at('turns', 2), [start['turn'] & 0xFF, start['turn'] >> 8])
+        self.assertEqual(at('SWITCH', 20), start['switches'])
+        self.assertEqual(at('LAMPSTAT'), [0 if start['light'] else 1])
+
+    def test_json_is_compact(self):
+        # number lists, points and strokes are written on one line each, not a number a line
+        with open(os.path.join(self.out, 'gamedata.json')) as f:
+            lines = f.read().splitlines()
+        self.assertEqual([l for l in lines if re.fullmatch(r'\s*-?\d+,?', l)], [])
+
     def test_vocabulary_and_messages(self):
         self.assertIn(' 26  WITH, USE, SHOOT, FIRE\n', self.text('vocabulary.txt'))
         self.assertIn('CONGRATULATIONS YOU HAVE BEATEN', self.text('messages.txt'))

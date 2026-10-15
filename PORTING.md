@@ -68,6 +68,13 @@ A few small objects are shapes. Each is a list of `[plot, direction]` vectors, w
 A shape moves only the screen position of the pen. The point a following line is measured
 from stays at the shape's `(x, y)`; `Canvas` keeps both positions.
 
+### The screen edges
+
+Nothing the game draws reaches an edge: pictures are clamped to 255 x 160 and every shape is
+drawn well inside. The Apple's routines would wrap a pen that ran off a side (past column 279
+to column 0, and the rows round too), where `Canvas` simply drops the pixel. Neither happens
+in the game, so a port need not copy either.
+
 ### What is on screen (`draw_room`, `draw_objects`)
 
 Before every command prompt, the screen is cleared. If the light is on (`LAMPSTAT` = 0),
