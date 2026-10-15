@@ -1,5 +1,7 @@
 # Mystery House decompilation
 
+[![build](https://github.com/kDylanHayes/mystery-house-decompilation/actions/workflows/build.yml/badge.svg)](https://github.com/kDylanHayes/mystery-house-decompilation/actions/workflows/build.yml)
+
 A complete decompilation of *Hi-Res Adventure #1: Mystery House* (Ken and Roberta Williams,
 On-Line Systems, 1980) for the Apple II, from the 1987 public-domain release: assembler source
 that rebuilds the original files byte for byte, every routine named and documented, and the
@@ -72,6 +74,9 @@ source formats - is released into the public domain too, under the Unlicense (`L
 
 The one exception is DOS 3.3 (`src/disk/dos33.bin`, tracks 0-2 of the built disk), which is
 Apple's and is not covered by either: it is kept as an untouched binary only so the disk boots.
+`ADVENTURE` also contains a relocated copy of Applesoft's hi-res graphics routines (HGR, HPLOT,
+DRAW, ...; NOTES.md, "Pictures"), which the game uses to draw. They are part of the game file
+as released and are reproduced here only as part of it.
 The original image also carried stale fragments of other, copyrighted software in unused
 sectors; those were dropped, so the built disk is a clean copy with its own hash
 (`disk/README.md` explains why and records the original's).
