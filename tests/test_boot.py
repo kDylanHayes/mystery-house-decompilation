@@ -98,6 +98,8 @@ class Timeline(unittest.TestCase):
         # replayed, the text steps make the screen GET waits on, and then the loader starts
         self.assertEqual(boot.replay(steps[:key]), self.boot.notice)
         self.assertEqual(steps[key + 1:], [{'at': 0.0, 'loader': True}])
+        # the cursor is at the start of the line after the notice's last
+        self.assertEqual((steps[key]['row'], steps[key]['col']), (21, 0))
         times = [s['at'] for s in steps[:key + 1]]
         self.assertEqual(times, sorted(times))
         kinds = [k for s in steps for k in s if k != 'at']

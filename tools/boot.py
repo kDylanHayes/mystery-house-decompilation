@@ -27,7 +27,8 @@ the start or since the last key:
                                       character every d ms
   {"title": "1987", "ms": d}          the 1987 title arrives in hi-res page 1, in memory order,
                                       over d ms (BLOAD AUTO LOAD OBJ)
-  {"key": true}                       waits for a key (GET)
+  {"key": true, "row": r, "col": c}  waits for a key (GET), the cursor flashing at (r, c), where
+                                      the text that follows (the loader's) is printed
 The last step is MYSTERY.HELLO's CALL 4093, which starts the loader (with the text page as it
 is): {"loader": true}.
 """
@@ -412,7 +413,7 @@ class Boot:
             return self.print(s[5:], env)
         elif s.startswith('GET '):
             self.notice = self.snapshot()
-            self.step(key=True)
+            self.step(key=True, row=self.mon.cv, col=self.mon.ch)
             self.t = 0.0
         elif re.match(r'CALL ', s):
             if ev(s[5:]) == 4093:

@@ -41,7 +41,8 @@ public domain; a port can show them or start straight at the game.
      rightwards, one character every `char_ms` (Applesoft's `SPEED`);
    - `title` `"1987"`, `ms`: the title picture arriving over `ms` in memory order, row y at
      `$2000 + (y & 7) * $400 + ((y >> 3) & 7) * $80 + (y >> 6) * $28` (the disk's `BLOAD`);
-   - `key`: wait for a key (`GET`);
+   - `key`, `row`, `col`: wait for a key (`GET`), with the flashing cursor at (`row`, `col`),
+     which is where the loader goes on printing;
    - `loader`: the last step: start the loader (step 3), the text page left as it is.
 
    The text page starts blank. The character delays follow from `SPEED`; the empty loops'
