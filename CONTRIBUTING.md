@@ -35,7 +35,7 @@ tools/ca65_check.sh
 
 1. `./build.sh --check` must say "all 30 files match the original" and
    "build/mystery_house.do: matches disk/SHA256".
-2. The tests take about a minute and a half. Run them from the repository root as shown;
+2. The tests take about two minutes. Run them from the repository root as shown;
    running a single test file directly cannot import `tests/helpers.py`.
 3. `./build.sh --bugfix` builds the game with the documented bugs fixed into `build/bugfix/`.
 4. `tools/ca65_check.sh` checks both builds with ca65 and ld65. It needs cc65; skip it if you

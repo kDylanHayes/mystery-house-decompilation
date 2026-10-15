@@ -3,13 +3,17 @@
 commands into it, for tests and walkthroughs.
 
 usage: play.py <files dir> <commands.txt> [--transcript out.txt] [--screens dir]
-                                          [--screen-hashes out.txt] [--max-steps N]
+                                          [--screen-hashes out.txt] [--pixel-hashes out.txt]
+                                          [--max-steps N]
 
 <files dir> holds the disk's files as dos33.py extracts them (build.sh makes extracted/).
 <commands.txt> has one command per line ('#' starts a comment). The transcript is everything
 the game prints, with each command echoed after the prompt; --screens saves the hi-res screen
 at each prompt as PNG (screen_NNN.png), and --screen-hashes writes a short SHA-256 of the
-hi-res page at each prompt, one per line (what the tests compare).
+hi-res page at each prompt, one per line (what the tests compare). --pixel-hashes writes the
+same for the picture the player sees, in a form a port can make without emulating the Apple:
+the 280 x 160 graphics area above the four text lines, one byte per pixel (1 lit, 0 dark), rows
+top to bottom, SHA-256, first 16 hex digits (pixel_hash below; PORTING.md).
 
 No Apple ROMs are needed: ADVENTURE only calls three Monitor routines and DOS, and those are
 stood in for here:
@@ -65,7 +69,7 @@ class Stop(Exception):
 class Machine:
     __slots__ = ('files', 'mem', 'a', 'x', 'y', 'sp', 'n', 'v', 'd', 'i', 'z', 'c', 'pc', 'out',
                  'line', 'commands', 'reading', 'saved', 'steps', 'prompts', 'on_prompt',
-                 'screens', 'executed', 'hooks')
+                 'screens', 'pixels', 'executed', 'hooks')
 
     def __init__(self, files):
         self.files = files
@@ -83,6 +87,7 @@ class Machine:
         self.prompts = 0
         self.on_prompt = None
         self.screens = []          # hash of the hi-res page at each prompt
+        self.pixels = []           # pixel_hash of the visible picture at each prompt
         self.executed = None       # a set to record every executed address in (gamecov.py)
         self.hooks = {}            # address -> function(machine), called while recording
 
@@ -171,6 +176,7 @@ class Machine:
                 self.out.append(self.line.rstrip())
             self.line = ''
             self.screens.append(hashlib.sha256(bytes(self.mem[0x2000:0x4000])).hexdigest()[:16])
+            self.pixels.append(pixel_hash(self.mem[0x2000:0x4000]))
             if self.on_prompt:
                 self.on_prompt(self)
             if not self.commands:
@@ -343,6 +349,20 @@ def compile_handlers():
 HANDLERS = compile_handlers()
 
 
+# a hi-res byte -> its 7 pixels, one byte each (bit 0 is the leftmost; bit 7 is the colour group)
+PIXELS = [bytes((b >> k) & 1 for k in range(7)) for b in range(256)]
+
+
+def pixel_hash(page, rows=160):
+    """SHA-256 (first 16 hex digits) of the top rows of a hi-res page as one byte per pixel,
+    280 per row: the picture as the player sees it, above the four lines of text."""
+    out = bytearray()
+    for y in range(rows):
+        base = (y & 7) * 0x400 + ((y >> 3) & 7) * 0x80 + (y >> 6) * 0x28
+        out += b''.join(PIXELS[b] for b in page[base:base + 40])
+    return hashlib.sha256(bytes(out)).hexdigest()[:16]
+
+
 def read_commands(path):
     """A command script: one command per line, '#' starts a comment, blank lines skipped."""
     lines = [l.split('#')[0].strip() for l in pathlib.Path(path).read_text().splitlines()]
@@ -396,7 +416,7 @@ def play(files_dir, commands, max_steps=200_000_000, screens=None, setup=None):
 def main():
     args = sys.argv[1:]
     opts = {}
-    for k in ('--transcript', '--screens', '--screen-hashes', '--max-steps'):
+    for k in ('--transcript', '--screens', '--screen-hashes', '--pixel-hashes', '--max-steps'):
         if k in args:
             i = args.index(k)
             opts[k] = args[i + 1]
@@ -407,6 +427,8 @@ def main():
     text = '\n'.join(m.out) + '\n'
     if '--screen-hashes' in opts:
         pathlib.Path(opts['--screen-hashes']).write_text('\n'.join(m.screens) + '\n')
+    if '--pixel-hashes' in opts:
+        pathlib.Path(opts['--pixel-hashes']).write_text('\n'.join(m.pixels) + '\n')
     if '--transcript' in opts:
         pathlib.Path(opts['--transcript']).write_text(text)
     else:

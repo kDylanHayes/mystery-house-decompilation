@@ -19,12 +19,14 @@ def expected(name):
 
 
 class Scripts(unittest.TestCase):
-    """Each script's transcript and the hi-res screen at every prompt, as recorded."""
+    """Each script's transcript and the screen at every prompt, as recorded: the hi-res page
+    (screens) and the visible picture as pixels (pixels, what a port compares; PORTING.md)."""
 
     def check(self, name):
         m, reason, _, _ = helpers.played(name)
         self.assertEqual(m.out, expected(name + '.expected.txt'))
         self.assertEqual(m.screens, expected(name + '.screens.txt'))
+        self.assertEqual(m.pixels, expected(name + '.pixels.txt'))
         return m, reason
 
     def test_walkthrough_wins(self):

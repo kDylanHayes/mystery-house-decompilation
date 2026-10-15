@@ -31,6 +31,8 @@ on tracks 0-2, is kept as a binary.
 
 * [HACKING.md](HACKING.md): the source, the build, and how to change the game
 * [CONTRIBUTING.md](CONTRIBUTING.md): the checks, conventions and rules for changes
+* [PORTING.md](PORTING.md): the engine as a port needs it, and how to check a port against
+  the original (transcripts and pixel hashes for every script)
 * [NOTES.md](NOTES.md): how the engine works: the rule interpreter, data formats, graphics,
   messages, the original source found in the binary, bugs and leftovers
 * a README.md in each folder: [`src/data`](src/data/README.md), [`tools`](tools/README.md),
@@ -56,7 +58,7 @@ on tracks 0-2, is kept as a binary.
 | `tests/play/walkthrough.txt` | a complete solution, played by the tests on an emulated 6502 |
 | `tests/play/` | also a tour of every room and every death: together they run 347 of the 348 command rules and all the turn rules |
 | `assets/text/` | rooms, objects, vocabulary, messages; `gamedata.json` has all of it |
-| `assets/pictures/` | the 97 vector pictures as PNG and SVG |
+| `assets/pictures/` | the 97 vector pictures as PNG (pixel-exact: drawn as the game draws them) and SVG |
 | `assets/rooms/` | each of the 41 rooms as first seen, with its objects |
 | `assets/shapes/`, `assets/screens/` | the 6 shapes; the 1980 and 1987 title screens |
 | `decomp/` | C pseudocode from Ghidra, for reading (optional build step) |

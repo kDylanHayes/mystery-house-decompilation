@@ -13,8 +13,8 @@ Everything is python3 with the standard library only. Each script's docstring ha
 | `diskfiles.py` | build | makes the files derived from other built files (table copies, `STARTUP`, `SAVED GAME`) and the list for the disk; `verify` checks a built disk's files against `disk/FILES.sha256` (`hashes` recorded those from the original) |
 | `mkdisk.py` | build | builds the disk image from `src/disk/` and the built files; `extract` made `src/disk/` (and can write a `residue.bin` to reproduce an original image exactly; the project has none) |
 | `dos33.py` | build | extracts a DOS 3.3 disk (lists BASIC as text), and `put` writes binary, text and BASIC files back into one (keeping each file's sectors, as DOS does) |
-| `gamedata.py` | build | decodes the game database (vocabulary, rooms, objects, messages, rules) into `assets/text/` |
-| `pictures.py` | build | renders the pictures, shapes, rooms and title screens into `assets/` |
+| `gamedata.py` | build | decodes the game database (vocabulary, rooms, objects, messages, rules, picture strokes, shape vectors) into `assets/text/`; `gamedata.json` is what a port loads (PORTING.md) |
+| `pictures.py` | build | renders the pictures, shapes, rooms and title screens into `assets/`, drawing exactly as the game does (the reference renderer for a port; checked pixel for pixel by `tests/test_pictures.py`) |
 | `source_fragments.py` | once | recovered the original source fragments into `original_source/` |
 | `play.py` | tests | plays the built game on a 6502 emulator with scripted commands (no ROMs needed): transcript, screens |
 | `gamecov.py` | tests | what a set of play scripts exercises: instructions, rules, the routines and rules that never run |

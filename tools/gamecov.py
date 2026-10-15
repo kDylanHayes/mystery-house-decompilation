@@ -58,15 +58,17 @@ def rule_text(path):
     return text
 
 
-def play_recorded(build_dir, files_dir, script):
+def play_recorded(build_dir, files_dir, script, more=None):
     """Play one script while recording; returns (machine, stop reason, executed addresses,
-    addresses of the rules whose actions ran)."""
+    addresses of the rules whose actions ran). more(machine, symbols), if given, can add hooks."""
     syms = symbols(os.path.join(build_dir, 'adventure.syms.csv'))
     executed, ran = set(), set()
 
     def setup(m):
         m.executed = executed
         m.hooks[syms['run_actions']] = lambda mach: ran.add(mach.rw(syms['rule_ptr']))
+        if more:
+            more(m, syms)
 
     m, reason = play.play(files_dir, play.read_commands(script), setup=setup)
     return m, reason, executed, ran

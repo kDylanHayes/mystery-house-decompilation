@@ -225,8 +225,13 @@ x y      continue the line to (x, y)        (HPLOT TO)
 FF FF    end
 ```
 
-`draw_picture` adds the object offset and clamps to 255 x 160 (the bottom four text lines stay
-free). Lines are drawn by a relocated copy of the Applesoft hi-res routines (`$6A00-$6DB8`:
+`draw_picture` adds the object offset in 8 bits (a coordinate past 255 wraps round) and
+clamps to 255 x 160 (the bottom four text lines stay free). Each 00 00 sets `pen_up`, which
+carries over between pictures; picture 92 does not start with 00 00, so its first stroke is a
+line from wherever the previous picture left the pen. HGLIN's lines are 4-connected
+staircases (one pixel across or down per step), not Bresenham lines; `tools/pictures.py`
+draws them the same way and `tests/test_pictures.py` checks it against the game, pixel for
+pixel. PORTING.md has the algorithm. Lines are drawn by a relocated copy of the Applesoft hi-res routines (`$6A00-$6DB8`:
 HGR, HPOSN, HPLOT, HGLIN, DRAW), which read their arguments from Applesoft-style variables the
 engine keeps at `$0800` (`var_x` `$0805`, `var_y` `$080C`, `var_hcolor` `$0815`, `var_shape`
 `$081F`). Applesoft's own hi-res variables (`$E0-$EA`) were moved to `$0320-$032A`, and the

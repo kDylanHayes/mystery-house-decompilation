@@ -50,6 +50,7 @@ class BugFix(unittest.TestCase):
         m, reason, _, _ = self.fixed
         self.assertEqual(m.out, expected('bugfix.expected.txt'))
         self.assertEqual(m.screens, expected('bugfix.screens.txt'))
+        self.assertEqual(m.pixels, expected('bugfix.pixels.txt'))
         self.assertEqual(reason, 'quit to DOS')
 
     def test_open_trunk_says_it_is_open(self):

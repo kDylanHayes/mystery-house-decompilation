@@ -56,6 +56,7 @@ def build(src=SRC, defines=()):
 PLAY = os.path.join(ROOT, 'tests', 'play')
 SCRIPTS = ['walkthrough', 'errors', 'house', 'deaths']    # the command scripts in tests/play
 _played = {}
+_states = {}
 
 
 def played(name):
@@ -63,6 +64,23 @@ def played(name):
     returns (machine, stop reason, executed addresses, addresses of the rules that ran)."""
     if name not in _played:
         import gamecov
+        import play
         b = build()
-        _played[name] = gamecov.play_recorded(b, os.path.join(b, 'files'), os.path.join(PLAY, name + '.txt'))
+        states = _states[name] = []
+        redraws = [0]
+
+        def more(m, syms):
+            # at each prompt: was it a command prompt (GETLN), how many times the room has
+            # been drawn so far, and the game state ($0800-$10FF: variables, objects, rooms)
+            m.hooks[syms['draw_room']] = lambda mach: redraws.__setitem__(0, redraws[0] + 1)
+            m.on_prompt = lambda mach: states.append((mach.pc == play.GETLN, redraws[0],
+                                                      bytes(mach.mem[0x0800:0x1100])))
+        _played[name] = gamecov.play_recorded(b, os.path.join(b, 'files'), os.path.join(PLAY, name + '.txt'), more)
     return _played[name]
+
+
+def prompt_states(name):
+    """For each prompt of a played script: (command prompt?, room redraws so far, state bytes
+    $0800-$10FF)."""
+    played(name)
+    return _states[name]

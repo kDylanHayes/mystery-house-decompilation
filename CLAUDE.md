@@ -1,7 +1,8 @@
 # Mystery House decompilation
 
 Decompilation of *Hi-Res Adventure #1: Mystery House* (Apple II, 1980; public domain since 1987).
-README.md covers the layout, NOTES.md explains how the engine works.
+README.md covers the layout, NOTES.md explains how the engine works, PORTING.md specifies the
+engine for a port (keep it in step with the source and gamedata.json).
 
 ## Build
 

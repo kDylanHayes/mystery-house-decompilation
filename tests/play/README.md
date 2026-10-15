@@ -11,8 +11,9 @@ Command scripts played on the built game by `tests/test_play.py`, through the 65
 | `deaths.txt` | every death and ending, darkness and the match, the first visit to the hall, SAVE GAME and RESTORE GAME (including the saved game on the disk) |
 | `bugfix.txt` | played on the bug-fix build and the original by `tests/test_bugfix.py` (not part of the coverage) |
 
-For each script, `<name>.expected.txt` is the transcript and `<name>.screens.txt` a short hash
-of the hi-res screen at every prompt. `coverage.expected.txt` is what the scripts exercise
+For each script, `<name>.expected.txt` is the transcript, `<name>.screens.txt` a short hash of
+the hi-res screen memory at every prompt, and `<name>.pixels.txt` a hash of the picture the
+player sees at every prompt, which a port can compute too (PORTING.md, "Checking a port"). `coverage.expected.txt` is what the scripts exercise
 together (`tools/gamecov.py`): the counts, and the routines and rules that never run. Everything
 listed there cannot run in the shipped game (NOTES.md, "Test coverage"), so a change that stops
 some code or rule running, or a new script that reaches more, changes the report.
@@ -32,11 +33,11 @@ When a change is meant to alter what the game does, regenerate the expected file
 difference:
 
 ```bash
-for s in walkthrough errors house deaths; do python3 tools/play.py extracted tests/play/$s.txt --transcript tests/play/$s.expected.txt --screen-hashes tests/play/$s.screens.txt; done
+for s in walkthrough errors house deaths; do python3 tools/play.py extracted tests/play/$s.txt --transcript tests/play/$s.expected.txt --screen-hashes tests/play/$s.screens.txt --pixel-hashes tests/play/$s.pixels.txt; done
 ```
 
 ```bash
-python3 tools/play.py build/bugfix/files tests/play/bugfix.txt --transcript tests/play/bugfix.expected.txt --screen-hashes tests/play/bugfix.screens.txt
+python3 tools/play.py build/bugfix/files tests/play/bugfix.txt --transcript tests/play/bugfix.expected.txt --screen-hashes tests/play/bugfix.screens.txt --pixel-hashes tests/play/bugfix.pixels.txt
 ```
 
 ```bash

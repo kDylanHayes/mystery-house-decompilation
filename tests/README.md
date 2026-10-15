@@ -5,7 +5,7 @@ python3 -m unittest discover -s tests
 ```
 
 Standard library only; run from the repository root as shown (a test file run on its own cannot
-import `helpers.py`). The whole suite takes about a minute and a half, most of it playing the
+import `helpers.py`). The whole suite takes about two minutes, most of it playing the
 scripts in `play/` on the emulator. `helpers.py` builds every game file from `src/` into a
 temporary directory once per run, and plays each script once, recording what runs, for the
 tests that need it.
@@ -20,4 +20,5 @@ tests that need it.
 | `test_play.py` | each script in `play/` gives the recorded transcript and screens; together they exercise the recorded code and rules (`play/coverage.expected.txt`) |
 | `test_bugfix.py` | the bug-fix build (`./build.sh --bugfix`): `play/bugfix.txt` on both builds, each bug present in the original and fixed in the other |
 | `test_shift.py` | padding the source moves the code and tables, and the game plays and decodes the same |
+| `test_pictures.py` | `pictures.py` against the game's own drawing on the emulator: every picture (also offset, to check the wrap and clamp), every shape, every room, and the screen at every command prompt of every script rebuilt from the game state; `gamedata.json` alone is enough to draw |
 | `test_analysis.py` | `gamedata.py` against the symbol table, `trace6502.py` against the listing and what the game executes, `source_fragments.py` against `original_source/`, and `gen_source.py` (which made the first `src/`) still giving source that reassembles to the same bytes |

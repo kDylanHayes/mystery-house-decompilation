@@ -42,28 +42,52 @@ def png(path, width, height, rows):
 
 
 class Canvas:
+    """A 280 x 192 one-bit screen with the game's drawing routines (the relocated Applesoft
+    HPLOT, HGLIN and DRAW in ADVENTURE), pixel for pixel; tests/test_pictures.py checks every
+    picture and shape against the game's own code on the emulator.
+
+    Like Applesoft, the pen has a logical position (hgr_x, hgr_y: where HGLIN measures a line
+    from) and a screen position (where the next point is plotted). They differ only after DRAW,
+    which moves the screen position alone. pen_up is the game's flag: set by a 00 00 pair in a
+    picture, it makes the next point an HPLOT rather than a line, and it carries over from one
+    picture to the next (only picture 92 starts without 00 00)."""
+
     def __init__(self):
         self.px = bytearray(W * H)
+        self.x = self.y = 0          # logical pen (hgr_x, hgr_y)
+        self.sx = self.sy = 0        # screen pen
+        self.pen_up = True
 
-    def plot(self, x, y):
+    def set(self, x, y):
         if 0 <= x < W and 0 <= y < H:
             self.px[y * W + x] = 1
 
-    def line(self, x0, y0, x1, y1):
-        dx, dy = abs(x1 - x0), -abs(y1 - y0)
-        sx, sy = (1 if x1 > x0 else -1), (1 if y1 > y0 else -1)
-        err = dx + dy
-        while True:
-            self.plot(x0, y0)
-            if x0 == x1 and y0 == y1:
-                return
-            e2 = 2 * err
-            if e2 >= dy:
-                err += dy
-                x0 += sx
-            if e2 <= dx:
+    def plot(self, x, y):
+        """HPLOT x,y: move both pens there and plot."""
+        self.x, self.y = self.sx, self.sy = x, y
+        self.set(x, y)
+
+    def line(self, x1, y1):
+        """HPLOT TO x1,y1 (Applesoft HGLIN): |dx| + |dy| single steps from the screen pen, each
+        one pixel across or one pixel down/up, plotting the start again and every pixel after:
+        a step goes across while the error term (starting at |dx|, less |dy| for each step
+        across, plus |dx| for each step down) is not negative."""
+        dx, dy = abs(x1 - self.x), abs(y1 - self.y)
+        step_x = -1 if x1 < self.x else 1
+        step_y = 1 if y1 > self.y else -1
+        x, y = self.sx, self.sy
+        err = dx - dy
+        self.set(x, y)
+        for _ in range(dx + dy):
+            if err >= 0:
+                x += step_x
+                err -= dy
+            else:
+                y += step_y
                 err += dx
-                y0 += sy
+            self.set(x, y)
+        self.x, self.y = x1, y1
+        self.sx, self.sy = x, y
 
     def save(self, path, height=H, fg=(255, 255, 255), bg=(0, 0, 0)):
         rows = []
@@ -75,9 +99,13 @@ class Canvas:
         png(path, W * SCALE, height * SCALE, rows)
 
 
+MAX_X, MAX_Y = 0xFF, 0xA0     # draw_picture clamps points to the 256 x 161 picture area
+
+
 def picture_points(data, off):
-    """Yield (pen_down, x, y) for a picture starting at data[off]."""
-    move = True
+    """Yield (pen_down, x, y) for a picture starting at data[off]; pen_down is None for the
+    first point when the picture does not start with 00 00 (it depends on the pen)."""
+    move = None
     while True:
         x, y = data[off], data[off + 1]
         off += 2
@@ -86,25 +114,33 @@ def picture_points(data, off):
         if x == 0 and y == 0:
             move = True
             continue
-        yield (not move), x, y
+        yield (None if move is None else not move), x, y
         move = False
 
 
 def draw_picture(cv, data, off, dx=0, dy=0):
-    last = None
-    for down, x, y in picture_points(data, off):
-        x, y = min(x + dx, 255), min(y + dy, 160)
-        if down and last:
-            cv.line(last[0], last[1], x, y)
-        else:
+    """draw_picture: each point offset by (dx, dy) in 8 bits (so it wraps past 255), then
+    clamped to MAX_X / MAX_Y; HPLOT after a 00 00 pair, HPLOT TO otherwise."""
+    while True:
+        x, y = data[off], data[off + 1]
+        off += 2
+        if x == 0xFF and y == 0xFF:
+            return
+        if x == 0 and y == 0:
+            cv.pen_up = True
+            continue
+        x, y = min((x + dx) & 0xFF, MAX_X), min((y + dy) & 0xFF, MAX_Y)
+        if cv.pen_up:
             cv.plot(x, y)
-        last = (x, y)
+            cv.pen_up = False
+        else:
+            cv.line(x, y)
 
 
 def picture_svg(path, data, off):
     paths, cur = [], []
     for down, x, y in picture_points(data, off):
-        if not down and cur:
+        if down is not True and cur:
             paths.append(cur)
             cur = []
         cur.append((x, y))
@@ -118,17 +154,19 @@ def picture_svg(path, data, off):
 
 
 def draw_shape(cv, table, n, x, y):
-    """Applesoft DRAW with SCALE=1, ROT=0: each byte holds vectors A (bits 0-2), B (3-5) and
-    C (6-7, move only); bit 2 of a vector means plot before moving, bits 0-1 the direction
-    (up, right, down, left). Vectors are taken while the remaining byte is non-zero."""
+    """Applesoft DRAW with SCALE=1, ROT=0 (draw_shape): HPOSN at (x, y), then each byte holds
+    vectors A (bits 0-2), B (3-5) and C (6-7, move only); bit 2 of a vector means plot before
+    moving, bits 0-1 the direction (up, right, down, left). Vectors are taken while the
+    remaining byte is non-zero. Only the screen pen moves."""
+    cv.x, cv.y = cv.sx, cv.sy = x, y
     p = table[2 + 2 * (n - 1)] | table[3 + 2 * (n - 1)] << 8
     while table[p]:
         b = table[p]
         while b:
             v = b & 7
             if v & 4:
-                cv.plot(x, y)
-            x, y = x + (0, 1, 0, -1)[v & 3], y + (-1, 0, 1, 0)[v & 3]
+                cv.set(cv.sx, cv.sy)
+            cv.sx, cv.sy = cv.sx + (0, 1, 0, -1)[v & 3], cv.sy + (-1, 0, 1, 0)[v & 3]
             b >>= 3
         p += 1
 
@@ -162,6 +200,51 @@ def hires_color(mem):
     return rows
 
 
+def hires_pixels(page):
+    """The pixels of an 8 KB hi-res page as a W x H array of 0/1 (bit 7, the colour group, is
+    left out), so a screen can be compared with a Canvas."""
+    px = bytearray(W * H)
+    for y in range(H):
+        base = (y & 7) * 0x400 + ((y >> 3) & 7) * 0x80 + (y >> 6) * 0x28
+        for c in range(40):
+            b = page[base + c]
+            for k in range(7):
+                px[y * W + c * 7 + k] = (b >> k) & 1
+    return px
+
+
+def room_canvas(gd, blocks, table, roomno, cv=None):
+    """Draw a room the way draw_room does, with the objects as they are in gd: the room's
+    current picture, then each object in the room in object-table order. An OMOVED object
+    (taken and dropped) goes in the next floor slot, and only in the room's permanent view;
+    any other object is drawn at its own position when the picture is in its ORPICSTA list."""
+    cv = cv or Canvas()
+    pics = {int(k): (v['block'], v['offset']) for k, v in gd['pictures'].items()}
+    room = gd['rooms'][roomno - 1]
+    pic = room['RCURPIC']
+    blk, off = pics[pic]
+    draw_picture(cv, blocks[blk], off)
+    slot = 0
+    for o in gd['objects']:
+        if o['OROOM'] != roomno:
+            continue
+        if o['OSTATUS'] == 1:
+            if room['RBASEPIC'] != room['RCURPIC']:
+                continue
+            x, y = gd['floor_slots'][slot]
+            slot += 1
+        elif pic in o['ORPICSTA']:
+            x, y = o['OXCOORD'], o['OYCOORD']
+        else:
+            continue
+        if o['shape']:
+            draw_shape(cv, table, o['OPIC'], x, y)
+        else:
+            b2, o2 = pics[o['OPIC']]
+            draw_picture(cv, blocks[b2], o2, x, y)
+    return cv
+
+
 def main():
     ext, gd, out = sys.argv[1], json.loads(pathlib.Path(sys.argv[2]).read_text()), sys.argv[3]
     adv = pathlib.Path(os.path.join(ext, 'ADVENTURE.bin')).read_bytes()
@@ -192,32 +275,9 @@ def main():
             rows += [bytes(r)] * 4
         png(os.path.join(out, 'shapes', 'shape_%d.png' % n), (x1 - x0 + 1) * 4, (y1 - y0 + 1) * 4, rows)
 
-    # rooms in their starting state, as SUB_7900 / SUB_7000 draw them
-    objs = gd['objects']
-    slots = gd['floor_slots']
+    # rooms in their starting state, as draw_room and draw_objects draw them
     for room in gd['rooms']:
-        cv = Canvas()
-        pic = room['RCURPIC']
-        blk, off = pics[pic]
-        draw_picture(cv, blocks[blk], off)
-        slot = 0
-        for o in objs:
-            if o['OROOM'] != room['RROOMNO']:
-                continue
-            if o['OSTATUS'] == 1:
-                if room['RBASEPIC'] != room['RCURPIC']:
-                    continue
-                x, y = slots[slot]
-                slot += 1
-            elif pic in o['ORPICSTA']:
-                x, y = o['OXCOORD'], o['OYCOORD']
-            else:
-                continue
-            if o['shape']:
-                draw_shape(cv, table, o['OPIC'], x, y)
-            else:
-                b2, o2 = pics[o['OPIC']]
-                draw_picture(cv, blocks[b2], o2, x, y)
+        cv = room_canvas(gd, blocks, table, room['RROOMNO'])
         cv.save(os.path.join(out, 'rooms', 'room_%02d.png' % room['RROOMNO']), height=161)
 
     auto = pathlib.Path(os.path.join(ext, 'AUTO_LOAD_OBJ.bin')).read_bytes()

@@ -13,7 +13,9 @@ move); without it, it uses the original addresses. It writes:
   objects.txt       object table with locations, pictures and states
   rules.txt         the turn and command rule scripts, decompiled to pseudocode
   map.txt, map.dot  every room's exits and the passages rules make (map.dot is Graphviz)
-  gamedata.json     all of the above in machine-readable form
+  gamedata.json     all of the above in machine-readable form, plus what a port needs to
+                    draw: each picture's strokes, each shape's vectors, the floor slots, and
+                    the state a new game starts in (PORTING.md describes every field)
 """
 import pathlib
 import json
@@ -136,6 +138,7 @@ ACTIONS = {
 
 class Game:
     def __init__(self, extracted):
+        self.dir = extracted
         self.d = pathlib.Path(os.path.join(extracted, 'ADVENTURE.bin')).read_bytes()
         self.msgfile = pathlib.Path(os.path.join(extracted, 'MESSAGES.txt.bin')).read_bytes()
 
@@ -223,6 +226,47 @@ class Game:
             a += 3
             n += 1
         return pics
+
+    def picture(self, blk, off):
+        """A picture's strokes as draw_picture reads them: a 00 00 pair starts a new stroke
+        (the pen is lifted: its first point is plotted, the rest are lines from the point before),
+        FF FF ends the picture. 'continues' is true when the picture does not start with 00 00:
+        its first stroke then goes on from wherever the pen was (only picture 92)."""
+        data = pathlib.Path(os.path.join(self.dir, 'BLOCK%d.bin' % blk)).read_bytes()
+        strokes, cur, continues = [], None, data[off:off + 2] != b'\x00\x00'
+        if continues:
+            cur = []
+            strokes.append(cur)
+        while True:
+            x, y = data[off], data[off + 1]
+            off += 2
+            if x == 0xFF and y == 0xFF:
+                break
+            if x == 0 and y == 0:
+                cur = []
+                strokes.append(cur)
+                continue
+            cur.append([x, y])
+        return {'continues': continues, 'strokes': [st for st in strokes if st]}
+
+    def shapes(self):
+        """The shape table as DRAW reads it (scale 1, rotation 0): for each shape, its vectors
+        in order as [plot, direction] (plot 1 = plot the pen's pixel before moving; direction
+        0 up, 1 right, 2 down, 3 left). Each byte holds up to three vectors, taken while the
+        rest of the byte is non-zero; the third has no plot bit."""
+        count = self.b(SHAPES)
+        out = {}
+        for n in range(1, count + 1):
+            p = SHAPES + self.w(SHAPES + 2 * n)
+            vectors = []
+            while self.b(p):
+                v = self.b(p)
+                while v:
+                    vectors.append([1 if v & 4 else 0, v & 3])
+                    v >>= 3
+                p += 1
+            out[n] = vectors
+        return out
 
     # --- rules ------------------------------------------------------------------------
     def rules(self, base):
@@ -354,9 +398,9 @@ def main():
             f.write('%3d%s %s\n' % (n, '*' if n in BUILTIN_MESSAGES else ' ', msgs[n]))
 
     with open(os.path.join(out, 'vocabulary.txt'), 'w') as f:
-        f.write('# Only the first 8 letters of a word are significant. A command is VERB NOUN,\n'
-                '# NOUN VERB, or one word; the parser at $6300 tries the verb table on the first\n'
-                '# word and the noun table on the second.\n\nVERBS ($%04X)\n' % VERBS)
+        f.write('# Only the first 8 letters of a word are significant. A command is VERB NOUN or a\n'
+                '# verb alone: the parser (read_command) looks the first word up in the verb table\n'
+                '# and the second in the noun table (a missing noun is noun 70, eight spaces).\n\nVERBS ($%04X)\n' % VERBS)
         for i, ws in enumerate(verbs, 1):
             f.write('%3d  %s\n' % (i, ', '.join(ws)))
         f.write('\nNOUNS ($%04X)\n' % NOUNS)
@@ -421,9 +465,11 @@ def main():
 
     pathlib.Path(os.path.join(out, 'gamedata.json')).write_text(json.dumps({
         'verbs': verbs, 'nouns': nouns, 'messages': msgs, 'rooms': rooms, 'objects': objs,
-        'pictures': {n: {'block': b, 'offset': o} for n, (b, o) in pics.items()},
+        'pictures': {n: {'block': b, 'offset': o, **g.picture(b, o)} for n, (b, o) in pics.items()},
+        'shapes': g.shapes(),
         'command_rules': enc(cmd_rules), 'turn_rules': enc(turn_rules),
         'floor_slots': [(g.b(FLOOR_SLOTS + 2 * i), g.b(FLOOR_SLOTS + 2 * i + 1)) for i in range(21)],
+        'start': {'room': 1, 'turn': 1, 'switches': [0] * 20, 'light': True},   # init_game
         'addresses': {k: globals()[k] for k in sorted(TABLE_SYMBOLS.values())},
     }, indent=1))
     print('%d verbs, %d nouns, %d messages, %d rooms, %d objects, %d pictures, %d command rules, '

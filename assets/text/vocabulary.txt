@@ -1,6 +1,6 @@
-# Only the first 8 letters of a word are significant. A command is VERB NOUN,
-# NOUN VERB, or one word; the parser at $6300 tries the verb table on the first
-# word and the noun table on the second.
+# Only the first 8 letters of a word are significant. A command is VERB NOUN or a
+# verb alone: the parser (read_command) looks the first word up in the verb table
+# and the second in the noun table (a missing noun is noun 70, eight spaces).
 
 VERBS ($4000)
   1  GO, ENTER, RUN, EXIT, LEAVE, WALK
