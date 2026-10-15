@@ -431,10 +431,11 @@ digits as `#`.
 
 ## Test coverage
 
-`tests/play/` plays the solution, a tour of every room, every death and ending, and the unknown
-words on the emulated game, and `tools/gamecov.py` records what runs (the report is
-`tests/play/coverage.expected.txt`). Together they run 347 of the 348 command rules, all 10
-turn rules and 1869 of the 2120 instructions. What never runs cannot run in the shipped game:
+`tests/play/` plays the solution, a tour of every room, every death and ending, the unknown
+words and the refusals of GET and DROP on the emulated game, and `tools/gamecov.py` records
+what runs (the report is `tests/play/coverage.expected.txt`). Together they run 347 of the 348
+command rules, all 10 turn rules and 1874 of the 2120 instructions. What never runs cannot run
+in the shipped game:
 
 * `rule_4F56`, which the trunk quirk above makes unreachable;
 * the dead code: `dead_*` and `old_read_digits` (see "Dead code and other leftovers");
@@ -443,6 +444,17 @@ turn rules and 1869 of the 2120 instructions. What never runs cannot run in the 
   stand for the unused actions 12 and 14;
 * the parts of the Applesoft hi-res copy the game does not use (`hplot0`, `hlinrl`, `xdraw0`
   and the XDRAW plot, `hcolor_bkgnd`, `hfind`), and `quantity_error`, its bad-argument exit.
+
+Inside the routines that do run (`gamecov.py --detail` lists them), what is left is as
+unreachable:
+
+* the `BRK` for an object that is not in the table, in `find_object`, `AC1500` and `AC2900`
+  (no rule names one);
+* in the Applesoft copy: `hposn` for an x past 255 (the game clamps to 255), the pen wrapping
+  off the left or right edge (`move_left_or_right`) or up off the top row (`move_up_or_down`),
+  which nothing reaches, `color_shift`'s flip for coloured patterns (the game draws only in
+  white), `draw0`'s vertical step for a rotated shape (ROT is always 0), and `find_shape`'s
+  carry for shape numbers from 128 (there are 6).
 
 ## Bug-fix build
 
