@@ -11,7 +11,7 @@ are the author's own, recovered from the binary (see "Original source" below).
 2. `MYSTERY.HELLO` does `HGR`, `BLOAD AUTO LOAD OBJ` (which covers `$0FFD-$3FFF` and so
    puts the Sierra title picture on hi-res page 1), prints the 1987 public-domain notice and
    `CALL 4093` (`$0FFD`).
-3. `AUTO LOAD OBJ` asks *G for game or I for instructions*, shows eight pages of instructions
+3. `AUTO LOAD OBJ` asks *G for game or I for instructions*, shows six pages of instructions
    if asked, then prints `CTRL-D BRUN ADVENTURE`.
 4. `ADVENTURE` loads at `$0800-$7CFF`. Its bytes at `$2000-$3FFF` are hi-res page 1, so the
    original **1980 On-Line Systems title screen** appears while it loads
@@ -434,7 +434,7 @@ digits as `#`.
 `tests/play/` plays the solution, a tour of every room, every death and ending, and the unknown
 words on the emulated game, and `tools/gamecov.py` records what runs (the report is
 `tests/play/coverage.expected.txt`). Together they run 347 of the 348 command rules, all 10
-turn rules and 1855 of the 2120 instructions. What never runs cannot run in the shipped game:
+turn rules and 1869 of the 2120 instructions. What never runs cannot run in the shipped game:
 
 * `rule_4F56`, which the trunk quirk above makes unreachable;
 * the dead code: `dead_*` and `old_read_digits` (see "Dead code and other leftovers");

@@ -10317,18 +10317,832 @@
   "switches": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   "light": true
  },
+ "loader": {
+  "menu": [
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "ENTER G FOR GAME OR I FOR INSTRUCTIONS"
+  ],
+  "pages": [
+   [
+    "",
+    "INSTRUCTIONS FOR HI-RES ADVENTURE",
+    "",
+    "",
+    "ADVENTURE IS ONE OF THE MOST FACINATING",
+    "AND CHALLENGING GAMES AVAILABLE FOR",
+    "YOUR APPLE COMPUTER. WINNING IS QUITE",
+    "A CHALLENGE IN A GAME WHERE IT MAY TAKE",
+    "HOURS TO MOVE AND WEEKS TO SOLVE A ",
+    "PUZZLE. HI-RES ADVENTURE #1 ('MYSTERY",
+    "HOUSE') TAKES PLACE IN AN OLD HOUSE",
+    "WITH MANY ROOMS. AS YOU ENTER THE",
+    "HOUSE, SEVEN OTHER PERSONS WILL BE",
+    "IN THE LIVING ROOM. EVENTUALLY THEY",
+    "ARE DISPERSED THROUGHOUT THE HOUSE AND",
+    "YOU START FINDING THEM - DEAD! YOU MUST",
+    "FIND THE KILLER BEFORE HE(SHE?) ENDS UP",
+    "KILLING YOU.",
+    "",
+    "PRESS RETURN TO CONTINUE"
+   ],
+   [
+    "",
+    "",
+    "YOU PROGRESS THROUGH THE HOUSE BY",
+    "PROVIDING TWO WORD COMMANDS WHICH ",
+    "USUALLY CONTAIN A VERB AND THEN A ",
+    "NOUN BUT AREN'T ALWAYS IN THAT ORDER.",
+    "EXAMPLES ARE 'WATER ON' AND 'OPEN",
+    "DOOR'. IF A SET OF WORDS DOESNT SEEM",
+    "TO BE WORKING TRY DIFFERENT TERMINOLOGY",
+    "",
+    "IF YOU SHOULD FIND A STAIRCASE YOU MAY",
+    "TRY 'UP STAIRS' OR 'GO STAIRS'.",
+    "SOME OF THE ACTIONS YOU CAN TAKE ARE",
+    "GET, DROP, GO, LOOK, READ, CLIMB",
+    "MOVE, HIT, KILL ETC.",
+    "",
+    "PRESS RETURN TO CONTINUE"
+   ],
+   [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "YOU MAY GO IN THE DIRECTIONS NORTH, ",
+    "SOUTH, EAST, WEST, UP AND DOWN. TYPE",
+    "NORTH OR N TO GO NORTH. THE OTHER",
+    "DIRECTIONS MAY ALSO BE ABBREVIATED AS",
+    "WELL. WHEN YOUR WAY IS BLOCKED AND",
+    "YOU CAN'T USE DIRECTIONS TO MOVE ",
+    "YOU MAY HAVE TO REFER TO THE ACTUAL",
+    "OBJECT IN YOUR WAY. IN THESE CASES",
+    "YOU COULD TYPE 'GO DOOR', 'GO HOLE',",
+    "'GO GATE' ETC.",
+    "",
+    "PRESS RETURN TO CONTINUE"
+   ],
+   [
+    "",
+    "",
+    "",
+    "IN GENERAL THE TOP OF THE SCREEN IS",
+    "NORTH. THE BOTTOM IS SOUTH, THE LEFT",
+    "SIDE IS WEST AND THE RIGHT SIDE IS",
+    "EAST. BECAUSE OF THE DIFFICULTY OF",
+    "DRAWING DOORWAYS TO THE SOUTH OR THE",
+    "BOTTOM OF THE SCREEN, THERE ARE ONE",
+    "OR TWO ROOMS WHERE THE DOORWAYS DO NOT",
+    "MATCH UP TO THE NORMAL DIRECTIONS.",
+    "",
+    "IF YOU WANT A CLOSER LOOK AT SOMETHING",
+    "SAY LOOK (OBJECT). TO RETURN TO THE",
+    "MAIN VIEW SAY LOOK ROOM.",
+    "",
+    "SAVE GAME AND RESTORE GAME MAY",
+    "ALSO BE USED.",
+    "",
+    "",
+    "PRESS RETURN TO CONTINUE"
+   ],
+   [
+    "",
+    "",
+    "",
+    "A NOTE OF CAUTION: CARRYING MORE THAN",
+    "ONE NOTE MAY BE CONFUSING AS THE",
+    "COMPUTER WILL ARBITRARILY DECIDE WHICH",
+    "ONE TO READ OR DROP.",
+    "",
+    "SHOULD YOU WISH TO REVIEW PAST COMMANDS",
+    "YOU MAY PRESS RETURN WITHOUT TYPING TO",
+    "FLIP/FLOP BETWEEN GRAPHICS AND TEXT.",
+    "",
+    "IF YOUR COPY SHOULD EVER FAIL TO LOAD",
+    "(OR GET MUNCHED BY A HUNGRY DISK DRIVE)",
+    "SEND IT WITH FIVE DOLLARS TO:",
+    "",
+    "     ON-LINE SYSTEMS",
+    "     36575 MUDGE RANCH ROAD",
+    "     COARSEGOLD CA. 93614",
+    "",
+    "",
+    "",
+    "",
+    "PRESS RETURN TO CONTINUE"
+   ],
+   [
+    "",
+    "",
+    "AT THE START OF THE GAME THERE",
+    "WILL BE SEVEN OTHER PEOPLE IN",
+    "THE HOUSE WITH YOU. THEIR NAMES,",
+    "OCCUPATIONS, AND HAIRCOLOR ARE",
+    "AS FOLLOWS:",
+    "",
+    "TOM      SAM       SALLY",
+    "BLOND    BRUNETTE  REDHEAD",
+    "PLUMBER  MECHANIC  SEAMSTRESS",
+    "",
+    "DR. GREEN  JOE          BILL",
+    "BRUNETTE   BRUNETTE     BLOND",
+    "SURGEON    GRAVEDIGGER  BUTCHER",
+    "",
+    "DAISY",
+    "BLOND",
+    "COOK.",
+    "",
+    "",
+    "",
+    "PRESS RETURN TO BEGIN PLAY"
+   ]
+  ]
+ },
+ "saved_game": {
+  "room": 18,
+  "turn": 121,
+  "switches": [0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+  "light": true,
+  "verb": 34,
+  "noun": 88,
+  "objects": [
+   {
+    "OBJECTNO": 1,
+    "OROOM": 3,
+    "OPIC": 52,
+    "OXCOORD": 41,
+    "OYCOORD": 61,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 2,
+    "OROOM": 3,
+    "OPIC": 52,
+    "OXCOORD": 66,
+    "OYCOORD": 63,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 3,
+    "OROOM": 3,
+    "OPIC": 54,
+    "OXCOORD": 86,
+    "OYCOORD": 66,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 4,
+    "OROOM": 3,
+    "OPIC": 52,
+    "OXCOORD": 114,
+    "OYCOORD": 66,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 5,
+    "OROOM": 3,
+    "OPIC": 52,
+    "OXCOORD": 132,
+    "OYCOORD": 67,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 6,
+    "OROOM": 3,
+    "OPIC": 52,
+    "OXCOORD": 153,
+    "OYCOORD": 67,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 7,
+    "OROOM": 3,
+    "OPIC": 54,
+    "OXCOORD": 180,
+    "OYCOORD": 67,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 8,
+    "OROOM": 3,
+    "OPIC": 3,
+    "OXCOORD": 108,
+    "OYCOORD": 150,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 9,
+    "OROOM": 14,
+    "OPIC": 4,
+    "OXCOORD": 41,
+    "OYCOORD": 126,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 10,
+    "OROOM": 4,
+    "OPIC": 97,
+    "OXCOORD": 3,
+    "OYCOORD": 77,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 11,
+    "OROOM": 253,
+    "OPIC": 56,
+    "OXCOORD": 13,
+    "OYCOORD": 82,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 12,
+    "OROOM": 253,
+    "OPIC": 57,
+    "OXCOORD": 7,
+    "OYCOORD": 83,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 13,
+    "OROOM": 254,
+    "OPIC": 6,
+    "OXCOORD": 94,
+    "OYCOORD": 118,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 14,
+    "OROOM": 254,
+    "OPIC": 58,
+    "OXCOORD": 75,
+    "OYCOORD": 107,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 15,
+    "OROOM": 253,
+    "OPIC": 59,
+    "OXCOORD": 0,
+    "OYCOORD": 0,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 16,
+    "OROOM": 254,
+    "OPIC": 60,
+    "OXCOORD": 125,
+    "OYCOORD": 66,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 17,
+    "OROOM": 32,
+    "OPIC": 4,
+    "OXCOORD": 61,
+    "OYCOORD": 79,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 18,
+    "OROOM": 254,
+    "OPIC": 61,
+    "OXCOORD": 0,
+    "OYCOORD": 0,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 19,
+    "OROOM": 253,
+    "OPIC": 62,
+    "OXCOORD": 102,
+    "OYCOORD": 75,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 20,
+    "OROOM": 253,
+    "OPIC": 63,
+    "OXCOORD": 81,
+    "OYCOORD": 92,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 21,
+    "OROOM": 16,
+    "OPIC": 64,
+    "OXCOORD": 79,
+    "OYCOORD": 115,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 22,
+    "OROOM": 254,
+    "OPIC": 65,
+    "OXCOORD": 107,
+    "OYCOORD": 59,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 23,
+    "OROOM": 17,
+    "OPIC": 66,
+    "OXCOORD": 125,
+    "OYCOORD": 89,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 24,
+    "OROOM": 253,
+    "OPIC": 67,
+    "OXCOORD": 100,
+    "OYCOORD": 59,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 25,
+    "OROOM": 18,
+    "OPIC": 68,
+    "OXCOORD": 6,
+    "OYCOORD": 83,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 26,
+    "OROOM": 18,
+    "OPIC": 69,
+    "OXCOORD": 27,
+    "OYCOORD": 88,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 27,
+    "OROOM": 253,
+    "OPIC": 70,
+    "OXCOORD": 25,
+    "OYCOORD": 88,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 28,
+    "OROOM": 18,
+    "OPIC": 71,
+    "OXCOORD": 49,
+    "OYCOORD": 97,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 29,
+    "OROOM": 21,
+    "OPIC": 72,
+    "OXCOORD": 36,
+    "OYCOORD": 63,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 30,
+    "OROOM": 21,
+    "OPIC": 73,
+    "OXCOORD": 175,
+    "OYCOORD": 83,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 31,
+    "OROOM": 253,
+    "OPIC": 74,
+    "OXCOORD": 162,
+    "OYCOORD": 27,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 32,
+    "OROOM": 253,
+    "OPIC": 75,
+    "OXCOORD": 162,
+    "OYCOORD": 27,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 33,
+    "OROOM": 28,
+    "OPIC": 76,
+    "OXCOORD": 72,
+    "OYCOORD": 70,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 34,
+    "OROOM": 30,
+    "OPIC": 77,
+    "OXCOORD": 97,
+    "OYCOORD": 62,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 35,
+    "OROOM": 254,
+    "OPIC": 4,
+    "OXCOORD": 91,
+    "OYCOORD": 82,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 36,
+    "OROOM": 35,
+    "OPIC": 79,
+    "OXCOORD": 63,
+    "OYCOORD": 10,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 37,
+    "OROOM": 253,
+    "OPIC": 80,
+    "OXCOORD": 103,
+    "OYCOORD": 27,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 38,
+    "OROOM": 38,
+    "OPIC": 81,
+    "OXCOORD": 69,
+    "OYCOORD": 66,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 39,
+    "OROOM": 38,
+    "OPIC": 82,
+    "OXCOORD": 127,
+    "OYCOORD": 24,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 40,
+    "OROOM": 253,
+    "OPIC": 83,
+    "OXCOORD": 200,
+    "OYCOORD": 45,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 41,
+    "OROOM": 253,
+    "OPIC": 84,
+    "OXCOORD": 200,
+    "OYCOORD": 45,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 42,
+    "OROOM": 254,
+    "OPIC": 85,
+    "OXCOORD": 102,
+    "OYCOORD": 124,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 43,
+    "OROOM": 253,
+    "OPIC": 86,
+    "OXCOORD": 93,
+    "OYCOORD": 45,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 44,
+    "OROOM": 40,
+    "OPIC": 87,
+    "OXCOORD": 93,
+    "OYCOORD": 45,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 45,
+    "OROOM": 254,
+    "OPIC": 88,
+    "OXCOORD": 104,
+    "OYCOORD": 61,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 46,
+    "OROOM": 41,
+    "OPIC": 89,
+    "OXCOORD": 167,
+    "OYCOORD": 62,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 47,
+    "OROOM": 41,
+    "OPIC": 90,
+    "OXCOORD": 203,
+    "OYCOORD": 65,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 48,
+    "OROOM": 253,
+    "OPIC": 91,
+    "OXCOORD": 201,
+    "OYCOORD": 65,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 49,
+    "OROOM": 41,
+    "OPIC": 4,
+    "OXCOORD": 99,
+    "OYCOORD": 103,
+    "OSTATUS": 0
+   },
+   {
+    "OBJECTNO": 50,
+    "OROOM": 2,
+    "OPIC": 2,
+    "OXCOORD": 116,
+    "OYCOORD": 120,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 51,
+    "OROOM": 253,
+    "OPIC": 93,
+    "OXCOORD": 155,
+    "OYCOORD": 17,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 52,
+    "OROOM": 4,
+    "OPIC": 94,
+    "OXCOORD": 155,
+    "OYCOORD": 17,
+    "OSTATUS": 2
+   },
+   {
+    "OBJECTNO": 53,
+    "OROOM": 254,
+    "OPIC": 95,
+    "OXCOORD": 171,
+    "OYCOORD": 86,
+    "OSTATUS": 1
+   },
+   {
+    "OBJECTNO": 54,
+    "OROOM": 253,
+    "OPIC": 96,
+    "OXCOORD": 73,
+    "OYCOORD": 35,
+    "OSTATUS": 2
+   }
+  ],
+  "rooms": [
+   {
+    "RROOMNO": 1,
+    "RBASEPIC": 3,
+    "RCURPIC": 3
+   },
+   {
+    "RROOMNO": 2,
+    "RBASEPIC": 2,
+    "RCURPIC": 2
+   },
+   {
+    "RROOMNO": 3,
+    "RBASEPIC": 4,
+    "RCURPIC": 4
+   },
+   {
+    "RROOMNO": 4,
+    "RBASEPIC": 13,
+    "RCURPIC": 13
+   },
+   {
+    "RROOMNO": 5,
+    "RBASEPIC": 20,
+    "RCURPIC": 20
+   },
+   {
+    "RROOMNO": 6,
+    "RBASEPIC": 20,
+    "RCURPIC": 20
+   },
+   {
+    "RROOMNO": 7,
+    "RBASEPIC": 20,
+    "RCURPIC": 20
+   },
+   {
+    "RROOMNO": 8,
+    "RBASEPIC": 20,
+    "RCURPIC": 20
+   },
+   {
+    "RROOMNO": 9,
+    "RBASEPIC": 20,
+    "RCURPIC": 20
+   },
+   {
+    "RROOMNO": 10,
+    "RBASEPIC": 20,
+    "RCURPIC": 20
+   },
+   {
+    "RROOMNO": 11,
+    "RBASEPIC": 20,
+    "RCURPIC": 20
+   },
+   {
+    "RROOMNO": 12,
+    "RBASEPIC": 20,
+    "RCURPIC": 20
+   },
+   {
+    "RROOMNO": 13,
+    "RBASEPIC": 19,
+    "RCURPIC": 19
+   },
+   {
+    "RROOMNO": 14,
+    "RBASEPIC": 6,
+    "RCURPIC": 6
+   },
+   {
+    "RROOMNO": 15,
+    "RBASEPIC": 9,
+    "RCURPIC": 9
+   },
+   {
+    "RROOMNO": 16,
+    "RBASEPIC": 29,
+    "RCURPIC": 29
+   },
+   {
+    "RROOMNO": 17,
+    "RBASEPIC": 17,
+    "RCURPIC": 17
+   },
+   {
+    "RROOMNO": 18,
+    "RBASEPIC": 27,
+    "RCURPIC": 27
+   },
+   {
+    "RROOMNO": 19,
+    "RBASEPIC": 25,
+    "RCURPIC": 25
+   },
+   {
+    "RROOMNO": 20,
+    "RBASEPIC": 23,
+    "RCURPIC": 23
+   },
+   {
+    "RROOMNO": 21,
+    "RBASEPIC": 30,
+    "RCURPIC": 30
+   },
+   {
+    "RROOMNO": 22,
+    "RBASEPIC": 31,
+    "RCURPIC": 31
+   },
+   {
+    "RROOMNO": 23,
+    "RBASEPIC": 21,
+    "RCURPIC": 21
+   },
+   {
+    "RROOMNO": 24,
+    "RBASEPIC": 32,
+    "RCURPIC": 32
+   },
+   {
+    "RROOMNO": 25,
+    "RBASEPIC": 33,
+    "RCURPIC": 33
+   },
+   {
+    "RROOMNO": 26,
+    "RBASEPIC": 38,
+    "RCURPIC": 38
+   },
+   {
+    "RROOMNO": 27,
+    "RBASEPIC": 33,
+    "RCURPIC": 33
+   },
+   {
+    "RROOMNO": 28,
+    "RBASEPIC": 39,
+    "RCURPIC": 39
+   },
+   {
+    "RROOMNO": 29,
+    "RBASEPIC": 33,
+    "RCURPIC": 33
+   },
+   {
+    "RROOMNO": 30,
+    "RBASEPIC": 37,
+    "RCURPIC": 37
+   },
+   {
+    "RROOMNO": 31,
+    "RBASEPIC": 33,
+    "RCURPIC": 33
+   },
+   {
+    "RROOMNO": 32,
+    "RBASEPIC": 35,
+    "RCURPIC": 35
+   },
+   {
+    "RROOMNO": 33,
+    "RBASEPIC": 34,
+    "RCURPIC": 34
+   },
+   {
+    "RROOMNO": 34,
+    "RBASEPIC": 33,
+    "RCURPIC": 33
+   },
+   {
+    "RROOMNO": 35,
+    "RBASEPIC": 40,
+    "RCURPIC": 40
+   },
+   {
+    "RROOMNO": 36,
+    "RBASEPIC": 46,
+    "RCURPIC": 46
+   },
+   {
+    "RROOMNO": 37,
+    "RBASEPIC": 47,
+    "RCURPIC": 47
+   },
+   {
+    "RROOMNO": 38,
+    "RBASEPIC": 45,
+    "RCURPIC": 45
+   },
+   {
+    "RROOMNO": 39,
+    "RBASEPIC": 42,
+    "RCURPIC": 42
+   },
+   {
+    "RROOMNO": 40,
+    "RBASEPIC": 43,
+    "RCURPIC": 43
+   },
+   {
+    "RROOMNO": 41,
+    "RBASEPIC": 44,
+    "RCURPIC": 44
+   }
+  ]
+ },
  "addresses": {
   "CMD_RULES": 17664,
+  "CURONO": 2130,
   "FLOOR_SLOTS": 28927,
   "INIT_SWITCHES": 25087,
+  "LAMPSTAT": 2205,
   "MSGINDEX": 21760,
+  "NOUN": 2101,
   "NOUNS": 5888,
   "OBJBASE": 2304,
   "PICDIR": 21248,
   "ROOMBASE": 3328,
   "SHAPES": 22272,
   "SWITCH": 2106,
+  "TURNS": 2131,
   "TURN_RULES": 17408,
+  "VERB": 2100,
   "VERBS": 16384
  }
 }

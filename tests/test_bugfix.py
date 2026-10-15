@@ -53,6 +53,15 @@ class BugFix(unittest.TestCase):
         self.assertEqual(m.pixels, expected('bugfix.pixels.txt'))
         self.assertEqual(reason, 'quit to DOS')
 
+    def test_original_transcript_and_screens(self):
+        # the same script on the original, recorded too, so a faithful port can check the
+        # bugs it keeps (the dark lifting after turn 255 among them)
+        m, reason, _, _ = self.orig
+        self.assertEqual(m.out, expected('bugfix.original.expected.txt'))
+        self.assertEqual(m.screens, expected('bugfix.original.screens.txt'))
+        self.assertEqual(m.pixels, expected('bugfix.original.pixels.txt'))
+        self.assertEqual(reason, 'quit to DOS')
+
     def test_open_trunk_says_it_is_open(self):
         self.assertEqual(reply(self.orig[0], 'OPEN TRUNK')[0], 'IT IS LOCKED')
         self.assertEqual(reply(self.fixed[0], 'OPEN TRUNK')[0], 'IT IS OPEN')

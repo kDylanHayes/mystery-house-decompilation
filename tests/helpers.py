@@ -54,7 +54,8 @@ def build(src=SRC, defines=()):
 
 
 PLAY = os.path.join(ROOT, 'tests', 'play')
-SCRIPTS = ['walkthrough', 'errors', 'house', 'deaths']    # the command scripts in tests/play
+SCRIPTS = ['walkthrough', 'errors', 'house', 'deaths', 'intro']    # the scripts in tests/play
+BOOT = {'intro'}              # played from the 1987 loader (play.py --boot)
 _played = {}
 _states = {}
 
@@ -75,7 +76,8 @@ def played(name):
             m.hooks[syms['draw_room']] = lambda mach: redraws.__setitem__(0, redraws[0] + 1)
             m.on_prompt = lambda mach: states.append((mach.pc == play.GETLN, redraws[0],
                                                       bytes(mach.mem[0x0800:0x1100])))
-        _played[name] = gamecov.play_recorded(b, os.path.join(b, 'files'), os.path.join(PLAY, name + '.txt'), more)
+        _played[name] = gamecov.play_recorded(b, os.path.join(b, 'files'), os.path.join(PLAY, name + '.txt'), more,
+                                              boot=name in BOOT)
     return _played[name]
 
 

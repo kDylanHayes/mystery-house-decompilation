@@ -1,4 +1,4 @@
-instructions: 1855 of 2120 executed (87.5%)
+instructions: 1869 of 2120 executed (88.2%)
 command rules: 347 of 348 ran
 turn rules: 10 of 10 ran
 

@@ -9,16 +9,39 @@ tests, or is the source (`src/adventure.s`, routine names in brackets) read dire
 
 | | |
 |---|---|
-| `assets/text/gamedata.json` | the whole database: words, messages, rooms, objects, rules, pictures as strokes, shapes as vectors, floor slots, the starting state (fields below) |
+| `assets/text/gamedata.json` | the whole database: words, messages, rooms, objects, rules, pictures as strokes, shapes as vectors, floor slots, the starting state, the disk's saved game, the loader's menu and instruction pages (fields below) |
 | `tools/pictures.py` | the reference renderer: the game's line drawing, pictures, shapes and room composition, pixel for pixel (`Canvas`, `draw_picture`, `draw_shape`, `room_canvas`) |
-| `tests/play/*.txt` | conformance scripts: the solution, a tour of every room, every death and ending, unknown words |
+| `tests/play/*.txt` | conformance scripts: the solution, a tour of every room, every death and ending, unknown words, the loader and instructions, the bug fixes ("Checking a port") |
 | `tests/play/*.expected.txt` | what the game prints for each script |
 | `tests/play/*.pixels.txt` | what the player sees at every prompt, as a pixel hash a port can compute (below) |
 | NOTES.md, `src/adventure.s` | the details and the source of truth |
 
 The original's bugs are part of its behaviour. NOTES.md ("Quirks", "Bug-fix build") lists them.
 A faithful port keeps them, and may offer the fixes `./build.sh --bugfix` makes as an option;
-`tests/play/bugfix.txt` checks those.
+`tests/play/bugfix.txt` checks either way.
+
+## Before the game
+
+The disk boots through three programs before the game. They are all on the disk and all
+public domain; a port can show them or start straight at the game.
+
+1. **`HELLO`** (Applesoft, `src/basic/HELLO.bas`): a scrolling credit for The Public Domain
+   Exchange, then `RUN MYSTERY.HELLO`.
+2. **`MYSTERY.HELLO`** (`src/basic/MYSTERY.HELLO.bas`): shows the Sierra title picture, which
+   it loads with `AUTO LOAD OBJ` (`assets/screens/title_1987.png`). After a pause it prints the
+   1987 public-domain notice, waits for a key and starts the loader.
+3. **`AUTO LOAD OBJ`** (`src/autoload.s`): the title picture with four text lines below it.
+   It prints `loader.menu` (19 empty lines, then `ENTER G FOR GAME OR I FOR INSTRUCTIONS`) and
+   reads a line:
+   - `G...` starts the game;
+   - `I...` shows the instructions: six full-screen text pages (`loader.pages`), each after
+     the screen is cleared, each ending with `PRESS RETURN TO CONTINUE` (the last `PRESS RETURN
+     TO BEGIN PLAY`) and waiting for a line; then the game;
+   - anything else prints the menu again.
+
+   The game is started with `BRUN ADVENTURE`. As it loads over the hi-res page, the 1980
+   On-Line Systems title shows for a moment (`assets/screens/title_1980.png`), then
+   `init_game` clears the screen.
 
 ## The screen
 
@@ -111,6 +134,9 @@ and compare it with the game's pixels.
 - **Start of a game:** five empty lines, then the first room.
 - **DOS commands:** the lines the game prints to DOS (`BLOAD ...`, `READ MESSAGES...`,
   starting with Ctrl-D) are not shown, and a port has none.
+- **Upper case:** the game's words are upper case and the original keyboard typed only
+  capitals; a lower-case word matches nothing. A port should upper-case what is typed (the
+  scripts are upper case).
 
 ## A turn (`main`)
 
@@ -135,8 +161,9 @@ repeat:
   If the noun is unknown, it prints `I DONT KNOW HOW TO <verb> A <noun>` and asks again.
   Each word is padded with spaces to 8 letters, as typed, upper case. Neither counts as a turn.
   The game asks again from the same screen, without another room description.
-- An empty line flips between the picture and a full text page (the port may treat it as a
-  no-op that asks again).
+- An empty line flips between the picture and a full text page, and the game reads another
+  line at once: just the `?` prompt, no `ENTER COMMAND` line, no turn. A port may skip the
+  page flip, but must ask again the same way (`intro.txt` presses RETURN twice in the game).
 
 **Rules** (`run_command_rules`, `run_turn_rules`):
 - A rule matches when its room, verb and noun each equal the current room, verb and noun, or
@@ -203,15 +230,34 @@ fields:
 `src/saved_game.txt` is the disk's saved game written out field by field (`tools/savefile.py`),
 which shows the format at work.
 
+The disk comes with a saved game, and `RESTORE GAME` before any `SAVE GAME` loads it.
+`gamedata.json`'s `saved_game` is that game in a port's terms. A port starts with it in its
+save slot: `room`, `turn`, `switches`, `light`, every object's `OROOM`, `OPIC`, `OXCOORD`,
+`OYCOORD` and `OSTATUS`, and every room's `RBASEPIC` and `RCURPIC`. It also has `verb` and
+`noun`: the save file restores the last command's words too, and the turn rules that run
+after a `RESTORE GAME` see those (here `SAVE GAME`, verb 34 and noun 88). `deaths.txt` and
+`bugfix.txt` start from it.
+
 ## Checking a port
 
-Play each script in `tests/play/`, typing each command when the game asks for input. Lines
-starting `#` are comments. Then compare two things.
+Play each script in `tests/play/`, typing each command when the game asks for input:
+
+| Script | Start at | Compare with |
+|---|---|---|
+| `walkthrough.txt`, `errors.txt`, `house.txt`, `deaths.txt` | the game (`init_game`) | `<script>.expected.txt`, `<script>.pixels.txt` |
+| `intro.txt` | the loader's menu (step 3 of "Before the game") | `intro.expected.txt`; `intro.pixels.txt` from the first `ENTER COMMAND` on (before that it hashes the 1987 title picture's memory) |
+| `bugfix.txt` | the game | a faithful port: `bugfix.original.expected.txt`, `bugfix.original.pixels.txt`; with the bug fixes: `bugfix.expected.txt`, `bugfix.pixels.txt` |
+
+In a script, lines starting `#` are comments and a line `<CR>` means RETURN on an empty line.
+Then compare two things.
 
 **The transcript:**
 - Everything printed, as lines split at carriage returns, with trailing spaces removed.
-- At every request for input (commands and the play-again answer alike), the game's pending
-  text is flushed and a line `> ` + the command, upper case, is added.
+- At every request for input (commands, the play-again answer and the loader's questions
+  alike), the game's pending text is flushed and a line `> ` + the command, upper case, is
+  added (`> ` alone for `<CR>`).
+- Clearing the text screen (the loader's `HOME`, before each instruction page) is a line
+  `<HOME>`.
 - It must equal `<script>.expected.txt`.
 
 **The screen:**

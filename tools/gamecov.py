@@ -3,6 +3,8 @@
 
 usage: gamecov.py <build dir> <files dir> <script.txt>... [--rules rules.txt] [--detail]
 
+A script named intro.txt is played from the loader (play.py --boot); the others from the game.
+
 <build dir> holds adventure.lst and adventure.syms.csv (build/, as build.sh leaves it);
 <files dir> the disk's files (extracted/). Each script is played from a fresh start with
 tools/play.py while every executed address is recorded, and so is every rule whose actions
@@ -58,9 +60,10 @@ def rule_text(path):
     return text
 
 
-def play_recorded(build_dir, files_dir, script, more=None):
+def play_recorded(build_dir, files_dir, script, more=None, boot=False):
     """Play one script while recording; returns (machine, stop reason, executed addresses,
-    addresses of the rules whose actions ran). more(machine, symbols), if given, can add hooks."""
+    addresses of the rules whose actions ran). more(machine, symbols), if given, can add hooks;
+    boot starts at the loader (play.py --boot)."""
     syms = symbols(os.path.join(build_dir, 'adventure.syms.csv'))
     executed, ran = set(), set()
 
@@ -70,7 +73,7 @@ def play_recorded(build_dir, files_dir, script, more=None):
         if more:
             more(m, syms)
 
-    m, reason = play.play(files_dir, play.read_commands(script), setup=setup)
+    m, reason = play.play(files_dir, play.read_commands(script), setup=setup, boot=boot)
     return m, reason, executed, ran
 
 
@@ -78,7 +81,7 @@ def measure(build_dir, files_dir, scripts):
     """Play each script; returns (executed addresses, addresses of the rules that ran)."""
     executed, ran = set(), set()
     for s in scripts:
-        _, _, e, r = play_recorded(build_dir, files_dir, s)
+        _, _, e, r = play_recorded(build_dir, files_dir, s, boot=os.path.basename(s) == 'intro.txt')
         executed |= e
         ran |= r
     return executed, ran

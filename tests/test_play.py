@@ -42,6 +42,12 @@ class Scripts(unittest.TestCase):
         m, reason = self.check('house')
         self.assertEqual(reason, 'quit to DOS')
 
+    def test_intro(self):
+        # from the loader: menu, six pages of instructions (each after a <HOME>), the game
+        m, reason = self.check('intro')
+        self.assertEqual(m.out.count('<HOME>'), 6)
+        self.assertEqual(reason, 'quit to DOS')
+
     def test_deaths(self):
         m, reason = self.check('deaths')
         # 12 deaths that end the game and 4 QUITs; the storage-room window kills you without

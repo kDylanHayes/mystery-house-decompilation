@@ -71,6 +71,59 @@ class GameData(unittest.TestCase):
         self.assertEqual(at('SWITCH', 20), start['switches'])
         self.assertEqual(at('LAMPSTAT'), [0 if start['light'] else 1])
 
+    def test_saved_game_is_what_restore_loads(self):
+        # the game's memory just after RESTORE GAME's BLOAD (at the action's exit, before the
+        # turn rules run) holds what saved_game says
+        import play
+        syms, seen = self.syms, []
+
+        def setup(m):
+            m.executed = set()
+            m.hooks[syms['AC2600']] = lambda mach: seen.append(None)
+            m.hooks[syms['AC9000']] = lambda mach: (seen.append(bytes(mach.mem))
+                                                    if seen and seen[-1] is None else None)
+        play.play(os.path.join(helpers.build(), 'files'), ['RESTORE GAME'], setup=setup)
+        mem = seen[-1]
+        f, sg = self.fields(), self.data['saved_game']
+        self.assertEqual(mem[syms['CURONO']], sg['room'])
+        self.assertEqual(mem[syms['turns']] | mem[syms['turns'] + 1] << 8, sg['turn'])
+        self.assertEqual(list(mem[syms['SWITCH']:syms['SWITCH'] + 20]), sg['switches'])
+        self.assertEqual(mem[syms['LAMPSTAT']] == 0, sg['light'])
+        self.assertEqual((mem[syms['verb']], mem[syms['noun']]), (sg['verb'], sg['noun']))
+        for o, saved in zip(self.data['objects'], sg['objects']):
+            self.assertEqual(saved['OBJECTNO'], o['OBJECTNO'])
+            for k in ('OROOM', 'OPIC', 'OXCOORD', 'OYCOORD', 'OSTATUS'):
+                self.assertEqual(mem[o['addr'] + f[k]], saved[k], (o['OBJECTNO'], k))
+        for r in sg['rooms']:
+            a = syms['ROOMBASE'] + r['RROOMNO'] * f['RTBLSIZ']
+            self.assertEqual((mem[a + f['RBASEPIC']], mem[a + f['RCURPIC']]), (r['RBASEPIC'], r['RCURPIC']))
+
+    def test_loader_pages_are_what_it_prints(self):
+        # the intro script plays the loader: each page in gamedata.json is what the transcript
+        # shows after the matching <HOME>, up to the RETURN that ends the page
+        out = helpers.played('intro')[0].out
+        homes = [i for i, l in enumerate(out) if l == '<HOME>']
+        pages = self.data['loader']['pages']
+        self.assertEqual(len(homes), len(pages))
+        for i, page in zip(homes, pages):
+            end = next(j for j in range(i + 1, len(out)) if out[j].startswith('>'))
+            self.assertEqual(out[i + 1:end], [l.rstrip() for l in page])
+        menu = [l.rstrip() for l in self.data['loader']['menu']]
+        x = out.index('> X')
+        self.assertEqual(out[x - len(menu):x], menu)
+
+    def fields(self):
+        names = {}
+        with open(os.path.join(helpers.SRC, 'game.inc')) as f:
+            for line in f:
+                p = line.split(';')[0].split('=')
+                if len(p) == 2 and p[0].strip().isidentifier():
+                    try:
+                        names[p[0].strip()] = int(p[1].strip().replace('$', '0x'), 0)
+                    except ValueError:
+                        pass
+        return names
+
     def test_json_is_compact(self):
         # number lists, points and strokes are written on one line each, not a number a line
         with open(os.path.join(self.out, 'gamedata.json')) as f:

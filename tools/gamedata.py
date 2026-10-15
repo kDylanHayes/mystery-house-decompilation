@@ -13,9 +13,10 @@ move); without it, it uses the original addresses. It writes:
   objects.txt       object table with locations, pictures and states
   rules.txt         the turn and command rule scripts, decompiled to pseudocode
   map.txt, map.dot  every room's exits and the passages rules make (map.dot is Graphviz)
-  gamedata.json     all of the above in machine-readable form, plus what a port needs to
-                    draw: each picture's strokes, each shape's vectors, the floor slots, and
-                    the state a new game starts in (PORTING.md describes every field)
+  gamedata.json     all of the above in machine-readable form, plus what a port needs: each
+                    picture's strokes, each shape's vectors, the floor slots, the state a new
+                    game starts in, the disk's saved game, and the loader's menu and
+                    instruction pages (PORTING.md describes every field)
 """
 import pathlib
 import json
@@ -39,6 +40,18 @@ MSGINDEX = 0x5500     # message index: byte offsets into MESSAGES, numbers from 
 SHAPES = 0x5700       # Applesoft shape table used for small objects
 FLOOR_SLOTS = 0x70FF  # (x, y) positions for dropped objects, in order of drawing
 INIT_SWITCHES = 0x61FF  # the 20 switches as init_game sets them for a new game
+CURONO = 0x0852       # the game's state that a save file holds, besides the two tables
+TURNS = 0x0853
+LAMPSTAT = 0x089D
+VERB = 0x0834
+NOUN = 0x0835
+SAVE_START = 0x0830   # SAVE GAME writes $0830-$10FE
+
+# AUTO LOAD OBJ, the 1987 loader: where it loads and starts, its print routine, and the Monitor
+# routines it calls between pages
+LOADER = 0x0FFD
+LOADER_PRINT = 0x1C15
+HOME, GETLN1 = 0xFC58, 0xFD6F
 
 ROOM_FIELDS = ['RROOMNO', 'RMSG', 'RN', 'RS', 'RE', 'RW', 'RU', 'RD', 'RBASEPIC', 'RCURPIC']
 DIRS = ['north', 'south', 'east', 'west', 'up', 'down']
@@ -60,7 +73,8 @@ TABLE_SYMBOLS = {'verb_table': 'VERBS', 'noun_table': 'NOUNS', 'OBJBASE': 'OBJBA
                  'ROOMBASE': 'ROOMBASE', 'SWITCH': 'SWITCH', 'turn_rules': 'TURN_RULES',
                  'command_rules': 'CMD_RULES', 'picture_directory': 'PICDIR',
                  'message_index': 'MSGINDEX', 'shape_table': 'SHAPES', 'floor_slots': 'FLOOR_SLOTS',
-                 'init_switches': 'INIT_SWITCHES'}
+                 'init_switches': 'INIT_SWITCHES', 'CURONO': 'CURONO', 'turns': 'TURNS',
+                 'LAMPSTAT': 'LAMPSTAT', 'verb': 'VERB', 'noun': 'NOUN'}
 
 
 def use_symbols(path):
@@ -269,6 +283,52 @@ class Game:
                 p += 1
             out[n] = vectors
         return out
+
+    def saved_state(self, name):
+        """A state snapshot file (SAVED GAME: $0830-$10FE, what RESTORE GAME loads) as the
+        state a port keeps: room, turn, switches, light, the last verb and noun (the turn rules
+        that run after a RESTORE see them), and every object's and room's changeable fields."""
+        snap = pathlib.Path(os.path.join(self.dir, name)).read_bytes()
+        at = lambda a: snap[a - SAVE_START]
+        objects = []
+        for o in self.objects():
+            a = o['addr']
+            objects.append({'OBJECTNO': o['OBJECTNO'], 'OROOM': at(a + 2), 'OPIC': at(a + 3),
+                            'OXCOORD': at(a + 5), 'OYCOORD': at(a + 6), 'OSTATUS': at(a + 7)})
+        rooms = [{'RROOMNO': n, 'RBASEPIC': at(ROOMBASE + 10 * n + 8), 'RCURPIC': at(ROOMBASE + 10 * n + 9)}
+                 for n in range(1, len(self.rooms()) + 1)]
+        return {'room': at(CURONO), 'turn': at(TURNS) | at(TURNS + 1) << 8,
+                'switches': [at(SWITCH + i) for i in range(20)], 'light': at(LAMPSTAT) == 0,
+                'verb': at(VERB), 'noun': at(NOUN), 'objects': objects, 'rooms': rooms}
+
+    def loader_text(self):
+        """The loader's menu prompt and instruction pages, read from its code in byte order:
+        each JSR to its print routine is followed by $00-terminated text, JSR GETLN1 waits for
+        a line, JSR HOME clears the screen and starts a page. Each is a list of lines, split at
+        the carriage returns as printed (so leading empty lines are kept): the menu is the text
+        before the first wait, each page the text after a HOME."""
+        code = pathlib.Path(os.path.join(self.dir, 'AUTO_LOAD_OBJ.bin')).read_bytes()
+        lengths = {0xAD: 3, 0xA2: 2, 0x9A: 1, 0xC9: 2, 0xD0: 2, 0xF0: 2, 0x4C: 3, 0x20: 3}
+        p, events, text = 0, [], []
+        while code[p] != 0x60:                       # up to run_adventure's RTS
+            op = code[p]
+            if op not in lengths:
+                raise SystemExit('loader: unexpected opcode $%02X at $%04X' % (op, LOADER + p))
+            if op == 0x20:
+                target = code[p + 1] | code[p + 2] << 8
+                p += 3
+                if target == LOADER_PRINT:
+                    end = code.index(0, p)
+                    text.append(bytes(c & 0x7F for c in code[p:end]).decode('ascii'))
+                    p = end + 1
+                elif target in (HOME, GETLN1):
+                    events.append((''.join(text), target))
+                    text = []
+                continue
+            p += lengths[op]
+        menu = events[0][0].split('\r')
+        pages = [t.split('\r') for (t, _), (_, after) in zip(events[1:], events) if after == HOME]
+        return {'menu': menu, 'pages': pages}
 
     # --- rules ------------------------------------------------------------------------
     def rules(self, base):
@@ -486,6 +546,10 @@ def main():
         # (tests/test_analysis.py checks this against the game at its first prompt)
         'start': {'room': 1, 'turn': 1, 'switches': [g.b(INIT_SWITCHES + i) for i in range(20)],
                   'light': True},
+        # the 1987 loader's menu and instruction pages (PORTING.md, "Before the game")
+        'loader': g.loader_text(),
+        # the saved game on the disk: what RESTORE GAME loads before any SAVE GAME
+        'saved_game': g.saved_state('SAVED_GAME.bin'),
         'addresses': {k: globals()[k] for k in sorted(TABLE_SYMBOLS.values())},
     }))
     print('%d verbs, %d nouns, %d messages, %d rooms, %d objects, %d pictures, %d command rules, '

@@ -2,12 +2,15 @@
 """Play Mystery House headlessly: a 6502 emulator that runs the built ADVENTURE and types
 commands into it, for tests and walkthroughs.
 
-usage: play.py <files dir> <commands.txt> [--transcript out.txt] [--screens dir]
+usage: play.py <files dir> <commands.txt> [--boot] [--transcript out.txt] [--screens dir]
                                           [--screen-hashes out.txt] [--pixel-hashes out.txt]
                                           [--max-steps N]
 
 <files dir> holds the disk's files as dos33.py extracts them (build.sh makes extracted/).
-<commands.txt> has one command per line ('#' starts a comment). The transcript is everything
+<commands.txt> has one command per line ('#' starts a comment; a line <CR> is RETURN on an
+empty line). --boot starts at the 1987 loader (AUTO LOAD OBJ, as MYSTERY.HELLO leaves it:
+the title picture loaded, CALL 4093) instead of at ADVENTURE; its BRUN ADVENTURE then starts
+the game. The transcript is everything
 the game prints, with each command echoed after the prompt; --screens saves the hi-res screen
 at each prompt as PNG (screen_NNN.png), and --screen-hashes writes a short SHA-256 of the
 hi-res page at each prompt, one per line (what the tests compare). --pixel-hashes writes the
@@ -22,8 +25,11 @@ stood in for here:
                           file DOS is READing. GETLN first prints the prompt character at
                           $33 (the game sets '?'); GETLN1 does not
   WAIT ($FCA8)            a delay: returns at once
+  HOME ($FC58)            clear the text screen: recorded as a line <HOME> (only the loader
+                          calls it)
   DOS commands            OPEN, READ MESSAGES,B$xxxx, BLOAD name[,A$xxxx], BSAVE name,A$xxxx,
-                          L$xxxx, served from <files dir> (BSAVE keeps the file in memory)
+                          L$xxxx, BRUN name, served from <files dir> (BSAVE keeps the file in
+                          memory; BRUN loads and jumps to the load address)
   $03D0                   DOS warm start: the game has quit; the run ends
 Anything else outside the program (an Applesoft error at $EE68, BRK) stops with an error.
 The relocated hi-res code draws into $2000-$3FFF as on the real machine.
@@ -70,7 +76,7 @@ class Stop(Exception):
 class Machine:
     __slots__ = ('files', 'mem', 'a', 'x', 'y', 'sp', 'n', 'v', 'd', 'i', 'z', 'c', 'pc', 'out',
                  'line', 'commands', 'reading', 'saved', 'steps', 'prompts', 'on_prompt',
-                 'screens', 'pixels', 'executed', 'hooks')
+                 'screens', 'pixels', 'executed', 'hooks', 'jump')
 
     def __init__(self, files):
         self.files = files
@@ -91,6 +97,7 @@ class Machine:
         self.pixels = []           # pixel_hash of the visible picture at each prompt
         self.executed = None       # a set to record every executed address in (gamecov.py)
         self.hooks = {}            # address -> function(machine), called while recording
+        self.jump = None           # where a BRUN goes once the command line is printed
 
     # ---- memory ------------------------------------------------------------------------
     def rd(self, a):
@@ -117,6 +124,7 @@ class Machine:
 
     # ---- ROM and DOS -------------------------------------------------------------------
     def load(self, name, at=None):
+        """Load a file (or one BSAVEd in this run); returns its address."""
         if name in self.saved:
             data, load = self.saved[name]
         else:
@@ -126,6 +134,7 @@ class Machine:
             data, load = raw
         at = load if at is None else at
         self.mem[at:at + len(data)] = data
+        return at
 
     def dos(self, cmd):
         word, _, rest = cmd.partition(' ')
@@ -142,7 +151,9 @@ class Machine:
             for p in parts[1:]:
                 if p.startswith('A$'):
                     at = int(p[2:], 16)
-            self.load(parts[0].strip(), at)
+            at = self.load(parts[0].strip(), at)
+            if word == 'BRUN':
+                self.jump = at
             return
         if word == 'BSAVE':
             parts = rest.split(',')
@@ -196,9 +207,19 @@ class Machine:
         pc = self.pc
         if pc == COUT:
             self.cout(self.a)
+            if self.jump is not None:          # BRUN: DOS runs the program it loaded
+                self.pc, self.jump = self.jump, None
+                if self.executed is not None:  # recording covers the program now running
+                    self.executed.clear()
+                return
         elif pc in (GETLN, GETLN1):
             self.getln(pc == GETLN)
-        elif pc in (WAIT, HOME):
+        elif pc == HOME:
+            if self.line.strip():
+                self.out.append(self.line.rstrip())
+            self.line = ''
+            self.out.append('<HOME>')
+        elif pc == WAIT:
             self.a = 0
         elif pc == DOS_WARM:
             raise Stop('quit to DOS')
@@ -367,9 +388,10 @@ def pixel_hash(page, rows=160):
 
 
 def read_commands(path):
-    """A command script: one command per line, '#' starts a comment, blank lines skipped."""
+    """A command script: one command per line, '#' starts a comment, blank lines skipped; a
+    line <CR> stands for RETURN on an empty line."""
     lines = [l.split('#')[0].strip() for l in pathlib.Path(path).read_text().splitlines()]
-    return [l for l in lines if l]
+    return ['' if l == '<CR>' else l for l in lines if l]
 
 
 def read_files(d):
@@ -388,15 +410,18 @@ def read_files(d):
     return files
 
 
-def play(files_dir, commands, max_steps=200_000_000, screens=None, setup=None):
+def play(files_dir, commands, max_steps=200_000_000, screens=None, setup=None, boot=False):
     """Run the game on commands; setup(machine), if given, runs first (gamecov.py uses it
-    to start recording)."""
+    to start recording). boot: start at the 1987 loader instead (see the usage above)."""
     m = Machine(read_files(files_dir))
     m.commands = list(commands)
     if setup:
         setup(m)
-    m.load('ADVENTURE')
-    m.pc = 0x0800
+    if boot:
+        m.pc = m.load('AUTO LOAD OBJ')            # MYSTERY.HELLO's CALL 4093: $0FFD, start
+    else:
+        m.load('ADVENTURE')
+        m.pc = 0x0800
     if screens:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         import pictures
@@ -424,9 +449,13 @@ def main():
             i = args.index(k)
             opts[k] = args[i + 1]
             del args[i:i + 2]
+    boot = '--boot' in args
+    if boot:
+        args.remove('--boot')
     files_dir, cmd_file = args
     commands = read_commands(cmd_file)
-    m, reason = play(files_dir, commands, int(opts.get('--max-steps', 200_000_000)), opts.get('--screens'))
+    m, reason = play(files_dir, commands, int(opts.get('--max-steps', 200_000_000)), opts.get('--screens'),
+                     boot=boot)
     text = '\n'.join(m.out) + '\n'
     if '--screen-hashes' in opts:
         pathlib.Path(opts['--screen-hashes']).write_text('\n'.join(m.screens) + '\n')

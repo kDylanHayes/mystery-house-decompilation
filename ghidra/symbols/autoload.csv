@@ -5,7 +5,7 @@ address,name,type,comment
 # AUTO LOAD OBJ: the 1987 public-domain loader. It shows the Sierra title, offers the
 # instructions, then BRUNs ADVENTURE. It carries its own copy of the macro library at $1C00.
 0FFD,start,func,menu: G = game, I = instructions
-105A,show_instructions,func,eight pages of instructions and the cast of characters
+105A,show_instructions,func,six pages of instructions, the last the cast of characters
 1B7B,run_adventure,func,PRINT CHR$(4)"BRUN ADVENTURE"
 2000,title_1987,label,hi-res page 1: the 1987 Sierra title screen
 1C00,rt_copy,func:X,copy X bytes: .word src, dst
