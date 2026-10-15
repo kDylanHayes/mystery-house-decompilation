@@ -15,8 +15,9 @@ move); without it, it uses the original addresses. It writes:
   map.txt, map.dot  every room's exits and the passages rules make (map.dot is Graphviz)
   gamedata.json     all of the above in machine-readable form, plus what a port needs: each
                     picture's strokes, each shape's vectors, the floor slots, the state a new
-                    game starts in, the disk's saved game, and the loader's menu and
-                    instruction pages (PORTING.md describes every field)
+                    game starts in, the disk's saved game, the loader's menu and
+                    instruction pages, and the two title pictures as 280 x 192 bitmaps
+                    (PORTING.md describes every field)
 """
 import pathlib
 import json
@@ -45,6 +46,7 @@ TURNS = 0x0853
 LAMPSTAT = 0x089D
 VERB = 0x0834
 NOUN = 0x0835
+SHOWN_PICTURE = 0x0839  # the picture on screen, which VIEW_IS tests
 SAVE_START = 0x0830   # SAVE GAME writes $0830-$10FE
 
 # AUTO LOAD OBJ, the 1987 loader: where it loads and starts, its print routine, and the Monitor
@@ -74,7 +76,8 @@ TABLE_SYMBOLS = {'verb_table': 'VERBS', 'noun_table': 'NOUNS', 'OBJBASE': 'OBJBA
                  'command_rules': 'CMD_RULES', 'picture_directory': 'PICDIR',
                  'message_index': 'MSGINDEX', 'shape_table': 'SHAPES', 'floor_slots': 'FLOOR_SLOTS',
                  'init_switches': 'INIT_SWITCHES', 'CURONO': 'CURONO', 'turns': 'TURNS',
-                 'LAMPSTAT': 'LAMPSTAT', 'verb': 'VERB', 'noun': 'NOUN'}
+                 'LAMPSTAT': 'LAMPSTAT', 'verb': 'VERB', 'noun': 'NOUN',
+                 'shown_picture': 'SHOWN_PICTURE'}
 
 
 def use_symbols(path):
@@ -286,8 +289,9 @@ class Game:
 
     def saved_state(self, name):
         """A state snapshot file (SAVED GAME: $0830-$10FE, what RESTORE GAME loads) as the
-        state a port keeps: room, turn, switches, light, the last verb and noun (the turn rules
-        that run after a RESTORE see them), and every object's and room's changeable fields."""
+        state a port keeps: room, turn, switches, light, the last verb and noun and the picture
+        on screen (the turn rules that run after a RESTORE see them), and every object's and
+        room's changeable fields."""
         snap = pathlib.Path(os.path.join(self.dir, name)).read_bytes()
         at = lambda a: snap[a - SAVE_START]
         objects = []
@@ -299,7 +303,8 @@ class Game:
                  for n in range(1, len(self.rooms()) + 1)]
         return {'room': at(CURONO), 'turn': at(TURNS) | at(TURNS + 1) << 8,
                 'switches': [at(SWITCH + i) for i in range(20)], 'light': at(LAMPSTAT) == 0,
-                'verb': at(VERB), 'noun': at(NOUN), 'objects': objects, 'rooms': rooms}
+                'verb': at(VERB), 'noun': at(NOUN),
+                'shown_picture': at(SHOWN_PICTURE), 'objects': objects, 'rooms': rooms}
 
     def loader_text(self):
         """The loader's menu prompt and instruction pages, read from its code in byte order:
@@ -329,6 +334,17 @@ class Game:
         menu = events[0][0].split('\r')
         pages = [t.split('\r') for (t, _), (_, after) in zip(events[1:], events) if after == HOME]
         return {'menu': menu, 'pages': pages}
+
+    def titles(self):
+        """The two title pictures as 280 x 192 bitmaps: the 1987 Sierra title in AUTO LOAD OBJ's
+        $2000-$3FFF and the 1980 On-Line Systems title in ADVENTURE's. Each row of 'pixels' is 35
+        bytes in hex, eight pixels a byte with the leftmost in bit 7 (1 = lit). Each row of
+        'colour_bits' is the hi-res bytes' bit 7 (the colour group, which shifts NTSC artefact
+        colour) for the row's 40 groups of 7 pixels: 5 bytes in hex, leftmost group in bit 7."""
+        auto = pathlib.Path(os.path.join(self.dir, 'AUTO_LOAD_OBJ.bin')).read_bytes()
+        pages = {'1987': auto[0x2000 - LOADER:0x4000 - LOADER],
+                 '1980': self.d[0x2000 - LOAD:0x4000 - LOAD]}
+        return {name: hires_bitmap(page) for name, page in pages.items()}
 
     # --- rules ------------------------------------------------------------------------
     def rules(self, base):
@@ -441,6 +457,23 @@ def short(s, n=40):
     return s if len(s) <= n else s[:n - 3] + '...'
 
 
+def pack_bits(bits):
+    """A list of 0/1, a multiple of 8 long, as hex bytes with the first bit in bit 7."""
+    return bytes(sum(b << (7 - k) for k, b in enumerate(bits[i:i + 8]))
+                 for i in range(0, len(bits), 8)).hex().upper()
+
+
+def hires_bitmap(page):
+    """An 8 KB hi-res page as {'pixels': 192 rows, 'colour_bits': 192 rows} (Game.titles)."""
+    pixels, colour = [], []
+    for y in range(192):
+        base = (y & 7) * 0x400 + ((y >> 3) & 7) * 0x80 + (y >> 6) * 0x28
+        row = page[base:base + 40]
+        pixels.append(pack_bits([(b >> k) & 1 for b in row for k in range(7)]))
+        colour.append(pack_bits([b >> 7 for b in row]))
+    return {'pixels': pixels, 'colour_bits': colour}
+
+
 def compact_json(data):
     """JSON indented by one space, but with each list of numbers on one line, and each list of
     such lists (a picture's stroke, a shape's vectors) too, so the picture data stays small."""
@@ -550,6 +583,8 @@ def main():
         'loader': g.loader_text(),
         # the saved game on the disk: what RESTORE GAME loads before any SAVE GAME
         'saved_game': g.saved_state('SAVED_GAME.bin'),
+        # the 1987 and 1980 title pictures (PORTING.md, "Before the game")
+        'titles': g.titles(),
         'addresses': {k: globals()[k] for k in sorted(TABLE_SYMBOLS.values())},
     }))
     print('%d verbs, %d nouns, %d messages, %d rooms, %d objects, %d pictures, %d command rules, '

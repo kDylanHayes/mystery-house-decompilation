@@ -3,6 +3,7 @@ Ghidra step) and source_fragments.py (the original source in the binary). Each i
 against something independent: the assembler's symbol table and listing, and what the game
 actually executes while the play scripts run (helpers.played)."""
 import csv
+import hashlib
 import json
 import os
 import re
@@ -90,6 +91,7 @@ class GameData(unittest.TestCase):
         self.assertEqual(list(mem[syms['SWITCH']:syms['SWITCH'] + 20]), sg['switches'])
         self.assertEqual(mem[syms['LAMPSTAT']] == 0, sg['light'])
         self.assertEqual((mem[syms['verb']], mem[syms['noun']]), (sg['verb'], sg['noun']))
+        self.assertEqual(mem[syms['shown_picture']], sg['shown_picture'])
         for o, saved in zip(self.data['objects'], sg['objects']):
             self.assertEqual(saved['OBJECTNO'], o['OBJECTNO'])
             for k in ('OROOM', 'OPIC', 'OXCOORD', 'OYCOORD', 'OSTATUS'):
@@ -111,6 +113,38 @@ class GameData(unittest.TestCase):
         menu = [l.rstrip() for l in self.data['loader']['menu']]
         x = out.index('> X')
         self.assertEqual(out[x - len(menu):x], menu)
+
+    def test_titles_are_the_hires_pages(self):
+        # both titles decode back to the pages in the built files, colour bits and all
+        b = os.path.join(helpers.build(), 'files')
+        with open(os.path.join(b, 'AUTO_LOAD_OBJ.bin'), 'rb') as f:
+            auto = f.read()
+        with open(os.path.join(b, 'ADVENTURE.bin'), 'rb') as f:
+            adv = f.read()
+        pages = {'1987': auto[0x2000 - 0x0FFD:0x4000 - 0x0FFD], '1980': adv[0x2000 - 0x0800:0x4000 - 0x0800]}
+        for name, page in pages.items():
+            t = self.data['titles'][name]
+            self.assertEqual((len(t['pixels']), len(t['colour_bits'])), (192, 192))
+            rebuilt = bytearray(0x2000)
+            for y in range(192):
+                base = (y & 7) * 0x400 + ((y >> 3) & 7) * 0x80 + (y >> 6) * 0x28
+                px = int(t['pixels'][y], 16)
+                col = int(t['colour_bits'][y], 16)
+                for c in range(40):
+                    bits = sum(((px >> (279 - (c * 7 + k))) & 1) << k for k in range(7))
+                    rebuilt[base + c] = bits | ((col >> (39 - c)) & 1) << 7
+            for y in range(192):
+                base = (y & 7) * 0x400 + ((y >> 3) & 7) * 0x80 + (y >> 6) * 0x28
+                self.assertEqual(rebuilt[base:base + 40], page[base:base + 40], (name, y))
+
+    def test_title_1987_is_what_the_loader_shows(self):
+        # a port that draws the 1987 title from its bitmap gets the intro script's pixel hash
+        # at the loader's prompts (the hash of the top 160 rows, one byte per pixel)
+        px = bytes(int(row, 16) >> (279 - x) & 1 for row in self.data['titles']['1987']['pixels'][:160]
+                   for x in range(280))
+        with open(os.path.join(helpers.ROOT, 'tests', 'play', 'intro.pixels.txt')) as f:
+            first = f.readline().strip()
+        self.assertEqual(hashlib.sha256(px).hexdigest()[:16], first)
 
     def fields(self):
         names = {}
