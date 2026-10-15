@@ -12,7 +12,8 @@ whole game database (rooms, objects, words, messages, rules and pictures) decode
 python3 -m unittest discover -s tests
 ```
 
-Needs only python3. It builds every file of the game from source (the programs, the messages,
+Needs only python3 (the source is standard ca65; `tools/ca65_check.sh` shows ca65 + ld65 build
+the same programs). It builds every file of the game from source (the programs, the messages,
 the pictures, the BASIC programs and the saved states) and the disk image around them
 (`build/mystery_house.do`, bootable), checks every file against the original's hash and the
 disk against its recorded hash, and regenerates the assets. Only DOS 3.3 itself, Apple's code
@@ -32,7 +33,7 @@ on tracks 0-2, is kept as a binary.
 
 | Path | Contents |
 |---|---|
-| `src/adventure.s` | the game: engine and data, **reassemblable**, byte-identical to `ADVENTURE` |
+| `src/adventure.s` | the game: engine and data, **reassemblable** (standard ca65 syntax), byte-identical to `ADVENTURE` |
 | `src/autoload.s` | the 1987 loader and instructions (`AUTO LOAD OBJ`) |
 | `src/messages.txt` | the game's 167 messages, one per line; builds the `MESSAGES` file |
 | `src/pictures/` | the 97 pictures as editable point lists; build the `BLOCK1`-`BLOCK19` files |

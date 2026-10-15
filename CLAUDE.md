@@ -31,8 +31,9 @@ original disk image, no residue. Edit these, not generated files.
 - Names and routine comments live only in `src/`. Rename or document there; the Ghidra step takes
   them from the assembler's symbol table. `symbols/*.csv` only adds Ghidra data types and register
   parameters (`func:X`); its name column is informational.
-- Local labels are scoped with a dot (`draw_picture.next_point`). Every label has a name; keep it
-  that way.
+- The source is standard ca65 syntax; keep it that way (`tools/ca65_check.sh`, needs cc65, must
+  report both programs byte for byte; CI runs it). A label inside a routine is
+  `routine__local` (`draw_picture__next_point`). Every label has a name; keep it that way.
 - HACKING.md is the guide to the source, the build and editing the game; each folder has a
   README.md. Update them when something they describe changes.
 - `tools/gen_source.py` produced `src/` once from the original binary; don't rerun it over
@@ -48,7 +49,7 @@ Unlicense (`LICENSE`); DOS 3.3 (`src/disk/dos33.bin`) is Apple's and excluded.
 ## Conventions
 
 - The engine passes operands inline after `JSR` (the `rt_*` macro library at `$7600`); the
-  tracer and the source keep those as `.word` / `.hiasc` lines after the call.
+  tracer and the source keep those as `.word` / `hiasc` lines after the call.
 - The source is shiftable: always refer to addresses by name (`.word label`, `#<label`), never
   as numbers. Only `$0800`, `OBJBASE`, `ROOMBASE` and `$2000` are pinned. `tests/test_shift.py`
   pads the source and replays the game; it fails if anything still depends on a fixed address.

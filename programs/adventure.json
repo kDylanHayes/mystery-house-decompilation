@@ -29,7 +29,7 @@
   ],
   "labels": {},
   "always_branches": [
-    "hglin.always"
+    "hglin__always"
   ],
   "data_only": [
     [
@@ -41,7 +41,7 @@
     "old_rt_copy"
   ],
   "inline_text_length": {
-    "cache_load_block.bload": 23,
+    "cache_load_block__bload": 23,
     "read_message_line": 23,
     "dead_read_message_cmd": 23
   }

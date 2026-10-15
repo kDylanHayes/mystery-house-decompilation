@@ -354,13 +354,13 @@ void rt_compare_body(byte x)
   do {
     if (rt_ptr1[bVar1] != rt_ptr2[bVar1]) {
       cmp_result = 1;
-      goto rt_compare_body.done;
+      goto rt_compare_body__done;
     }
     bVar1 = bVar1 + 1;
     x = x - 1;
   } while (x != 0);
   cmp_result = 0;
-rt_compare_body.done:
+rt_compare_body__done:
                     /* WARNING: Subroutine does not return */
   rt_return(2);
 }

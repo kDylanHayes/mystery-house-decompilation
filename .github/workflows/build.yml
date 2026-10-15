@@ -1,5 +1,6 @@
 # Every push and pull request: run the tests, build everything with the strict check (each file
-# must match the original's hash and the disk must match disk/SHA256), and make sure the
+# must match the original's hash and the disk must match disk/SHA256), check that the standard
+# cc65 tools (ca65 + ld65) build the same programs from the same source, and make sure the
 # committed generated files are what the source produces.
 name: build
 
@@ -17,11 +18,17 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install cc65 (ca65, ld65)
+        run: sudo apt-get update && sudo apt-get install -y cc65
+
       - name: Tests
         run: python3 -m unittest discover -s tests -v
 
       - name: Matching build
         run: ./build.sh --check
+
+      - name: The standard assembler builds the same programs
+        run: tools/ca65_check.sh
 
       - name: Generated files are up to date
         # PNGs are left out: zlib versions differ between platforms, so the compressed bytes

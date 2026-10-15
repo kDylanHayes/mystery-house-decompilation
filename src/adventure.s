@@ -23,6 +23,7 @@
 ; in the binary (see original_source/). "leftover memory" is stale data saved with the file;
 ; nothing reads it, and it can be deleted to make room in front of a pinned (.org) table.
 
+        .include "macros.inc"
         .include "apple2.inc"
         .include "game.inc"
 
@@ -71,9 +72,6 @@ old_rt_copy              = $4A00
 old_BUMPIT              = $4A03
 old_BUMP16             = $4A06
 old_rt_print             = $4A15
-unknown_verb_text        = $6362    ; patched into "I DONT KNOW HOW TO ________ SOMETHING"
-unknown_noun_verb        = $63A1    ; patched into "I DONT KNOW HOW TO ________ A ________"
-unknown_noun_text        = $63AC
 dos_error_vector         = $9D5A    ; DOS 3.3 error-handler vector
 dos_language_flag        = $AAB6    ; DOS 3.3: $40 = Applesoft active
 
@@ -210,7 +208,7 @@ pic_cache:
 ; ==== objects ========================================================================
 ; One record per object (layout in game.inc: OBJECTNO ... ORPICSTA). ONEXT is the record
 ; length; the table ends with HV. Starting state; STARTUP restores it on "play again".
-        .org $0900
+        .assert * = $0900, error, "OBJBASE must be at $0900 (it is inside the saved state): the variables before it must end exactly there"
 OBJBASE:
 ; id  noun  room  pic  shape  x  y  status  msg  length  npics  pics...
 obj_01: .byte 1, N_TOM, 3, 52, 0, 41, 61, OFIXED, 0, obj_02-obj_01, 1, 53
@@ -268,12 +266,12 @@ obj_52: .byte 52, N_REFRIGER, NOWHERE, 94, 0, 155, 17, OFIXED, 0, obj_53-obj_52,
 obj_53: .byte 53, N_DAGGER, 26, 95, 0, 171, 86, OMOVABLE, 117, obj_54-obj_53, 1, 38
 obj_54: .byte 54, N_LINE, 26, 96, 0, 73, 35, OFIXED, 0, obj_end-obj_54, 1, 38
 obj_end: .byte $FF
-        .incbin "data/adventure_0B9D.bin", upto $0D00    ; $0B9D-$0CFF leftover memory, not used by the code (see NOTES.md)
+        incbin_upto "data/adventure_0B9D.bin", 355, $0D00    ; $0B9D-$0CFF leftover memory, not used by the code (see NOTES.md)
 
 ; ==== rooms ==========================================================================
 ; RTBLSIZ bytes per room, indexed by room number (room 0 unused): RROOMNO, RMSG, the six
 ; exits RN RS RE RW RU RD (0 = none), RBASEPIC, RCURPIC.
-        .org $0D00
+        .assert * = $0D00, error, "ROOMBASE must be at $0D00 (it is inside the saved state)"
 ROOMBASE:
 ;      no  msg  N  S  E  W  U  D  base cur
         .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0   ; 0 unused
@@ -318,412 +316,412 @@ ROOMBASE:
         .byte 39, 78, 0, 0, 0, 0, 0, 33, 42, 42   ; 39 IN THE ATTIC
         .byte 40, 81, 0, 0, 0, 0, 0, 0, 43, 43   ; 40 IN A STORAGE ROOM
         .byte 41, 85, 0, 0, 0, 0, 0, 0, 44, 44   ; 41 IN THE TOWER
-        .assert * <= STATE_END, "the room table must end inside the saved state ($0830-$10FE)"
+        .assert * <= STATE_END, error, "the room table must end inside the saved state ($0830-$10FE)"
         .incbin "data/adventure_0EA4.bin"    ; $0EA4-$16FF leftover memory, not used by the code (see NOTES.md)
 
 ; ==== nouns ==========================================================================
 ; Word groups: head word, synonym count, synonyms; all WORDLEN characters, high-bit ASCII.
 ; The group number is the noun's id (N_* in game.inc). Ends with HV.
 noun_table:
-        .hiasc "DAISY   "            ; N_DAISY = 1
+        hiasc "DAISY   "            ; N_DAISY = 1
         .byte 1
-        .hiasc "FLOWER  "
-        .hiasc "BILL    "            ; N_BILL = 2
+        hiasc "FLOWER  "
+        hiasc "BILL    "            ; N_BILL = 2
         .byte 0
-        .hiasc "JOE     "            ; N_JOE = 3
+        hiasc "JOE     "            ; N_JOE = 3
         .byte 0
-        .hiasc "SALLY   "            ; N_SALLY = 4
+        hiasc "SALLY   "            ; N_SALLY = 4
         .byte 0
-        .hiasc "SAM     "            ; N_SAM = 5
+        hiasc "SAM     "            ; N_SAM = 5
         .byte 0
-        .hiasc "TOM     "            ; N_TOM = 6
+        hiasc "TOM     "            ; N_TOM = 6
         .byte 0
-        .hiasc "DOCTOR  "            ; N_DOCTOR = 7
+        hiasc "DOCTOR  "            ; N_DOCTOR = 7
         .byte 3
-        .hiasc "GREEN   "
-        .hiasc "DR.     "
-        .hiasc "DR.GREEN"
-        .hiasc "DAGGER  "            ; N_DAGGER = 8
+        hiasc "GREEN   "
+        hiasc "DR.     "
+        hiasc "DR.GREEN"
+        hiasc "DAGGER  "            ; N_DAGGER = 8
         .byte 0
-        .hiasc "GUN     "            ; N_GUN = 9
+        hiasc "GUN     "            ; N_GUN = 9
         .byte 1
-        .hiasc "PISTOL  "
-        .hiasc "NOTE    "            ; N_NOTE = 10
+        hiasc "PISTOL  "
+        hiasc "NOTE    "            ; N_NOTE = 10
         .byte 3
-        .hiasc "MEMO    "
-        .hiasc "LETTER  "
-        .hiasc "PAPER   "
-        .hiasc "BLA     "            ; N_BLA = 11
+        hiasc "MEMO    "
+        hiasc "LETTER  "
+        hiasc "PAPER   "
+        hiasc "BLA     "            ; N_BLA = 11
         .byte 1
-        .hiasc "DOG     "
-        .hiasc "DOG     "            ; N_DOG = 12
+        hiasc "DOG     "
+        hiasc "DOG     "            ; N_DOG = 12
         .byte 0
-        .hiasc "FOOD    "            ; N_FOOD = 13
+        hiasc "FOOD    "            ; N_FOOD = 13
         .byte 1
-        .hiasc "BREAD   "
-        .hiasc "LAST    "            ; N_LAST = 14
+        hiasc "BREAD   "
+        hiasc "LAST    "            ; N_LAST = 14
         .byte 0
-        .hiasc "BODY    "            ; N_BODY = 15
+        hiasc "BODY    "            ; N_BODY = 15
         .byte 2
-        .hiasc "CORPSE  "
-        .hiasc "CADAVER "
-        .hiasc "TRAPDOOR"            ; N_TRAPDOOR = 16
+        hiasc "CORPSE  "
+        hiasc "CADAVER "
+        hiasc "TRAPDOOR"            ; N_TRAPDOOR = 16
         .byte 0
-        .hiasc "KNIFE   "            ; N_KNIFE = 17
+        hiasc "KNIFE   "            ; N_KNIFE = 17
         .byte 0
-        .hiasc "BOLTS   "            ; N_BOLTS = 18
+        hiasc "BOLTS   "            ; N_BOLTS = 18
         .byte 1
-        .hiasc "SCREWS  "
-        .hiasc "BUTTERKN"            ; N_BUTTERKN = 19
+        hiasc "SCREWS  "
+        hiasc "BUTTERKN"            ; N_BUTTERKN = 19
         .byte 0
-        .hiasc "PICTURE "            ; N_PICTURE = 20
+        hiasc "PICTURE "            ; N_PICTURE = 20
         .byte 1
-        .hiasc "PORTRAIT"
-        .hiasc "BUTTON  "            ; N_BUTTON = 21
+        hiasc "PORTRAIT"
+        hiasc "BUTTON  "            ; N_BUTTON = 21
         .byte 1
-        .hiasc "KNOB    "
-        .hiasc "CRAWLSPA"            ; N_CRAWLSPA = 22
+        hiasc "KNOB    "
+        hiasc "CRAWLSPA"            ; N_CRAWLSPA = 22
         .byte 0
-        .hiasc "STAIRS  "            ; N_STAIRS = 23
+        hiasc "STAIRS  "            ; N_STAIRS = 23
         .byte 2
-        .hiasc "STAIRWAY"
-        .hiasc "STEPS   "
-        .hiasc "WALL    "            ; N_WALL = 24
+        hiasc "STAIRWAY"
+        hiasc "STEPS   "
+        hiasc "WALL    "            ; N_WALL = 24
         .byte 1
-        .hiasc "WALLS   "
-        .hiasc "DOOR    "            ; N_DOOR = 25
+        hiasc "WALLS   "
+        hiasc "DOOR    "            ; N_DOOR = 25
         .byte 2
-        .hiasc "DOORS   "
-        .hiasc "DOORWAY "
-        .hiasc "TABLE   "            ; N_TABLE = 26
+        hiasc "DOORS   "
+        hiasc "DOORWAY "
+        hiasc "TABLE   "            ; N_TABLE = 26
         .byte 1
-        .hiasc "DESK    "
-        .hiasc "DRAWERS "            ; N_DRAWERS = 27
+        hiasc "DESK    "
+        hiasc "DRAWERS "            ; N_DRAWERS = 27
         .byte 0
-        .hiasc "RUG     "            ; N_RUG = 28
+        hiasc "RUG     "            ; N_RUG = 28
         .byte 1
-        .hiasc "CARPET  "
-        .hiasc "WATER   "            ; N_WATER = 29
+        hiasc "CARPET  "
+        hiasc "WATER   "            ; N_WATER = 29
         .byte 1
-        .hiasc "LIQUID  "
-        .hiasc "TOILET  "            ; N_TOILET = 30
+        hiasc "LIQUID  "
+        hiasc "TOILET  "            ; N_TOILET = 30
         .byte 2
-        .hiasc "POTTY   "
-        .hiasc "JOHN    "
-        .hiasc "TOWEL   "            ; N_TOWEL = 31
+        hiasc "POTTY   "
+        hiasc "JOHN    "
+        hiasc "TOWEL   "            ; N_TOWEL = 31
         .byte 1
-        .hiasc "CLOTH   "
-        .hiasc "SHOWER  "            ; N_SHOWER = 32
+        hiasc "CLOTH   "
+        hiasc "SHOWER  "            ; N_SHOWER = 32
         .byte 0
-        .hiasc "SLEDGEHA"            ; N_SLEDGEHA = 33
+        hiasc "SLEDGEHA"            ; N_SLEDGEHA = 33
         .byte 1
-        .hiasc "HAMMER  "
-        .hiasc "WINDOW  "            ; N_WINDOW = 34
+        hiasc "HAMMER  "
+        hiasc "WINDOW  "            ; N_WINDOW = 34
         .byte 0
-        .hiasc "BOXES   "            ; N_BOXES = 35
+        hiasc "BOXES   "            ; N_BOXES = 35
         .byte 1
-        .hiasc "BOX     "
-        .hiasc "TRUNK   "            ; N_TRUNK = 36
+        hiasc "BOX     "
+        hiasc "TRUNK   "            ; N_TRUNK = 36
         .byte 1
-        .hiasc "CHEST   "
-        .hiasc "FENCE   "            ; N_FENCE = 37
+        hiasc "CHEST   "
+        hiasc "FENCE   "            ; N_FENCE = 37
         .byte 0
-        .hiasc "CANDLE  "            ; N_CANDLE = 38
+        hiasc "CANDLE  "            ; N_CANDLE = 38
         .byte 0
-        .hiasc "LAMP    "            ; N_LAMP = 39
+        hiasc "LAMP    "            ; N_LAMP = 39
         .byte 0
-        .hiasc "HOLE    "            ; N_HOLE = 40
+        hiasc "HOLE    "            ; N_HOLE = 40
         .byte 0
-        .hiasc "KEY     "            ; N_KEY = 41
+        hiasc "KEY     "            ; N_KEY = 41
         .byte 0
-        .hiasc "SHELVES "            ; N_SHELVES = 42
+        hiasc "SHELVES "            ; N_SHELVES = 42
         .byte 1
-        .hiasc "BOOKSHEL"
-        .hiasc "FIREPLAC"            ; N_FIREPLAC = 43
+        hiasc "BOOKSHEL"
+        hiasc "FIREPLAC"            ; N_FIREPLAC = 43
         .byte 1
-        .hiasc "CHIMNEY "
-        .hiasc "COUCH   "            ; N_COUCH = 44
+        hiasc "CHIMNEY "
+        hiasc "COUCH   "            ; N_COUCH = 44
         .byte 3
-        .hiasc "SOFA    "
-        .hiasc "DAVENPOR"
-        .hiasc "DIVAN   "
-        .hiasc "BED     "            ; N_BED = 45
+        hiasc "SOFA    "
+        hiasc "DAVENPOR"
+        hiasc "DIVAN   "
+        hiasc "BED     "            ; N_BED = 45
         .byte 1
-        .hiasc "MATTRESS"
-        .hiasc "FLOOR   "            ; N_FLOOR = 46
+        hiasc "MATTRESS"
+        hiasc "FLOOR   "            ; N_FLOOR = 46
         .byte 0
-        .hiasc "ALGAE   "            ; N_ALGAE = 47
+        hiasc "ALGAE   "            ; N_ALGAE = 47
         .byte 0
-        .hiasc "BRICKS  "            ; N_BRICKS = 48
+        hiasc "BRICKS  "            ; N_BRICKS = 48
         .byte 1
-        .hiasc "BRICK   "
-        .hiasc "JEWELS  "            ; N_JEWELS = 49
+        hiasc "BRICK   "
+        hiasc "JEWELS  "            ; N_JEWELS = 49
         .byte 3
-        .hiasc "GEMS    "
-        .hiasc "TREASURE"
-        .hiasc "DIAMONDS"
-        .hiasc "JARS    "            ; N_JARS = 50
+        hiasc "GEMS    "
+        hiasc "TREASURE"
+        hiasc "DIAMONDS"
+        hiasc "JARS    "            ; N_JARS = 50
         .byte 3
-        .hiasc "JAR     "
-        .hiasc "BOTTLE  "
-        .hiasc "BOTTLES "
-        .hiasc "GATE    "            ; N_GATE = 51
+        hiasc "JAR     "
+        hiasc "BOTTLE  "
+        hiasc "BOTTLES "
+        hiasc "GATE    "            ; N_GATE = 51
         .byte 0
-        .hiasc "TREE    "            ; N_TREE = 52
+        hiasc "TREE    "            ; N_TREE = 52
         .byte 1
-        .hiasc "TREES   "
-        .hiasc "TELESCOP"            ; N_TELESCOP = 53
+        hiasc "TREES   "
+        hiasc "TELESCOP"            ; N_TELESCOP = 53
         .byte 0
-        .hiasc "PERSON  "            ; N_PERSON = 54
+        hiasc "PERSON  "            ; N_PERSON = 54
         .byte 3
-        .hiasc "MAN     "
-        .hiasc "WOMAN   "
-        .hiasc "PEOPLE  "
-        .hiasc "GRAVESTO"            ; N_GRAVESTO = 55
+        hiasc "MAN     "
+        hiasc "WOMAN   "
+        hiasc "PEOPLE  "
+        hiasc "GRAVESTO"            ; N_GRAVESTO = 55
         .byte 1
-        .hiasc "TOMBSTON"
-        .hiasc "CABINET "            ; N_CABINET = 56
+        hiasc "TOMBSTON"
+        hiasc "CABINET "            ; N_CABINET = 56
         .byte 1
-        .hiasc "CUPBOARD"
-        .hiasc "MATCHES "            ; N_MATCHES = 57
+        hiasc "CUPBOARD"
+        hiasc "MATCHES "            ; N_MATCHES = 57
         .byte 1
-        .hiasc "MATCH   "
-        .hiasc "REFRIGER"            ; N_REFRIGER = 58
+        hiasc "MATCH   "
+        hiasc "REFRIGER"            ; N_REFRIGER = 58
         .byte 3
-        .hiasc "FRIDGE  "
-        .hiasc "ICEBOX  "
-        .hiasc "REFRIDGE"
-        .hiasc "PITCHER "            ; N_PITCHER = 59
+        hiasc "FRIDGE  "
+        hiasc "ICEBOX  "
+        hiasc "REFRIDGE"
+        hiasc "PITCHER "            ; N_PITCHER = 59
         .byte 0
-        .hiasc "STOVE   "            ; N_STOVE = 60
+        hiasc "STOVE   "            ; N_STOVE = 60
         .byte 1
-        .hiasc "RANGE   "
-        .hiasc "PORCH   "            ; N_PORCH = 61
+        hiasc "RANGE   "
+        hiasc "PORCH   "            ; N_PORCH = 61
         .byte 0
-        .hiasc "GRAVES  "            ; N_GRAVES = 62
+        hiasc "GRAVES  "            ; N_GRAVES = 62
         .byte 1
-        .hiasc "GRAVE   "
-        .hiasc "FAUCET  "            ; N_FAUCET = 63
+        hiasc "GRAVE   "
+        hiasc "FAUCET  "            ; N_FAUCET = 63
         .byte 1
-        .hiasc "TAP     "
-        .hiasc "ON      "            ; N_ON = 64
+        hiasc "TAP     "
+        hiasc "ON      "            ; N_ON = 64
         .byte 0
-        .hiasc "OFF     "            ; N_OFF = 65
+        hiasc "OFF     "            ; N_OFF = 65
         .byte 0
-        .hiasc "SINK    "            ; N_SINK = 66
+        hiasc "SINK    "            ; N_SINK = 66
         .byte 1
-        .hiasc "TUB     "
-        .hiasc "CRADLE  "            ; N_CRADLE = 67
+        hiasc "TUB     "
+        hiasc "CRADLE  "            ; N_CRADLE = 67
         .byte 1
-        .hiasc "CRIB    "
-        .hiasc "CHAIR   "            ; N_CHAIR = 68
+        hiasc "CRIB    "
+        hiasc "CHAIR   "            ; N_CHAIR = 68
         .byte 1
-        .hiasc "ROCKER  "
-        .hiasc "SHOVEL  "            ; N_SHOVEL = 69
+        hiasc "ROCKER  "
+        hiasc "SHOVEL  "            ; N_SHOVEL = 69
         .byte 1
-        .hiasc "SPADE   "
-        .hiasc "        "            ; N_NONE = 70
+        hiasc "SPADE   "
+        hiasc "        "            ; N_NONE = 70
         .byte 0
-        .hiasc "ROOM    "            ; N_ROOM = 71
+        hiasc "ROOM    "            ; N_ROOM = 71
         .byte 1
-        .hiasc "AROUND  "
-        .hiasc "TUNNEL  "            ; N_TUNNEL = 72
+        hiasc "AROUND  "
+        hiasc "TUNNEL  "            ; N_TUNNEL = 72
         .byte 0
-        .hiasc "HOUSE   "            ; N_HOUSE = 73
+        hiasc "HOUSE   "            ; N_HOUSE = 73
         .byte 2
-        .hiasc "BUILDING"
-        .hiasc "HOME    "
-        .hiasc "HALL    "            ; N_HALL = 74
+        hiasc "BUILDING"
+        hiasc "HOME    "
+        hiasc "HALL    "            ; N_HALL = 74
         .byte 2
-        .hiasc "HALLWAY "
-        .hiasc "CORRIDOR"
-        .hiasc "LADDER  "            ; N_LADDER = 75
+        hiasc "HALLWAY "
+        hiasc "CORRIDOR"
+        hiasc "LADDER  "            ; N_LADDER = 75
         .byte 0
-        .hiasc "FIRE    "            ; N_FIRE = 76
+        hiasc "FIRE    "            ; N_FIRE = 76
         .byte 0
-        .hiasc "DOTS    "            ; N_DOTS = 77
+        hiasc "DOTS    "            ; N_DOTS = 77
         .byte 0
-        .hiasc "X'S     "            ; N_X_S = 78
+        hiasc "X'S     "            ; N_X_S = 78
         .byte 0
-        .hiasc "WELCOME "            ; N_WELCOME = 79
+        hiasc "WELCOME "            ; N_WELCOME = 79
         .byte 0
-        .hiasc "LINE    "            ; N_LINE = 80
+        hiasc "LINE    "            ; N_LINE = 80
         .byte 0
-        .hiasc "N       "            ; N_N = 81
+        hiasc "N       "            ; N_N = 81
         .byte 1
-        .hiasc "NORTH   "
-        .hiasc "S       "            ; N_S = 82
+        hiasc "NORTH   "
+        hiasc "S       "            ; N_S = 82
         .byte 1
-        .hiasc "SOUTH   "
-        .hiasc "E       "            ; N_E = 83
+        hiasc "SOUTH   "
+        hiasc "E       "            ; N_E = 83
         .byte 1
-        .hiasc "EAST    "
-        .hiasc "W       "            ; N_W = 84
+        hiasc "EAST    "
+        hiasc "W       "            ; N_W = 84
         .byte 1
-        .hiasc "WEST    "
-        .hiasc "U       "            ; N_U = 85
+        hiasc "WEST    "
+        hiasc "U       "            ; N_U = 85
         .byte 1
-        .hiasc "UP      "
-        .hiasc "D       "            ; N_D = 86
+        hiasc "UP      "
+        hiasc "D       "            ; N_D = 86
         .byte 1
-        .hiasc "DOWN    "
-        .hiasc "BOOKS   "            ; N_BOOKS = 87
+        hiasc "DOWN    "
+        hiasc "BOOKS   "            ; N_BOOKS = 87
         .byte 1
-        .hiasc "BOOK    "
-        .hiasc "GAME    "            ; N_GAME = 88
+        hiasc "BOOK    "
+        hiasc "GAME    "            ; N_GAME = 88
         .byte 1
-        .hiasc "ADVENTUR"
-        .hiasc "DONE    "            ; N_DONE = 89
+        hiasc "ADVENTUR"
+        hiasc "DONE    "            ; N_DONE = 89
         .byte $FF
-        .incbin "data/adventure_1C61.bin", upto $2000    ; $1C61-$1FFF leftover memory, not used by the code (see NOTES.md)
-        .org $2000
+        incbin_upto "data/adventure_1C61.bin", 927, $2000    ; $1C61-$1FFF leftover memory, not used by the code (see NOTES.md)
+        .assert * = $2000, error, "the hi-res page must be at $2000"
 title_1980:
         .incbin "data/title_1980.bin"    ; $2000-$3FFF 
 
 ; ==== verbs ==========================================================================
 ; Same layout as the nouns; ids are V_* in game.inc.
 verb_table:
-        .hiasc "GO      "            ; V_GO = 1
+        hiasc "GO      "            ; V_GO = 1
         .byte 5
-        .hiasc "ENTER   "
-        .hiasc "RUN     "
-        .hiasc "EXIT    "
-        .hiasc "LEAVE   "
-        .hiasc "WALK    "
-        .hiasc "U       "            ; V_U = 2
+        hiasc "ENTER   "
+        hiasc "RUN     "
+        hiasc "EXIT    "
+        hiasc "LEAVE   "
+        hiasc "WALK    "
+        hiasc "U       "            ; V_U = 2
         .byte 3
-        .hiasc "UP      "
-        .hiasc "CLIMB   "
-        .hiasc "ASCEND  "
-        .hiasc "D       "            ; V_D = 3
+        hiasc "UP      "
+        hiasc "CLIMB   "
+        hiasc "ASCEND  "
+        hiasc "D       "            ; V_D = 3
         .byte 2
-        .hiasc "DOWN    "
-        .hiasc "DESCEND "
-        .hiasc "OPEN    "            ; V_OPEN = 4
+        hiasc "DOWN    "
+        hiasc "DESCEND "
+        hiasc "OPEN    "            ; V_OPEN = 4
         .byte 0
-        .hiasc "CLOSE   "            ; V_CLOSE = 5
+        hiasc "CLOSE   "            ; V_CLOSE = 5
         .byte 1
-        .hiasc "SHUT    "
-        .hiasc "UNLOCK  "            ; V_UNLOCK = 6
+        hiasc "SHUT    "
+        hiasc "UNLOCK  "            ; V_UNLOCK = 6
         .byte 1
-        .hiasc "UNLATCH "
-        .hiasc "N       "            ; V_N = 7
+        hiasc "UNLATCH "
+        hiasc "N       "            ; V_N = 7
         .byte 1
-        .hiasc "NORTH   "
-        .hiasc "S       "            ; V_S = 8
+        hiasc "NORTH   "
+        hiasc "S       "            ; V_S = 8
         .byte 1
-        .hiasc "SOUTH   "
-        .hiasc "E       "            ; V_E = 9
+        hiasc "SOUTH   "
+        hiasc "E       "            ; V_E = 9
         .byte 1
-        .hiasc "EAST    "
-        .hiasc "W       "            ; V_W = 10
+        hiasc "EAST    "
+        hiasc "W       "            ; V_W = 10
         .byte 1
-        .hiasc "WEST    "
-        .hiasc "BREAK   "            ; V_BREAK = 11
+        hiasc "WEST    "
+        hiasc "BREAK   "            ; V_BREAK = 11
         .byte 2
-        .hiasc "TEAR    "
-        .hiasc "BUST    "
-        .hiasc "MOVE    "            ; V_MOVE = 12
+        hiasc "TEAR    "
+        hiasc "BUST    "
+        hiasc "MOVE    "            ; V_MOVE = 12
         .byte 2
-        .hiasc "SLIDE   "
-        .hiasc "PUSH    "
-        .hiasc "LOOK    "            ; V_LOOK = 13
+        hiasc "SLIDE   "
+        hiasc "PUSH    "
+        hiasc "LOOK    "            ; V_LOOK = 13
         .byte 1
-        .hiasc "EXAMINE "
-        .hiasc "GET     "            ; V_GET = 14
+        hiasc "EXAMINE "
+        hiasc "GET     "            ; V_GET = 14
         .byte 2
-        .hiasc "TAKE    "
-        .hiasc "LIFT    "
-        .hiasc "LIGHT   "            ; V_LIGHT = 15
+        hiasc "TAKE    "
+        hiasc "LIFT    "
+        hiasc "LIGHT   "            ; V_LIGHT = 15
         .byte 1
-        .hiasc "STRIKE  "
-        .hiasc "POUR    "            ; V_POUR = 16
+        hiasc "STRIKE  "
+        hiasc "POUR    "            ; V_POUR = 16
         .byte 1
-        .hiasc "DUMP    "
-        .hiasc "DROP    "            ; V_DROP = 17
+        hiasc "DUMP    "
+        hiasc "DROP    "            ; V_DROP = 17
         .byte 2
-        .hiasc "SET     "
-        .hiasc "LEAVE   "
-        .hiasc "JUMP    "            ; V_JUMP = 18
+        hiasc "SET     "
+        hiasc "LEAVE   "
+        hiasc "JUMP    "            ; V_JUMP = 18
         .byte 1
-        .hiasc "LEAP    "
-        .hiasc "READ    "            ; V_READ = 19
+        hiasc "LEAP    "
+        hiasc "READ    "            ; V_READ = 19
         .byte 0
-        .hiasc "TALK    "            ; V_TALK = 20
+        hiasc "TALK    "            ; V_TALK = 20
         .byte 1
-        .hiasc "SPEAK   "
-        .hiasc "KILL    "            ; V_KILL = 21
+        hiasc "SPEAK   "
+        hiasc "KILL    "            ; V_KILL = 21
         .byte 1
-        .hiasc "SLAY    "
-        .hiasc "EAT     "            ; V_EAT = 22
+        hiasc "SLAY    "
+        hiasc "EAT     "            ; V_EAT = 22
         .byte 1
-        .hiasc "CONSUME "
-        .hiasc "WIPE    "            ; V_WIPE = 23
+        hiasc "CONSUME "
+        hiasc "WIPE    "            ; V_WIPE = 23
         .byte 2
-        .hiasc "RUB     "
-        .hiasc "REMOVE  "
-        .hiasc "FLUSH   "            ; V_FLUSH = 24
+        hiasc "RUB     "
+        hiasc "REMOVE  "
+        hiasc "FLUSH   "            ; V_FLUSH = 24
         .byte 0
-        .hiasc "UNSCREW "            ; V_UNSCREW = 25
+        hiasc "UNSCREW "            ; V_UNSCREW = 25
         .byte 2
-        .hiasc "UNBOLT  "
-        .hiasc "LOOSEN  "
-        .hiasc "WITH    "            ; V_WITH = 26
+        hiasc "UNBOLT  "
+        hiasc "LOOSEN  "
+        hiasc "WITH    "            ; V_WITH = 26
         .byte 3
-        .hiasc "USE     "
-        .hiasc "SHOOT   "
-        .hiasc "FIRE    "
-        .hiasc "PRESS   "            ; V_PRESS = 27
+        hiasc "USE     "
+        hiasc "SHOOT   "
+        hiasc "FIRE    "
+        hiasc "PRESS   "            ; V_PRESS = 27
         .byte 1
-        .hiasc "PUSH    "
-        .hiasc "TURN    "            ; V_TURN = 28
+        hiasc "PUSH    "
+        hiasc "TURN    "            ; V_TURN = 28
         .byte 0
-        .hiasc "FAUCET  "            ; V_FAUCET = 29
+        hiasc "FAUCET  "            ; V_FAUCET = 29
         .byte 2
-        .hiasc "TAP     "
-        .hiasc "WATER   "
-        .hiasc "WATER   "            ; V_WATER = 30
+        hiasc "TAP     "
+        hiasc "WATER   "
+        hiasc "WATER   "            ; V_WATER = 30
         .byte 0
-        .hiasc "ON      "            ; V_ON = 31
+        hiasc "ON      "            ; V_ON = 31
         .byte 0
-        .hiasc "OFF     "            ; V_OFF = 32
+        hiasc "OFF     "            ; V_OFF = 32
         .byte 0
-        .hiasc "UNLIGHT "            ; V_UNLIGHT = 33
+        hiasc "UNLIGHT "            ; V_UNLIGHT = 33
         .byte 1
-        .hiasc "OFF     "
-        .hiasc "SAVE    "            ; V_SAVE = 34
+        hiasc "OFF     "
+        hiasc "SAVE    "            ; V_SAVE = 34
         .byte 1
-        .hiasc "STORE   "
-        .hiasc "RESTORE "            ; V_RESTORE = 35
+        hiasc "STORE   "
+        hiasc "RESTORE "            ; V_RESTORE = 35
         .byte 0
-        .hiasc "QUIT    "            ; V_QUIT = 36
+        hiasc "QUIT    "            ; V_QUIT = 36
         .byte 2
-        .hiasc "BYE     "
-        .hiasc "STOP    "
-        .hiasc "HELP    "            ; V_HELP = 37
+        hiasc "BYE     "
+        hiasc "STOP    "
+        hiasc "HELP    "            ; V_HELP = 37
         .byte 0
-        .hiasc "INVENTOR"            ; V_INVENTOR = 38
+        hiasc "INVENTOR"            ; V_INVENTOR = 38
         .byte 3
-        .hiasc "INVEN   "
-        .hiasc "CARRYING"
-        .hiasc "?       "
-        .hiasc "FUCK    "            ; V_PROFANITY = 39
+        hiasc "INVEN   "
+        hiasc "CARRYING"
+        hiasc "?       "
+        hiasc "FUCK    "            ; V_PROFANITY = 39
         .byte 3
-        .hiasc "SUCK    "
-        .hiasc "SHIT    "
-        .hiasc "CUNT    "
-        .hiasc "SCORE   "            ; V_SCORE = 40
+        hiasc "SUCK    "
+        hiasc "SHIT    "
+        hiasc "CUNT    "
+        hiasc "SCORE   "            ; V_SCORE = 40
         .byte 0
-        .hiasc "SLEEP   "            ; V_SLEEP = 41
+        hiasc "SLEEP   "            ; V_SLEEP = 41
         .byte 3
-        .hiasc "REST    "
-        .hiasc "RETIRE  "
-        .hiasc "LIE     "
-        .hiasc "DRINK   "            ; V_DRINK = 42
+        hiasc "REST    "
+        hiasc "RETIRE  "
+        hiasc "LIE     "
+        hiasc "DRINK   "            ; V_DRINK = 42
         .byte 2
-        .hiasc "SIP     "
-        .hiasc "TASTE   "
-        .hiasc "DONE    "            ; V_DONE = 43
+        hiasc "SIP     "
+        hiasc "TASTE   "
+        hiasc "DONE    "            ; V_DONE = 43
         .byte $FF
         .incbin "data/adventure_4343.bin"    ; $4343-$43FF leftover memory, not used by the code (see NOTES.md)
 
@@ -2880,13 +2878,13 @@ dead_init_tail:
         .word dead_disk_error_ptr
         .word dos_error_vector
         JSR old_rt_print
-        .hiasc "\x04OPEN MESSAGES\r\x04\r"
+        hiasc "\x04OPEN MESSAGES\r\x04\r"
         .byte $00
         RTS
 dead_blank_word:
-        .hiasc "        "
+        hiasc "        "
 dead_done_word:
-        .hiasc "DONE    "
+        hiasc "DONE    "
 dead_init_tables:
         .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
         .byte $00,$00,$00,$00
@@ -2897,7 +2895,7 @@ dead_disk_error_ptr:
 ; the text directly; the shipped build put the OPEN-once flag in between
 dead_disk_error:
         JSR old_rt_print
-        .hiasc "\rA DISK ERROR HAS OCCURED"
+        hiasc "\rA DISK ERROR HAS OCCURED"
         .byte $00
         RTS
         .incbin "data/adventure_56EC.bin"    ; fill
@@ -2984,21 +2982,21 @@ dead_read_message:
         LDA #$02
         STA $15
         LDY #$00
-dead_read_message.print_loop:
+dead_read_message__print_loop:
         LDA ($14),Y
         JSR COUT
         LDA ($14),Y
         INY
         CMP #$8D
-        BNE dead_read_message.print_loop
+        BNE dead_read_message__print_loop
         RTS
 
 dead_read_message_cmd:
         JSR old_rt_print
-        .hiasc "\x04READ MESSAGES,B$"
+        hiasc "\x04READ MESSAGES,B$"
 old_read_digits:
         .byte $00,$00,$00,$00     ; patched with the offset in hex
-        .hiasc "\r"
+        hiasc "\r"
         .byte $00
         JSR GETLN1
         LDA input_buffer
@@ -3006,7 +3004,7 @@ old_read_digits:
         LDA input_buffer+1
         STA floor_slot
         JSR old_rt_print
-        .hiasc "\x04\r"
+        hiasc "\x04\r"
         .byte $00
         LDA lru_turn+1
         STA input_buffer
@@ -3047,14 +3045,14 @@ dead_split_nibbles:
 
 dead_nibbles_to_ascii:
         LDY #$00
-dead_nibbles_to_ascii.loop:
+dead_nibbles_to_ascii__loop:
         LDA old_hex_out,Y
         TAX
         LDA dead_hex_digits,X
         STA old_hex_out,Y
         INY
         CPY #$04
-        BNE dead_nibbles_to_ascii.loop
+        BNE dead_nibbles_to_ascii__loop
         RTS
 dead_hex_digits:
         .byte $B0,$B1,$B2,$B3,$B4,$B5,$B6,$B7,$B8,$B9,$C1,$C2,$C3,$C4,$C5
@@ -3078,21 +3076,21 @@ run_command_rules:
         LDA command_rules_addr+1
         STA WORK+1
         STA rule_ptr+1
-        JMP run_command_rules.loop
+        JMP run_command_rules__loop
 command_rules_addr:
         .word command_rules
-run_command_rules.loop:
+run_command_rules__loop:
         JSR test_rule
         LDA cmp_result
         CMP #$01
-        BEQ run_command_rules.done
+        BEQ run_command_rules__done
         JSR next_rule
         LDA cmp_result
         CMP #HV
-        BNE run_command_rules.loop
+        BNE run_command_rules__loop
         LDX #MSG_DONT_UNDERSTAND
         JSR MESSLSTR
-run_command_rules.done:
+run_command_rules__done:
         RTS
 
 ; Run every matching turn rule (match timers, darkness, the winning check), whatever happened
@@ -3104,15 +3102,15 @@ run_turn_rules:
         LDA turn_rules_addr+1
         STA WORK+1
         STA rule_ptr+1
-        JMP run_turn_rules.loop
+        JMP run_turn_rules__loop
 turn_rules_addr:
         .word turn_rules
-run_turn_rules.loop:
+run_turn_rules__loop:
         JSR test_rule
         JSR next_rule
         LDA cmp_result
         CMP #HV
-        BNE run_turn_rules.loop
+        BNE run_turn_rules__loop
         RTS
 
 ; Test the rule at rule_ptr: room, verb and noun must match (ANY matches everything). If they
@@ -3126,27 +3124,27 @@ test_rule:
         LDY #RULE_ROOM
         LDA (rule_ptr),Y
         CMP #ANY
-        BEQ test_rule.check_verb
+        BEQ test_rule__check_verb
         CMP CURONO
-        BEQ test_rule.check_verb
+        BEQ test_rule__check_verb
         JMP rule_done
-test_rule.check_verb:
+test_rule__check_verb:
         LDY #RULE_VERB
         LDA (rule_ptr),Y
         CMP #ANY
-        BEQ test_rule.check_noun
+        BEQ test_rule__check_noun
         CMP verb
-        BEQ test_rule.check_noun
+        BEQ test_rule__check_noun
         JMP rule_done
-test_rule.check_noun:
+test_rule__check_noun:
         LDY #RULE_NOUN
         LDA (rule_ptr),Y
         CMP #ANY
-        BEQ test_rule.matched
+        BEQ test_rule__matched
         CMP noun
-        BEQ test_rule.matched
+        BEQ test_rule__matched
         JMP rule_done
-test_rule.matched:
+test_rule__matched:
         LDY #RULE_NCOND
         LDA (rule_ptr),Y
         STA counter
@@ -3160,9 +3158,9 @@ test_rule.matched:
 ; (conditions left) reaches 0. Condition handlers read their operands at (WORK),Y.
 next_condition:
         LDA counter
-        BNE next_condition.dispatch
+        BNE next_condition__dispatch
         JMP rule_done
-next_condition.dispatch:
+next_condition__dispatch:
         LDY #$00
         LDA (WORK),Y
         ASL A
@@ -3274,9 +3272,9 @@ cond_fail:
 rule_done:
         LDA #$01
         CMP cmp_result
-        BEQ rule_done.run
+        BEQ rule_done__run
         RTS
-rule_done.run:
+rule_done__run:
         JSR run_actions
         RTS
 
@@ -3294,11 +3292,11 @@ next_rule:
         LDY #$00
         LDA (WORK),Y
         CMP #HV
-        BEQ next_rule.at_end
+        BEQ next_rule__at_end
         LDA #$00
         STA cmp_result
         RTS
-next_rule.at_end:
+next_rule__at_end:
         LDA #$FF
         STA cmp_result
         RTS
@@ -3311,25 +3309,25 @@ find_object:
         STA found_obj
         LDA objbase_addr+1
         STA found_obj+1
-        JMP find_object.loop
+        JMP find_object__loop
 objbase_addr:
         .word OBJBASE
-find_object.loop:
+find_object__loop:
         LDY #OBJECTNO
         LDA (found_obj),Y
         CMP find_objectno
-        BEQ find_object.found
+        BEQ find_object__found
         CMP #HV
-        BNE find_object.next
+        BNE find_object__next
         BRK
-find_object.next:
+find_object__next:
         LDY #ONEXT
         LDA (found_obj),Y
         TAX
         JSR BUMPIT
         .word found_obj
-        JMP find_object.loop
-find_object.found:
+        JMP find_object__loop
+find_object__found:
         RTS
         .incbin "data/adventure_5BB9.bin"    ; $5BB9-$5DFF fill
 
@@ -3337,7 +3335,7 @@ find_object.found:
 ; turn's redraw.
 main:
         JSR init_game
-main.turn:
+main__turn:
         JSR draw_room
         JSR read_command
         JSR run_rules
@@ -3345,7 +3343,7 @@ main.turn:
         LDX #1
         JSR BUMPIT
         .word turns
-        JMP main.turn
+        JMP main__turn
         .incbin "data/adventure_5E19.bin"    ; $5E19-$60FF leftover memory, not used by the code (see NOTES.md)
 
 ; Start (or restart) a game: room 1, turn 1, switches and picture cache cleared, CUROOM at
@@ -3422,20 +3420,20 @@ init_game:
         .word dos_error_vector
         LDA messages_open
         CMP #$FF
-        BEQ init_game.opened
+        BEQ init_game__opened
         LDA #$FF
         STA messages_open          ; OPEN MESSAGES only on the first game
         JSR rt_print
-        .hiasc "\x04OPEN MESSAGES\r\x04\r"
+        hiasc "\x04OPEN MESSAGES\r\x04\r"
         .byte $00
-init_game.opened:
+init_game__opened:
         LDA #$00
         STA LAMPSTAT
         LDA TXTCLR
         LDA MIXSET
         LDA HIRES
         JSR rt_print
-        .hiasc "\r\r\r\r\r"
+        hiasc "\r\r\r\r\r"
         .byte $00
         RTS
 init_blank_word:
@@ -3455,7 +3453,7 @@ disk_error_handler_ptr:
 ; messages_open (see there).
 disk_error_handler:
         JSR rt_print
-        .hiasc "\rA DISK ERROR HAS OCCURED"
+        hiasc "\rA DISK ERROR HAS OCCURED"
         .byte $00
 ; The flag byte sits between the text's terminator and the RTS, so rt_print "returns" into it:
 ; it executes $00 (BRK) before init_game has run and $FF (an undocumented 3-byte opcode that
@@ -3480,7 +3478,7 @@ read_command:
         .word verb_table
         LDA word_id
         CMP #NOT_FOUND
-        BEQ read_command.unknown_verb
+        BEQ read_command__unknown_verb
         STA verb
         LDX #WORDLEN
         JSR rt_copy
@@ -3491,7 +3489,7 @@ read_command:
         .word noun_table
         LDA word_id
         CMP #NOT_FOUND
-        BEQ read_command.unknown_noun
+        BEQ read_command__unknown_noun
         STA noun
         LDX #WORDLEN
         JSR rt_copy
@@ -3499,16 +3497,19 @@ read_command:
         .word noun_word
         RTS
         .byte $60
-read_command.unknown_verb:
+read_command__unknown_verb:
         LDX #WORDLEN
         JSR rt_copy
         .word word_buf
         .word unknown_verb_text
         JSR rt_print
-        .hiasc "I DONT KNOW HOW TO          SOMETHING\r"
+        hiasc "I DONT KNOW HOW TO "
+unknown_verb_text:
+        hiasc "        "
+        hiasc " SOMETHING\r"
         .byte $00
         JMP read_command
-read_command.unknown_noun:
+read_command__unknown_noun:
         LDX #WORDLEN
         JSR rt_copy
         .word verb_word
@@ -3518,14 +3519,19 @@ read_command.unknown_noun:
         .word word_buf
         .word unknown_noun_text
         JSR rt_print
-        .hiasc "I DONT KNOW HOW TO          A         \r"
+        hiasc "I DONT KNOW HOW TO "
+unknown_noun_verb:
+        hiasc "        "
+        hiasc " A "
+unknown_noun_text:
+        hiasc "        \r"
         .byte $00
         JMP read_command
 
 ; Print the separator and ENTER COMMAND.
 print_prompt:
         JSR rt_print
-        .hiasc "--------------- ENTER COMMAND"
+        hiasc "--------------- ENTER COMMAND"
         .byte $00
         RTS
 
@@ -3538,20 +3544,20 @@ get_line:
         JSR GETLN
         LDA input_buffer
         CMP #HI_CR
-        BEQ get_line.empty
+        BEQ get_line__empty
         STX input_len
         LDA #$00
         STA parse_pos
         RTS
-get_line.empty:
+get_line__empty:
         LDA text_mode
         CMP #$FF
-        BEQ get_line.show_picture
+        BEQ get_line__show_picture
         LDA #$FF
         STA text_mode
         LDA TXTSET
         JMP get_line
-get_line.show_picture:
+get_line__show_picture:
         LDA #$00
         STA text_mode
         LDA TXTCLR
@@ -3572,30 +3578,30 @@ next_word:
         LDA #INPUT_END
         STA input_buffer,Y
         LDY parse_pos
-next_word.skip_blanks:
+next_word__skip_blanks:
         LDA input_buffer,Y
         CMP #INPUT_END
-        BEQ next_word.done
+        BEQ next_word__done
         CMP #HI_SPACE
-        BNE next_word.start_word
+        BNE next_word__start_word
         INY
-        JMP next_word.skip_blanks
-next_word.start_word:
+        JMP next_word__skip_blanks
+next_word__start_word:
         LDX #$00
-next_word.store_char:
+next_word__store_char:
         STA word_buf,X
-next_word.next_char:
+next_word__next_char:
         INY
         INX
         LDA input_buffer,Y
         CMP #INPUT_END
-        BEQ next_word.done
+        BEQ next_word__done
         CMP #HI_SPACE
-        BEQ next_word.done
+        BEQ next_word__done
         CPX #WORDLEN
-        BCS next_word.next_char
-        JMP next_word.store_char
-next_word.done:
+        BCS next_word__next_char
+        JMP next_word__store_char
+next_word__done:
         STY parse_pos
         RTS
 
@@ -3613,50 +3619,50 @@ lookup_word:
         INY
         LDA (rt_operands),Y
         STA WORK+1
-lookup_word.next_group:
+lookup_word__next_group:
         INC word_id
         LDX #WORDLEN
         JSR rt_compare
         .word word_buf
         LDA cmp_result
         CMP #$00
-        BEQ lookup_word.done
+        BEQ lookup_word__done
         LDX #8
         JSR BUMPIT
         .word WORK
         LDY #$00
         LDA (WORK),Y
         CMP #HV
-        BNE lookup_word.check_synonyms
+        BNE lookup_word__check_synonyms
         LDA #NOT_FOUND
         STA word_id
-        JMP lookup_word.done
-lookup_word.check_synonyms:
+        JMP lookup_word__done
+lookup_word__check_synonyms:
         CMP #$00
-        BNE lookup_word.synonyms
+        BNE lookup_word__synonyms
         JSR rt_inc16
         .word WORK
-        JMP lookup_word.next_group
-lookup_word.synonyms:
+        JMP lookup_word__next_group
+lookup_word__synonyms:
         LDA (WORK),Y
         STA counter
         JSR rt_inc16
         .word WORK
-lookup_word.next_synonym:
+lookup_word__next_synonym:
         LDA counter
-        BEQ lookup_word.next_group
+        BEQ lookup_word__next_group
         LDX #WORDLEN
         JSR rt_compare
         .word word_buf
         LDA cmp_result
         CMP #$00
-        BEQ lookup_word.done
+        BEQ lookup_word__done
         LDX #8
         JSR BUMPIT
         .word WORK
         DEC counter
-        JMP lookup_word.next_synonym
-lookup_word.done:
+        JMP lookup_word__next_synonym
+lookup_word__done:
         LDX #2
         JSR rt_return
 
@@ -3784,29 +3790,29 @@ AC1400:
         STA ZAWORK
         LDA #>OBJBASE
         STA ZAWORK+1
-AC1400.loop:
+AC1400__loop:
         LDY #OBJECTNO
         LDA (ZAWORK),Y
         CMP #HV
-        BEQ AC1400.done
+        BEQ AC1400__done
         LDY #OROOM
         LDA (ZAWORK),Y
         CMP #CARRYING
-        BEQ AC1400.list_it
-AC1400.next:
+        BEQ AC1400__list_it
+AC1400__next:
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
         JSR BUMPIT
         .word ZAWORK
-        JMP AC1400.loop
-AC1400.list_it:
+        JMP AC1400__loop
+AC1400__list_it:
         LDY #OMSG
         LDA (ZAWORK),Y
         TAX
         JSR MESSLSTR
-        JMP AC1400.next
-AC1400.done:
+        JMP AC1400__next
+AC1400__done:
         LDX #0
         JMP AC9000
 
@@ -3822,22 +3828,22 @@ AC1500:
         LDY #ARG_Y
         LDA (ZWORK),Y
         STA AWORK2
-AC1500.loop:
+AC1500__loop:
         LDY #OBJECTNO
         LDA (ZAWORK),Y
         CMP #HV
-        BNE AC1500.check_id
+        BNE AC1500__check_id
         BRK
-AC1500.check_id:
+AC1500__check_id:
         CMP AWORK1
-        BEQ AC1500.found
+        BEQ AC1500__found
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
         JSR BUMPIT
         .word ZAWORK
-        JMP AC1500.loop
-AC1500.found:
+        JMP AC1500__loop
+AC1500__found:
         LDY #OROOM
         LDA AWORK2
         STA (ZAWORK),Y
@@ -3933,7 +3939,7 @@ AC2400:
 ; action 15: save game (BSAVE SAVED GAME,A$830,L$8CF)
 AC2500:
         JSR rt_print
-        .hiasc "\x04BSAVE SAVED GAME,A$830,L$8CF\r"
+        hiasc "\x04BSAVE SAVED GAME,A$830,L$8CF\r"
         .byte $00
         LDX #0
         JMP AC9000
@@ -3948,14 +3954,14 @@ AC2600:
         LDA AWORK+1
         STA ZAWORK+1
         JSR rt_print
-        .hiasc "\x04BLOAD SAVED GAME,A$830\r"
+        hiasc "\x04BLOAD SAVED GAME,A$830\r"
         .byte $00
         LDX #$14
         LDA #$00
-AC2600.clear_cache:
+AC2600__clear_cache:
         STA pic_cache,X
         DEX
-        BNE AC2600.clear_cache
+        BNE AC2600__clear_cache
         STA pic_cache
         LDA ZAWORK
         STA AWORK             ; bug: both bytes go to the low byte
@@ -3968,25 +3974,25 @@ AC2600.clear_cache:
 ; STARTUP (the initial objects and rooms), clears the screen and restarts at main.
 AC2700:
         JSR rt_print
-        .hiasc "WOULD YOU LIKE TO PLAY AGAIN"
+        hiasc "WOULD YOU LIKE TO PLAY AGAIN"
         .byte $00
         JSR GETLN1
         LDA input_buffer
         CMP #'N'|$80
-        BEQ AC2700.quit
+        BEQ AC2700__quit
         LDA AWORK
         STA ZAWORK
         LDA AWORK+1
         STA ZAWORK+1
         JSR rt_print
-        .hiasc "\x04BLOAD STARTUP\r"
+        hiasc "\x04BLOAD STARTUP\r"
         .byte $00
         JSR hgr
         JSR rt_print
-        .hiasc "PRESS RETURN TO BEGIN PLAY"
+        hiasc "PRESS RETURN TO BEGIN PLAY"
         .byte $00
         JMP main
-AC2700.quit:
+AC2700__quit:
         JMP AC2300
 
 ; action 18: put object X in room Y at (x, y)
@@ -4007,18 +4013,18 @@ AC2800:
         STA ZAWORK
         LDA #>OBJBASE
         STA ZAWORK+1
-AC2800.loop:
+AC2800__loop:
         LDY #OBJECTNO
         LDA (ZAWORK),Y
         CMP AX
-        BEQ AC2800.found
+        BEQ AC2800__found
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
         JSR BUMPIT
         .word ZAWORK
-        JMP AC2800.loop
-AC2800.found:
+        JMP AC2800__loop
+AC2800__found:
         LDY #OROOM
         LDA AY
         STA (ZAWORK),Y
@@ -4043,22 +4049,22 @@ AC2900:
         STA ZAWORK
         LDA #>OBJBASE
         STA ZAWORK+1
-AC2900.loop:
+AC2900__loop:
         LDY #OBJECTNO
         LDA (ZAWORK),Y
         CMP #HV
-        BNE AC2900.check_id
+        BNE AC2900__check_id
         BRK
-AC2900.check_id:
+AC2900__check_id:
         CMP AY
-        BEQ AC2900.found
+        BEQ AC2900__found
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
         JSR BUMPIT
         .word ZAWORK
-        JMP AC2900.loop
-AC2900.found:
+        JMP AC2900__loop
+AC2900__found:
         LDY #OPIC
         LDA AX
         STA (ZAWORK),Y
@@ -4123,11 +4129,11 @@ AC3600:
 ACNEWROM:
         LDA AX
         CMP #$00
-        BNE ACNEWROM.move
+        BNE ACNEWROM__move
         LDX #MSG_CANT_GO
         JSR MESSLSTR
-        JMP ACNEWROM.done
-ACNEWROM.move:
+        JMP ACNEWROM__done
+ACNEWROM__move:
         LDA #$00
         STA AWORK2+1
         LDA AX
@@ -4150,7 +4156,7 @@ ACNEWROM.move:
         STA CUROOM
         LDA AWORK3+1
         STA CUROOM+1
-ACNEWROM.done:
+ACNEWROM__done:
         LDX #0
         JMP stop_actions
 
@@ -4164,38 +4170,38 @@ AC3700:
         STA ZAWORK
         LDA #>OBJBASE
         STA ZAWORK+1
-AC3700.loop:
+AC3700__loop:
         LDY #OBJECTNO
         LDA (ZAWORK),Y
         CMP #HV
-        BEQ AC3700.not_here
+        BEQ AC3700__not_here
         LDY #ONOUN
         LDA (ZAWORK),Y
         CMP AX
-        BNE AC3700.next
+        BNE AC3700__next
         LDY #OROOM
         LDA (ZAWORK),Y
         CMP CURONO
-        BNE AC3700.next
+        BNE AC3700__next
         LDY #OSTATUS
         LDA (ZAWORK),Y
         CMP #OFIXED
-        BNE AC3700.not_fixed
+        BNE AC3700__not_fixed
         LDX #MSG_DOESNT_MOVE
         JSR MESSLSTR
-        JMP AC3700.done
-AC3700.next:
+        JMP AC3700__done
+AC3700__next:
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
         JSR BUMPIT
         .word ZAWORK
-        JMP AC3700.loop
-AC3700.not_fixed:
+        JMP AC3700__loop
+AC3700__not_fixed:
         LDY #OSTATUS
         LDA (ZAWORK),Y
         CMP #OMOVED
-        BEQ AC3700.take
+        BEQ AC3700__take
         LDY #RCURPIC
         LDA (CUROOM),Y
         STA AWORK2
@@ -4203,29 +4209,29 @@ AC3700.not_fixed:
         LDA (ZAWORK),Y
         STA AWORK3
         LDY #$0B
-AC3700.check_pic:
+AC3700__check_pic:
         LDX AWORK3
-        BEQ AC3700.next
+        BEQ AC3700__next
         LDA (ZAWORK),Y
         CMP AWORK2
-        BEQ AC3700.take
+        BEQ AC3700__take
         INY
         LDX AWORK3
         DEX
         STX AWORK3
-        JMP AC3700.check_pic
-AC3700.take:
+        JMP AC3700__check_pic
+AC3700__take:
         LDA #CARRYING
         LDY #OROOM
         STA (ZAWORK),Y
         LDA #OMOVED
         LDY #OSTATUS
         STA (ZAWORK),Y
-        JMP AC3700.done
-AC3700.not_here:
+        JMP AC3700__done
+AC3700__not_here:
         LDX #MSG_DONT_SEE_IT
         JSR MESSLSTR
-AC3700.done:
+AC3700__done:
         LDX #0
         JMP AC9000
 
@@ -4236,37 +4242,37 @@ AC3800:
         STA ZAWORK
         LDA #>OBJBASE
         STA ZAWORK+1
-AC3800.loop:
+AC3800__loop:
         LDY #OBJECTNO
         LDA (ZAWORK),Y
         CMP #HV
-        BEQ AC3800.not_carried
+        BEQ AC3800__not_carried
         LDY #ONOUN
         LDA (ZAWORK),Y
         CMP noun
-        BNE AC3800.next
+        BNE AC3800__next
         LDY #OROOM
         LDA (ZAWORK),Y
         CMP #CARRYING
-        BNE AC3800.next
+        BNE AC3800__next
         LDY #OROOM
         LDA CURONO
         STA (ZAWORK),Y
         LDA #OMOVED
         LDY #OSTATUS
         STA (ZAWORK),Y
-        JMP AC3800.done
-AC3800.next:
+        JMP AC3800__done
+AC3800__next:
         LDY #ONEXT
         LDA (ZAWORK),Y
         TAX
         JSR BUMPIT
         .word ZAWORK
-        JMP AC3800.loop
-AC3800.not_carried:
+        JMP AC3800__loop
+AC3800__not_carried:
         LDX #MSG_DONT_UNDERSTAND
         JSR MESSLSTR
-AC3800.done:
+AC3800__done:
         LDX #0
         JMP AC9000
 
@@ -4346,16 +4352,16 @@ bkgnd:                                 ; Applesoft BKGND: fill the page with the
         STA hgr_shape_ptr+1
         LDY #$00
         STY hgr_shape_ptr
-hclr.loop:
+hclr__loop:
         LDA hgr_bits
         STA (hgr_shape_ptr),Y
         JSR color_shift
         INY
-        BNE hclr.loop
+        BNE hclr__loop
         INC hgr_shape_ptr+1
         LDA hgr_shape_ptr+1
         AND #$1F
-        BNE hclr.loop
+        BNE hclr__loop
         RTS
 
 ; Applesoft HPOSN: put the pen at (X + 256 * Y-register, A): hbasl = the row's address,
@@ -4388,14 +4394,14 @@ hposn:
         STA hbasl+1
         TXA
         CPY #$00
-        BEQ hposn.div7
+        BEQ hposn__div7
         LDY #$23
         ADC #$04
-hposn.div7_count:
+hposn__div7_count:
         INY
-hposn.div7:
+hposn__div7:
         SBC #$07
-        BCS hposn.div7_count
+        BCS hposn__div7_count
         STY hgr_horiz
         TAX
         LDA hgr_msktbl-$F9,X        ; X = $F9..$FF here, so this reads hgr_msktbl
@@ -4424,21 +4430,21 @@ hplot_here:
 ; Applesoft MOVE.LEFT.OR.RIGHT: move the pen one pixel; N set = right, clear = left. Shifts
 ; hmask and steps hgr_horiz to the next byte (wrapping from column 0 to 39 and back).
 move_left_or_right:
-        BPL move_left_or_right.right
+        BPL move_left_or_right__right
         LDA hmask
         LSR A
-        BCS move_left_or_right.left_byte
+        BCS move_left_or_right__left_byte
         EOR #$C0
-move_left_or_right.store_mask:
+move_left_or_right__store_mask:
         STA hmask
         RTS
-move_left_or_right.left_byte:
+move_left_or_right__left_byte:
         DEY
-        BPL move_left_or_right.left_edge
+        BPL move_left_or_right__left_edge
         LDY #$27
-move_left_or_right.left_edge:
+move_left_or_right__left_edge:
         LDA #$C0
-move_left_or_right.new_byte:
+move_left_or_right__new_byte:
         STA hmask
         STY hgr_horiz
         LDA hgr_bits
@@ -4448,38 +4454,38 @@ move_left_or_right.new_byte:
 color_shift:
         ASL A
         CMP #$C0
-        BPL color_shift.done
+        BPL color_shift__done
         LDA hgr_bits
         EOR #$7F
         STA hgr_bits
-color_shift.done:
+color_shift__done:
         RTS
-move_left_or_right.right:
+move_left_or_right__right:
         LDA hmask
         ASL A
         EOR #$80
-        BMI move_left_or_right.store_mask
+        BMI move_left_or_right__store_mask
         LDA #$81
         INY
         CPY #$28
-        BCC move_left_or_right.new_byte
+        BCC move_left_or_right__new_byte
         LDY #$00
-        BCS move_left_or_right.new_byte
+        BCS move_left_or_right__new_byte
 
 ; XDRAW0's plot-and-move step (the XOR version of draw_move_ud_plot). Not called by the game.
 xdraw_move_ud_plot:
         CLC
         LDA hgr_dx+1
         AND #$04
-        BEQ draw_move_ud.move
+        BEQ draw_move_ud__move
         LDA #$7F
         AND hmask
         AND (hbasl),Y
-        BNE draw_move_ud.plot
+        BNE draw_move_ud__plot
         INC hgr_collisions
         LDA #$7F
         AND hmask
-        BPL draw_move_ud.plot
+        BPL draw_move_ud__plot
 
 ; DRAW0's step: plot the point if the vector's plot bit (bit 2) is set, then move. Counts a
 ; collision in hgr_collisions when the pixel was already on.
@@ -4490,16 +4496,16 @@ draw_move_ud_plot:
 draw_move_ud:
         LDA hgr_dx+1
         AND #$04
-        BEQ draw_move_ud.move
+        BEQ draw_move_ud__move
         LDA (hbasl),Y
         EOR hgr_bits
         AND hmask
-        BNE draw_move_ud.plot
+        BNE draw_move_ud__plot
         INC hgr_collisions
-draw_move_ud.plot:
+draw_move_ud__plot:
         EOR (hbasl),Y
         STA (hbasl),Y
-draw_move_ud.move:
+draw_move_ud__move:
         LDA hgr_dx+1
         ADC hgr_quadrant
         AND #$03
@@ -4515,32 +4521,32 @@ move_up_or_down:
         CLC
         LDA hbasl+1
         BIT hgr_con_1c
-        BNE move_up_or_down.up_line
+        BNE move_up_or_down__up_line
         ASL hbasl
-        BCS move_up_or_down.up_third
-        BIT draw_move_ud.move+5                ; BIT on the constant $03 in the AND above (an Applesoft trick)
-        BEQ move_up_or_down.up_block
+        BCS move_up_or_down__up_third
+        BIT draw_move_ud__move+5                ; BIT on the constant $03 in the AND above (an Applesoft trick)
+        BEQ move_up_or_down__up_block
         ADC #$1F
         SEC
-        BCS move_up_or_down.up_ror
-move_up_or_down.up_block:
+        BCS move_up_or_down__up_ror
+move_up_or_down__up_block:
         ADC #$23
         PHA
         LDA hbasl
         ADC #$B0
-        BCS move_up_or_down.up_lo
+        BCS move_up_or_down__up_lo
         ADC #$F0
-move_up_or_down.up_lo:
+move_up_or_down__up_lo:
         STA hbasl
         PLA
-        BCS move_up_or_down.up_ror
-move_up_or_down.up_third:
+        BCS move_up_or_down__up_ror
+move_up_or_down__up_third:
         ADC #$1F
-move_up_or_down.up_ror:
+move_up_or_down__up_ror:
         ROR hbasl
-move_up_or_down.up_line:
+move_up_or_down__up_line:
         ADC #$FC
-move_up_or_down.store_hbash:
+move_up_or_down__store_hbash:
         STA hbasl+1
         RTS
         .byte $18
@@ -4550,27 +4556,27 @@ move_down:
         LDA hbasl+1
         ADC #$04
         BIT hgr_con_1c
-        BNE move_up_or_down.store_hbash
+        BNE move_up_or_down__store_hbash
         ASL hbasl
-        BCC move_down.next_third
+        BCC move_down__next_third
         ADC #$E0
         CLC
         BIT move_down+3                ; BIT on the constant $04 in the ADC above (an Applesoft trick)
-        BEQ move_down.ror
+        BEQ move_down__ror
         LDA hbasl
         ADC #$50
         EOR #$F0
-        BEQ move_down.store_lo
+        BEQ move_down__store_lo
         EOR #$F0
-move_down.store_lo:
+move_down__store_lo:
         STA hbasl
         LDA hgr_page
-        BCC move_down.ror
-move_down.next_third:
+        BCC move_down__ror
+move_down__next_third:
         ADC #$E0
-move_down.ror:
+move_down__ror:
         ROR hbasl
-        BCC move_up_or_down.store_hbash
+        BCC move_up_or_down__store_hbash
 
 ; Applesoft HLINRL: a line relative to (0,0): clear the start point and fall into HGLIN.
 ; Not called by the game.
@@ -4593,14 +4599,14 @@ hglin:
         TXA
         SBC hgr_x+1
         STA hgr_quadrant
-        BCS hglin.dx_positive
+        BCS hglin__dx_positive
         PLA
         EOR #$FF
         ADC #$01
         PHA
         LDA #$00
         SBC hgr_quadrant
-hglin.dx_positive:
+hglin__dx_positive:
         STA hgr_dx+1
         STA hgr_err+1
         PLA
@@ -4612,10 +4618,10 @@ hglin.dx_positive:
         TYA
         CLC
         SBC hgr_y
-        BCC hglin.dy_set
+        BCC hglin__dy_set
         EOR #$FF
         ADC #$FE
-hglin.dy_set:
+hglin__dy_set:
         STA hgr_dy
         STY hgr_y
         ROR hgr_quadrant
@@ -4626,18 +4632,18 @@ hglin.dy_set:
         SBC hgr_dx+1
         STA hgr_count_hi
         LDY hgr_horiz
-        BCS hglin.step
-hglin.step_x:
+        BCS hglin__step
+hglin__step_x:
         ASL A
         JSR move_left_or_right
         SEC
-hglin.step:
+hglin__step:
         LDA hgr_err
         ADC hgr_dy
         STA hgr_err
         LDA hgr_err+1
         SBC #$00
-hglin.plot:
+hglin__plot:
         STA hgr_err+1
         LDA (hbasl),Y
         EOR hgr_bits
@@ -4645,12 +4651,12 @@ hglin.plot:
         EOR (hbasl),Y
         STA (hbasl),Y
         INX
-        BNE hglin.next
+        BNE hglin__next
         INC hgr_count_hi
-        BEQ hglin.done
-hglin.next:
+        BEQ hglin__done
+hglin__next:
         LDA hgr_quadrant
-        BCS hglin.step_x
+        BCS hglin__step_x
         JSR move_up_or_down
         CLC
         LDA hgr_err
@@ -4658,8 +4664,8 @@ hglin.next:
         STA hgr_err
         LDA hgr_err+1
         ADC hgr_dx+1
-hglin.always:
-        BVC hglin.plot             ; always taken: V is clear here
+hglin__always:
+        BVC hglin__plot             ; always taken: V is clear here
 
 ; Applesoft MSKTBL: the bit for each of the 7 pixels in a hi-res byte (bit 7 is the colour bit)
 hgr_msktbl:
@@ -4699,19 +4705,19 @@ hfind:
         DEX
         LDA hmask
         AND #$7F
-hfind.count_bits:
+hfind__count_bits:
         INX
         LSR A
-        BNE hfind.count_bits
+        BNE hfind__count_bits
         STA hgr_x+1
         TXA
         CLC
         ADC hgr_horiz
-        BCC hfind.no_carry
+        BCC hfind__no_carry
         INC hgr_x+1
-hfind.no_carry:
+hfind__no_carry:
         STA hgr_x
-hglin.done:                            ; HGLIN's exit, shared with HFIND
+hglin__done:                            ; HGLIN's exit, shared with HFIND
         RTS
 
 ; Applesoft DRAW0: draw the shape at (X, Y-register) at the pen with rotation and scale from A
@@ -4740,40 +4746,40 @@ draw0:
         LDX #$00
         STX hgr_collisions
         LDA (hgr_shape_ptr,X)
-draw0.vector:
+draw0__vector:
         STA hgr_dx+1
         LDX #$80
         STX hgr_err
         STX hgr_err+1
         LDX hgr_scale
-draw0.scale_loop:
+draw0__scale_loop:
         LDA hgr_err
         SEC
         ADC hgr_dx
         STA hgr_err
-        BCC draw0.step_y
+        BCC draw0__step_y
         JSR draw_move_ud_plot
         CLC
-draw0.step_y:
+draw0__step_y:
         LDA hgr_err+1
         ADC hgr_dy
         STA hgr_err+1
-        BCC draw0.next_step
+        BCC draw0__next_step
         JSR draw_move_ud
-draw0.next_step:
+draw0__next_step:
         DEX
-        BNE draw0.scale_loop
+        BNE draw0__scale_loop
         LDA hgr_dx+1
         LSR A
         LSR A
         LSR A
-        BNE draw0.vector
+        BNE draw0__vector
         INC hgr_shape_ptr
-        BNE draw0.next_byte
+        BNE draw0__next_byte
         INC hgr_shape_ptr+1
-draw0.next_byte:
+draw0__next_byte:
         LDA (hgr_shape_ptr,X)
-        BNE draw0.vector
+        BNE draw0__vector
         RTS
 
 ; Applesoft XDRAW0: DRAW0 with each point XORed onto the screen. Not called by the game.
@@ -4800,40 +4806,40 @@ xdraw0:
         LDX #$00
         STX hgr_collisions
         LDA (hgr_shape_ptr,X)
-xdraw0.vector:
+xdraw0__vector:
         STA hgr_dx+1
         LDX #$80
         STX hgr_err
         STX hgr_err+1
         LDX hgr_scale
-xdraw0.scale_loop:
+xdraw0__scale_loop:
         LDA hgr_err
         SEC
         ADC hgr_dx
         STA hgr_err
-        BCC xdraw0.step_y
+        BCC xdraw0__step_y
         JSR xdraw_move_ud_plot
         CLC
-xdraw0.step_y:
+xdraw0__step_y:
         LDA hgr_err+1
         ADC hgr_dy
         STA hgr_err+1
-        BCC xdraw0.next_step
+        BCC xdraw0__next_step
         JSR draw_move_ud
-xdraw0.next_step:
+xdraw0__next_step:
         DEX
-        BNE xdraw0.scale_loop
+        BNE xdraw0__scale_loop
         LDA hgr_dx+1
         LSR A
         LSR A
         LSR A
-        BNE xdraw0.vector
+        BNE xdraw0__vector
         INC hgr_shape_ptr
-        BNE xdraw0.next_byte
+        BNE xdraw0__next_byte
         INC hgr_shape_ptr+1
-xdraw0.next_byte:
+xdraw0__next_byte:
         LDA (hgr_shape_ptr,X)
-        BNE xdraw0.vector
+        BNE xdraw0__vector
         RTS
 
 ; HFNS: read var_hcolor, var_y and var_x and position the pen there (HPOSN).
@@ -4912,14 +4918,14 @@ find_shape:
         BEQ quantity_error
         LDX #0
         CMP (hgr_shape_ptr,X)
-        BEQ find_shape.in_range
+        BEQ find_shape__in_range
         BCS quantity_error
-find_shape.in_range:
+find_shape__in_range:
         ASL A
-        BCC find_shape.no_carry
+        BCC find_shape__no_carry
         INC hgr_shape_ptr+1
         CLC
-find_shape.no_carry:
+find_shape__no_carry:
         TAY
         LDA (hgr_shape_ptr),Y
         ADC hgr_shape_ptr
@@ -4943,7 +4949,7 @@ get_var:
         BNE quantity_error
         DEY
         LDA (fake_vartab),Y
-get_var.done:
+get_var__done:
         RTS
 
 ; X (low) and Y-register (high) = var_x; an error unless < 280.
@@ -4957,7 +4963,7 @@ get_var_x:
         TAY
         CPX #$18
         SBC #$01
-        BCC get_var.done
+        BCC get_var__done
 
 ; Bad argument: Applesoft's ILLEGAL QUANTITY error in ROM.
 quantity_error:
@@ -4993,35 +4999,35 @@ draw_objects:
         STA ZWORK
         LDA #>OBJBASE
         STA ZWORK+1
-draw_objects.loop:
+draw_objects__loop:
         LDY #OBJECTNO
         LDA (ZWORK),Y
         CMP #HV
-        BNE draw_objects.check_room
-        JMP draw_objects.done
-draw_objects.check_room:
+        BNE draw_objects__check_room
+        JMP draw_objects__done
+draw_objects__check_room:
         LDY #OROOM
         LDA (ZWORK),Y
         CMP CURONO
-        BEQ draw_objects.in_room
-draw_objects.next:
+        BEQ draw_objects__in_room
+draw_objects__next:
         LDY #ONEXT
         LDA (ZWORK),Y
         TAX
         JSR BUMPIT
         .word ZWORK
-        JMP draw_objects.loop
-draw_objects.in_room:
+        JMP draw_objects__loop
+draw_objects__in_room:
         LDY #OSTATUS
         LDA (ZWORK),Y
         CMP #OMOVED
-        BEQ draw_objects.moved
+        BEQ draw_objects__moved
         LDY #ORPICKT
         LDA (ZWORK),Y
         STA counter
-draw_objects.check_pic:
+draw_objects__check_pic:
         LDA counter
-        BEQ draw_objects.next
+        BEQ draw_objects__next
         LDY #$0B
         CLC
         DEY
@@ -5030,22 +5036,22 @@ draw_objects.check_pic:
         TAY
         LDA (ZWORK),Y
         CMP shown_picture
-        BEQ draw_objects.visible
+        BEQ draw_objects__visible
         LDY counter
         DEY
         STY counter
-        JMP draw_objects.check_pic
-draw_objects.visible:
+        JMP draw_objects__check_pic
+draw_objects__visible:
         JSR draw_object_in_place
-        JMP draw_objects.next
-draw_objects.moved:
+        JMP draw_objects__next
+draw_objects__moved:
         LDY #RBASEPIC
         LDA (CUROOM),Y
         LDY #RCURPIC
         CMP (CUROOM),Y
-        BNE draw_objects.next
+        BNE draw_objects__next
         JSR draw_object_on_floor
-        JMP draw_objects.next
+        JMP draw_objects__next
 
 ; Draw the object at ZWORK at its OXCOORD/OYCOORD.
 draw_object_in_place:
@@ -5096,7 +5102,7 @@ draw_object:
         LDY #OSHAPE
         LDA (ZWORK),Y
         CMP #$01
-        BEQ draw_object.shape
+        BEQ draw_object__shape
         LDA ZWORK
         STA saved_object_ptr
         LDA ZWORK+1
@@ -5109,7 +5115,7 @@ draw_object:
         LDX saved_picture
         STX shown_picture
         RTS
-draw_object.shape:
+draw_object__shape:
         STX var_shape
         LDA draw_dx
         STA var_x
@@ -5119,7 +5125,7 @@ draw_object.shape:
         LDX saved_picture
         STX shown_picture
         RTS
-draw_objects.done:
+draw_objects__done:
         RTS
 floor_slots:
         .byte $60,$70,$40,$70,$80,$70,$20,$70,$A0,$70,$00,$70,$C0,$70,$00,$50
@@ -5181,22 +5187,22 @@ cache_lookup:
         STA ZWORK
         LDA #>pic_cache
         STA ZWORK+1
-cache_lookup.loop:
+cache_lookup__loop:
         LDA counter
         CMP #CACHE_SLOTS
-        BEQ cache_lookup.miss
+        BEQ cache_lookup__miss
         LDY #$02
         LDA (ZWORK),Y
         CMP pic_block
-        BEQ cache_lookup.hit
+        BEQ cache_lookup__hit
         LDX #4
         JSR BUMPIT
         .word ZWORK
         LDY counter
         INY
         STY counter
-        JMP cache_lookup.loop
-cache_lookup.hit:
+        JMP cache_lookup__loop
+cache_lookup__hit:
         LDY #$00
         LDA turns
         STA (ZWORK),Y
@@ -5211,12 +5217,12 @@ cache_lookup.hit:
         INY
         LDA cache_slots,Y
         STA ZWORK+1
-        JMP cache_lookup.done
-cache_lookup.miss:
+        JMP cache_lookup__done
+cache_lookup__miss:
         JSR cache_choose_victim
         JSR cache_load_block
-        JMP cache_lookup.done
-cache_lookup.done:
+        JMP cache_lookup__done
+cache_lookup__done:
         RTS
 
 ; Pick the slot with the oldest turn (cache_victim, ZWORK = its buffer).
@@ -5227,18 +5233,18 @@ cache_choose_victim:
         LDY #$00
         LDA #$00
         STA counter
-cache_choose_victim.loop:
+cache_choose_victim__loop:
         LDA pic_cache+1,Y
         CMP lru_turn+1
-        BCC cache_choose_victim.older
-        BEQ cache_choose_victim.check_lo
-        JMP cache_choose_victim.next
-cache_choose_victim.check_lo:
+        BCC cache_choose_victim__older
+        BEQ cache_choose_victim__check_lo
+        JMP cache_choose_victim__next
+cache_choose_victim__check_lo:
         LDA pic_cache,Y
         CMP lru_turn
-        BCC cache_choose_victim.older
-        JMP cache_choose_victim.next
-cache_choose_victim.older:
+        BCC cache_choose_victim__older
+        JMP cache_choose_victim__next
+cache_choose_victim__older:
         LDA pic_cache,Y
         STA lru_turn
         LDA pic_cache+1,Y
@@ -5256,8 +5262,8 @@ cache_choose_victim.older:
         LDY rt_temp
         LDA counter
         STA cache_victim
-        JMP cache_choose_victim.next
-cache_choose_victim.next:
+        JMP cache_choose_victim__next
+cache_choose_victim__next:
         INY
         INY
         INY
@@ -5267,7 +5273,7 @@ cache_choose_victim.next:
         STX counter
         TXA
         CMP #CACHE_SLOTS
-        BNE cache_choose_victim.loop
+        BNE cache_choose_victim__loop
         RTS
 
 ; Load BLOCKn into the victim slot by patching the digits of the DOS command below and
@@ -5296,15 +5302,15 @@ cache_load_block:
         INY
         LDA cache_addr_text,Y
         STA bload_addr_digits+3    ; patch the BLOAD command below
-cache_load_block.bload:
+cache_load_block__bload:
         JSR rt_print
-        .hiasc "\x04BLOAD BLOCK"
+        hiasc "\x04BLOAD BLOCK"
 bload_block_digits:
         .byte $00,$00             ; patched: block number
-        .hiasc ",A$"
+        hiasc ",A$"
 bload_addr_digits:
         .byte $00,$00,$00,$00     ; patched: cache slot address
-        .hiasc "\r"
+        hiasc "\r"
         .byte $00
         LDA cache_victim
         ASL A
@@ -5345,41 +5351,41 @@ cache_victim:
 MESSLSTR:
         STX scratch_word
         CPX #MSG_CANT_GO
-        BNE MESSLSTR.try_not_carrying
+        BNE MESSLSTR__try_not_carrying
         JSR rt_print
-        .hiasc "I CANT GO IN THAT DIRECTION\r"
+        hiasc "I CANT GO IN THAT DIRECTION\r"
         .byte $00
-        JMP MESSLSTR.done
-MESSLSTR.try_not_carrying:
+        JMP MESSLSTR__done
+MESSLSTR__try_not_carrying:
         CPX #MSG_NOT_CARRYING
-        BNE MESSLSTR.try_dont_understand
+        BNE MESSLSTR__try_dont_understand
         JSR rt_print
-        .hiasc "IM NOT CARRYING THAT\r"
+        hiasc "IM NOT CARRYING THAT\r"
         .byte $00
-        JMP MESSLSTR.done
-MESSLSTR.try_dont_understand:
+        JMP MESSLSTR__done
+MESSLSTR__try_dont_understand:
         CPX #MSG_DONT_UNDERSTAND
-        BNE MESSLSTR.try_getting_dark
+        BNE MESSLSTR__try_getting_dark
         JSR rt_print
-        .hiasc "I DONT UNDERSTAND WHAT YOU MEAN\r"
+        hiasc "I DONT UNDERSTAND WHAT YOU MEAN\r"
         .byte $00
-        JMP MESSLSTR.done
-MESSLSTR.try_getting_dark:
+        JMP MESSLSTR__done
+MESSLSTR__try_getting_dark:
         CPX #MSG_GETTING_DARK
-        BNE MESSLSTR.from_file
+        BNE MESSLSTR__from_file
         JSR rt_print
-        .hiasc "IT IS GETTING DARK\r"
+        hiasc "IT IS GETTING DARK\r"
         .byte $00
-        JMP MESSLSTR.done
-MESSLSTR.from_file:
+        JMP MESSLSTR__done
+MESSLSTR__from_file:
         LDA message_index_addr
         STA ZWORK
         LDA message_index_addr+1
         STA ZWORK+1
-        JMP MESSLSTR.index
+        JMP MESSLSTR__index
 message_index_addr:
         .word message_index
-MESSLSTR.index:
+MESSLSTR__index:
         LDA #$00
         STA scratch_word+1
         ASL scratch_word
@@ -5405,28 +5411,28 @@ MESSLSTR.index:
         STA ZWORK+1
         JSR word_wrap
         LDY #$00
-MESSLSTR.print_loop:
+MESSLSTR__print_loop:
         LDA (ZWORK),Y
         CMP #$00
-        BNE MESSLSTR.put_char
+        BNE MESSLSTR__put_char
         LDA #HI_CR
-MESSLSTR.put_char:
+MESSLSTR__put_char:
         JSR COUT
         LDA (ZWORK),Y
         INY
         CMP #$00
-        BNE MESSLSTR.print_loop
+        BNE MESSLSTR__print_loop
         LDA msg_no_delay
         CMP #$FF
-        BEQ MESSLSTR.done
+        BEQ MESSLSTR__done
         LDY #$0E
-MESSLSTR.pause:
+MESSLSTR__pause:
         DEY
-        BEQ MESSLSTR.done
+        BEQ MESSLSTR__done
         LDA #$FF
         JSR WAIT
-        JMP MESSLSTR.pause
-MESSLSTR.done:
+        JMP MESSLSTR__pause
+MESSLSTR__done:
         RTS
 
 ; READ MESSAGES,B$xxxx (offset patched in by MESSLSTR) and let DOS read one line into
@@ -5434,10 +5440,10 @@ MESSLSTR.done:
 ; ends the READ, because printing it disturbs them.
 read_message_line:
         JSR rt_print
-        .hiasc "\x04READ MESSAGES,B$"
+        hiasc "\x04READ MESSAGES,B$"
 read_offset_digits:
         .byte $00,$00,$00,$00     ; patched: byte offset of the message in hex
-        .hiasc "\r"
+        hiasc "\r"
         .byte $00
         JSR GETLN1
         LDA input_buffer
@@ -5445,7 +5451,7 @@ read_offset_digits:
         LDA input_buffer+1
         STA scratch_word+1
         JSR rt_print
-        .hiasc "\x04\r"
+        hiasc "\x04\r"
         .byte $00
         LDA scratch_word
         STA input_buffer
@@ -5489,14 +5495,14 @@ split_nibbles:
 ; Map the four nibbles in hex_out to ASCII digits.
 nibbles_to_ascii:
         LDY #$00
-nibbles_to_ascii.loop:
+nibbles_to_ascii__loop:
         LDA hex_out,Y
         TAX
         LDA hex_digits,X
         STA hex_out,Y
         INY
         CPY #$04
-        BNE nibbles_to_ascii.loop
+        BNE nibbles_to_ascii__loop
         RTS
 
 ; Break the $8D-terminated line at ZWORK into lines of at most 39 columns at spaces, and
@@ -5505,33 +5511,33 @@ word_wrap:
         LDY #$00
         LDA #39
         STA scratch_word
-word_wrap.scan:
+word_wrap__scan:
         LDA (ZWORK),Y
         CMP #HI_CR
-        BEQ word_wrap.done
+        BEQ word_wrap__done
         CPY scratch_word
-        BEQ word_wrap.at_margin
-word_wrap.next_char:
+        BEQ word_wrap__at_margin
+word_wrap__next_char:
         INY
-        JMP word_wrap.scan
-word_wrap.at_margin:
+        JMP word_wrap__scan
+word_wrap__at_margin:
         LDA (ZWORK),Y
         CMP #HI_SPACE
-        BEQ word_wrap.break_line
-word_wrap.back_to_space:
+        BEQ word_wrap__break_line
+word_wrap__back_to_space:
         DEY
         LDA (ZWORK),Y
         CMP #HI_SPACE
-        BNE word_wrap.back_to_space
-word_wrap.break_line:
+        BNE word_wrap__back_to_space
+word_wrap__break_line:
         LDA #HI_CR
         STA (ZWORK),Y
         SEC
         TYA
         ADC scratch_word
         STA scratch_word
-        JMP word_wrap.next_char
-word_wrap.done:
+        JMP word_wrap__next_char
+word_wrap__done:
         LDA #$00
         STA (ZWORK),Y
         RTS
@@ -5641,14 +5647,14 @@ rt_return_body:
 rt_print_body:
         JSR rt_args
         LDY #$00
-rt_print_body.loop:
+rt_print_body__loop:
         LDA (rt_operands),Y
         INY
         CMP #$00
-        BEQ rt_print_body.done
+        BEQ rt_print_body__done
         JSR COUT
-        JMP rt_print_body.loop
-rt_print_body.done:
+        JMP rt_print_body__loop
+rt_print_body__done:
         TYA
         TAX
         JSR rt_return
@@ -5671,11 +5677,11 @@ rt_copy_body:
         TXA
         TAY
         DEY
-rt_copy_body.loop:
+rt_copy_body__loop:
         LDA (rt_ptr1),Y
         STA (rt_ptr2),Y
         DEY
-        BNE rt_copy_body.loop
+        BNE rt_copy_body__loop
         LDA (rt_ptr1),Y
         STA (rt_ptr2),Y
         LDX #4
@@ -5739,23 +5745,23 @@ rt_compare_body:
         LDA WORK+1
         STA rt_ptr1+1
         LDY #$00
-rt_compare_body.loop:
+rt_compare_body__loop:
         LDA (rt_ptr1),Y
         CMP (rt_ptr2),Y
-        BNE rt_compare_body.differ
+        BNE rt_compare_body__differ
         INY
         DEX
         TXA
-        BEQ rt_compare_body.equal
-        JMP rt_compare_body.loop
-rt_compare_body.differ:
+        BEQ rt_compare_body__equal
+        JMP rt_compare_body__loop
+rt_compare_body__differ:
         LDA #$01
         STA cmp_result
-        JMP rt_compare_body.done
-rt_compare_body.equal:
+        JMP rt_compare_body__done
+rt_compare_body__equal:
         LDA #$00
         STA cmp_result
-rt_compare_body.done:
+rt_compare_body__done:
         LDX #2
         JSR rt_return
 
@@ -5812,22 +5818,22 @@ MULTIPLY_body:
         LDA #$00
         STA mul_result
         STA mul_result+1
-MULTIPLY_body.loop:
+MULTIPLY_body__loop:
         LDA scratch_word
-        BEQ MULTIPLY_body.done
+        BEQ MULTIPLY_body__done
         LSR mul_count
-        BCC MULTIPLY_body.no_add
+        BCC MULTIPLY_body__no_add
         JSR BUMP16
         .word mul_multiplicand
         .word mul_result
-MULTIPLY_body.no_add:
+MULTIPLY_body__no_add:
         ASL mul_multiplicand
         ROL mul_multiplicand+1
         LDY scratch_word
         DEY
         STY scratch_word
-        JMP MULTIPLY_body.loop
-MULTIPLY_body.done:
+        JMP MULTIPLY_body__loop
+MULTIPLY_body__done:
         LDA mul_dest
         STA rt_ptr1
         LDA mul_dest+1
@@ -5853,10 +5859,10 @@ draw_room:
         JSR hgr
         LDA LAMPSTAT
         CMP #$00
-        BNE draw_room.describe
+        BNE draw_room__describe
         JSR draw_picture
         JSR draw_objects
-draw_room.describe:
+draw_room__describe:
         LDY #RMSG
         LDA (CUROOM),Y
         TAX
@@ -5873,10 +5879,10 @@ set_curoom:
         STA room_offset+1
         LDA CURONO
         STA room_offset
-        JMP set_curoom.compute
+        JMP set_curoom__compute
 roombase_addr:
         .word ROOMBASE
-set_curoom.compute:
+set_curoom__compute:
         LDX #RTBLSIZ
         JSR MULTIPLY
         .word room_offset
@@ -5897,69 +5903,69 @@ stale_hglin_copy:
 draw_picture:
         LDX shown_picture
         JSR load_picture
-draw_picture.next_point:
+draw_picture__next_point:
         LDY #$00
         LDA (picture_ptr),Y
         CMP #PIC_END
-        BNE draw_picture.check_newline
+        BNE draw_picture__check_newline
         INY
         LDA (picture_ptr),Y
         CMP #PIC_END
-        BEQ draw_picture.done
+        BEQ draw_picture__done
         DEY
         LDA (picture_ptr),Y
-draw_picture.check_newline:
+draw_picture__check_newline:
         CMP #PIC_NEWLINE
-        BNE draw_picture.point
+        BNE draw_picture__point
         INY
         LDA (picture_ptr),Y
         CMP #PIC_NEWLINE
-        BNE draw_picture.reload_x
+        BNE draw_picture__reload_x
         LDA #$01
         STA pen_up
         LDX #2
         JSR BUMPIT
         .word picture_ptr
-        JMP draw_picture.next_point
-draw_picture.reload_x:
+        JMP draw_picture__next_point
+draw_picture__reload_x:
         DEY
         LDA (picture_ptr),Y
-draw_picture.point:
+draw_picture__point:
         CLC
         ADC draw_dx
         CMP #MAX_X
-        BCC draw_picture.x_ok
+        BCC draw_picture__x_ok
         LDA #MAX_X
-draw_picture.x_ok:
+draw_picture__x_ok:
         STA var_x
         INY
         LDA (picture_ptr),Y
         CLC
         ADC draw_dy
         CMP #MAX_Y
-        BCC draw_picture.y_ok
+        BCC draw_picture__y_ok
         LDA #MAX_Y
-draw_picture.y_ok:
+draw_picture__y_ok:
         STA var_y
         LDA pen_up
         CMP #0
-        BEQ draw_picture.line_to
+        BEQ draw_picture__line_to
         JSR hplot_xy
         LDA #$00
         STA pen_up
-        JMP draw_picture.advance
-draw_picture.line_to:
+        JMP draw_picture__advance
+draw_picture__line_to:
         JSR hplot_to_xy
-draw_picture.advance:
+draw_picture__advance:
         LDX #2
         JSR BUMPIT
         .word picture_ptr
-        JMP draw_picture.next_point
-draw_picture.done:
+        JMP draw_picture__next_point
+draw_picture__done:
         RTS
 
 ; ---- end of ADVENTURE ------------------------------------------------------------------------
 ; Everything after the hi-res page is free to move: the fill below shrinks as the code and data
 ; above grow, and the file always ends at $7CFF, below the picture cache.
-        .assert * <= CACHE_START, "ADVENTURE has grown into the picture cache at $7D00: delete leftover memory or dead code"
-        .incbin "data/adventure_7A72.bin", upto CACHE_START    ; fill
+        .assert * <= CACHE_START, error, "ADVENTURE has grown into the picture cache at $7D00: delete leftover memory or dead code"
+        incbin_upto "data/adventure_7A72.bin", 654, CACHE_START    ; fill

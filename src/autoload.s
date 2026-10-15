@@ -4,6 +4,7 @@
 ; copy of the macro library at $1C00 (the same code as ADVENTURE's at $7600).
 ; Assemble with tools/asm6502.py; build.sh checks the result against the original.
 
+        .include "macros.inc"
         .include "apple2.inc"
 
 ; ---- addresses outside the image or inside other items ----
@@ -30,19 +31,19 @@ start:
         TXS
         LDA TXTCLR
         LDA HIRES
-start.menu:
+start__menu:
         JSR rt_print
-        .hiasc "\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\rENTER G FOR GAME OR I FOR INSTRUCTIONS"
+        hiasc "\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\rENTER G FOR GAME OR I FOR INSTRUCTIONS"
         .byte $00
         JSR GETLN1
         LDA input_buffer
         CMP #'G'|$80                ; G: play
-        BNE start.not_game
+        BNE start__not_game
         JMP run_adventure
-start.not_game:
+start__not_game:
         CMP #'I'|$80                ; I: instructions
         BEQ show_instructions
-        JMP start.menu
+        JMP start__menu
 
 ; Full-screen text: six pages of instructions ending with the cast of characters, each page
 ; waiting for RETURN (GETLN1), then on to the game.
@@ -50,122 +51,122 @@ show_instructions:
         LDA TXTSET
         JSR HOME
         JSR rt_print
-        .hiasc "\rINSTRUCTIONS FOR HI-RES ADVENTURE\r\r\r"
+        hiasc "\rINSTRUCTIONS FOR HI-RES ADVENTURE\r\r\r"
         .byte $00
         JSR rt_print
-        .hiasc "ADVENTURE IS ONE OF THE MOST FACINATING\rAND CHALLENGING GAMES AVAILABLE FOR\rYOUR APPLE COMPUTER. WINNING IS QUITE\rA CHALLENGE IN A GAME WHERE IT MAY TAKE\r"
+        hiasc "ADVENTURE IS ONE OF THE MOST FACINATING\rAND CHALLENGING GAMES AVAILABLE FOR\rYOUR APPLE COMPUTER. WINNING IS QUITE\rA CHALLENGE IN A GAME WHERE IT MAY TAKE\r"
         .byte $00
         JSR rt_print
-        .hiasc "HOURS TO MOVE AND WEEKS TO SOLVE A \rPUZZLE. HI-RES ADVENTURE #1 ('MYSTERY\rHOUSE') TAKES PLACE IN AN OLD HOUSE\r"
+        hiasc "HOURS TO MOVE AND WEEKS TO SOLVE A \rPUZZLE. HI-RES ADVENTURE #1 ('MYSTERY\rHOUSE') TAKES PLACE IN AN OLD HOUSE\r"
         .byte $00
         JSR rt_print
-        .hiasc "WITH MANY ROOMS. AS YOU ENTER THE\rHOUSE, SEVEN OTHER PERSONS WILL BE\rIN THE LIVING ROOM. EVENTUALLY THEY\rARE DISPERSED THROUGHOUT THE HOUSE AND\r"
+        hiasc "WITH MANY ROOMS. AS YOU ENTER THE\rHOUSE, SEVEN OTHER PERSONS WILL BE\rIN THE LIVING ROOM. EVENTUALLY THEY\rARE DISPERSED THROUGHOUT THE HOUSE AND\r"
         .byte $00
         JSR rt_print
-        .hiasc "YOU START FINDING THEM - DEAD! YOU MUST\rFIND THE KILLER BEFORE HE(SHE?) ENDS UP\rKILLING YOU.\r\r"
+        hiasc "YOU START FINDING THEM - DEAD! YOU MUST\rFIND THE KILLER BEFORE HE(SHE?) ENDS UP\rKILLING YOU.\r\r"
         .byte $00
         JSR rt_print
-        .hiasc "PRESS RETURN TO CONTINUE"
-        .byte $00
-        JSR GETLN1
-        JSR HOME
-        JSR rt_print
-        .hiasc "\r\rYOU PROGRESS THROUGH THE HOUSE BY\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "PROVIDING TWO WORD COMMANDS WHICH \rUSUALLY CONTAIN A VERB AND THEN A \rNOUN BUT AREN'T ALWAYS IN THAT ORDER.\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "EXAMPLES ARE 'WATER ON' AND 'OPEN\rDOOR'. IF A SET OF WORDS DOESNT SEEM\rTO BE WORKING TRY DIFFERENT TERMINOLOGY\r\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "IF YOU SHOULD FIND A STAIRCASE YOU MAY\rTRY 'UP STAIRS' OR 'GO STAIRS'.\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "SOME OF THE ACTIONS YOU CAN TAKE ARE\rGET, DROP, GO, LOOK, READ, CLIMB\rMOVE, HIT, KILL ETC.\r\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "PRESS RETURN TO CONTINUE"
+        hiasc "PRESS RETURN TO CONTINUE"
         .byte $00
         JSR GETLN1
         JSR HOME
         JSR rt_print
-        .hiasc "\r\r\r\r\rYOU MAY GO IN THE DIRECTIONS NORTH, \rSOUTH, EAST, WEST, UP AND DOWN. TYPE\rNORTH OR N TO GO NORTH. THE OTHER\r"
+        hiasc "\r\rYOU PROGRESS THROUGH THE HOUSE BY\r"
         .byte $00
         JSR rt_print
-        .hiasc "DIRECTIONS MAY ALSO BE ABBREVIATED AS\rWELL. WHEN YOUR WAY IS BLOCKED AND\rYOU CAN'T USE DIRECTIONS TO MOVE \r"
+        hiasc "PROVIDING TWO WORD COMMANDS WHICH \rUSUALLY CONTAIN A VERB AND THEN A \rNOUN BUT AREN'T ALWAYS IN THAT ORDER.\r"
         .byte $00
         JSR rt_print
-        .hiasc "YOU MAY HAVE TO REFER TO THE ACTUAL\rOBJECT IN YOUR WAY. IN THESE CASES\rYOU COULD TYPE 'GO DOOR', 'GO HOLE',\r'GO GATE' ETC.\r\r"
+        hiasc "EXAMPLES ARE 'WATER ON' AND 'OPEN\rDOOR'. IF A SET OF WORDS DOESNT SEEM\rTO BE WORKING TRY DIFFERENT TERMINOLOGY\r\r"
         .byte $00
         JSR rt_print
-        .hiasc "PRESS RETURN TO CONTINUE"
-        .byte $00
-        JSR GETLN1
-        JSR HOME
-        JSR rt_print
-        .hiasc "\r\r\rIN GENERAL THE TOP OF THE SCREEN IS\rNORTH. THE BOTTOM IS SOUTH, THE LEFT\rSIDE IS WEST AND THE RIGHT SIDE IS\r"
+        hiasc "IF YOU SHOULD FIND A STAIRCASE YOU MAY\rTRY 'UP STAIRS' OR 'GO STAIRS'.\r"
         .byte $00
         JSR rt_print
-        .hiasc "EAST. BECAUSE OF THE DIFFICULTY OF\rDRAWING DOORWAYS TO THE SOUTH OR THE\rBOTTOM OF THE SCREEN, THERE ARE ONE\r"
+        hiasc "SOME OF THE ACTIONS YOU CAN TAKE ARE\rGET, DROP, GO, LOOK, READ, CLIMB\rMOVE, HIT, KILL ETC.\r\r"
         .byte $00
         JSR rt_print
-        .hiasc "OR TWO ROOMS WHERE THE DOORWAYS DO NOT\rMATCH UP TO THE NORMAL DIRECTIONS.\r\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "IF YOU WANT A CLOSER LOOK AT SOMETHING\rSAY LOOK (OBJECT). TO RETURN TO THE\rMAIN VIEW SAY LOOK ROOM.\r\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "SAVE GAME AND RESTORE GAME MAY\rALSO BE USED.\r\r\rPRESS RETURN TO CONTINUE"
+        hiasc "PRESS RETURN TO CONTINUE"
         .byte $00
         JSR GETLN1
         JSR HOME
         JSR rt_print
-        .hiasc "\r\r\rA NOTE OF CAUTION: CARRYING MORE THAN\rONE NOTE MAY BE CONFUSING AS THE"
+        hiasc "\r\r\r\r\rYOU MAY GO IN THE DIRECTIONS NORTH, \rSOUTH, EAST, WEST, UP AND DOWN. TYPE\rNORTH OR N TO GO NORTH. THE OTHER\r"
         .byte $00
         JSR rt_print
-        .hiasc "\rCOMPUTER WILL ARBITRARILY DECIDE WHICH\rONE TO READ OR DROP.\r\r"
+        hiasc "DIRECTIONS MAY ALSO BE ABBREVIATED AS\rWELL. WHEN YOUR WAY IS BLOCKED AND\rYOU CAN'T USE DIRECTIONS TO MOVE \r"
         .byte $00
         JSR rt_print
-        .hiasc "SHOULD YOU WISH TO REVIEW PAST COMMANDS\rYOU MAY PRESS RETURN WITHOUT TYPING TO\r"
+        hiasc "YOU MAY HAVE TO REFER TO THE ACTUAL\rOBJECT IN YOUR WAY. IN THESE CASES\rYOU COULD TYPE 'GO DOOR', 'GO HOLE',\r'GO GATE' ETC.\r\r"
         .byte $00
         JSR rt_print
-        .hiasc "FLIP/FLOP BETWEEN GRAPHICS AND TEXT.\r\rIF YOUR COPY SHOULD EVER FAIL TO LOAD\r(OR GET MUNCHED BY A HUNGRY DISK DRIVE)\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "SEND IT WITH FIVE DOLLARS TO:\r\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "     ON-LINE SYSTEMS\r     36575 MUDGE RANCH ROAD\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "     COARSEGOLD CA. 93614\r\r"
-        .byte $00
-        JSR rt_print
-        .hiasc "\r\r\rPRESS RETURN TO CONTINUE"
+        hiasc "PRESS RETURN TO CONTINUE"
         .byte $00
         JSR GETLN1
         JSR HOME
         JSR rt_print
-        .hiasc "\r\r"
+        hiasc "\r\r\rIN GENERAL THE TOP OF THE SCREEN IS\rNORTH. THE BOTTOM IS SOUTH, THE LEFT\rSIDE IS WEST AND THE RIGHT SIDE IS\r"
         .byte $00
         JSR rt_print
-        .hiasc "AT THE START OF THE GAME THERE\r"
+        hiasc "EAST. BECAUSE OF THE DIFFICULTY OF\rDRAWING DOORWAYS TO THE SOUTH OR THE\rBOTTOM OF THE SCREEN, THERE ARE ONE\r"
         .byte $00
         JSR rt_print
-        .hiasc "WILL BE SEVEN OTHER PEOPLE IN\rTHE HOUSE WITH YOU. THEIR NAMES,\rOCCUPATIONS, AND HAIRCOLOR ARE\rAS FOLLOWS:\r\r"
+        hiasc "OR TWO ROOMS WHERE THE DOORWAYS DO NOT\rMATCH UP TO THE NORMAL DIRECTIONS.\r\r"
         .byte $00
         JSR rt_print
-        .hiasc "TOM      SAM       SALLY\rBLOND    BRUNETTE  REDHEAD\rPLUMBER  MECHANIC  SEAMSTRESS\r\rDR. GREEN  JOE          BILL\r"
+        hiasc "IF YOU WANT A CLOSER LOOK AT SOMETHING\rSAY LOOK (OBJECT). TO RETURN TO THE\rMAIN VIEW SAY LOOK ROOM.\r\r"
         .byte $00
         JSR rt_print
-        .hiasc "BRUNETTE   BRUNETTE     BLOND\rSURGEON    GRAVEDIGGER  BUTCHER\r\rDAISY\rBLOND\r"
+        hiasc "SAVE GAME AND RESTORE GAME MAY\rALSO BE USED.\r\r\rPRESS RETURN TO CONTINUE"
+        .byte $00
+        JSR GETLN1
+        JSR HOME
+        JSR rt_print
+        hiasc "\r\r\rA NOTE OF CAUTION: CARRYING MORE THAN\rONE NOTE MAY BE CONFUSING AS THE"
         .byte $00
         JSR rt_print
-        .hiasc "COOK.\r\r\r\r"
+        hiasc "\rCOMPUTER WILL ARBITRARILY DECIDE WHICH\rONE TO READ OR DROP.\r\r"
         .byte $00
         JSR rt_print
-        .hiasc "PRESS RETURN TO BEGIN PLAY"
+        hiasc "SHOULD YOU WISH TO REVIEW PAST COMMANDS\rYOU MAY PRESS RETURN WITHOUT TYPING TO\r"
+        .byte $00
+        JSR rt_print
+        hiasc "FLIP/FLOP BETWEEN GRAPHICS AND TEXT.\r\rIF YOUR COPY SHOULD EVER FAIL TO LOAD\r(OR GET MUNCHED BY A HUNGRY DISK DRIVE)\r"
+        .byte $00
+        JSR rt_print
+        hiasc "SEND IT WITH FIVE DOLLARS TO:\r\r"
+        .byte $00
+        JSR rt_print
+        hiasc "     ON-LINE SYSTEMS\r     36575 MUDGE RANCH ROAD\r"
+        .byte $00
+        JSR rt_print
+        hiasc "     COARSEGOLD CA. 93614\r\r"
+        .byte $00
+        JSR rt_print
+        hiasc "\r\r\rPRESS RETURN TO CONTINUE"
+        .byte $00
+        JSR GETLN1
+        JSR HOME
+        JSR rt_print
+        hiasc "\r\r"
+        .byte $00
+        JSR rt_print
+        hiasc "AT THE START OF THE GAME THERE\r"
+        .byte $00
+        JSR rt_print
+        hiasc "WILL BE SEVEN OTHER PEOPLE IN\rTHE HOUSE WITH YOU. THEIR NAMES,\rOCCUPATIONS, AND HAIRCOLOR ARE\rAS FOLLOWS:\r\r"
+        .byte $00
+        JSR rt_print
+        hiasc "TOM      SAM       SALLY\rBLOND    BRUNETTE  REDHEAD\rPLUMBER  MECHANIC  SEAMSTRESS\r\rDR. GREEN  JOE          BILL\r"
+        .byte $00
+        JSR rt_print
+        hiasc "BRUNETTE   BRUNETTE     BLOND\rSURGEON    GRAVEDIGGER  BUTCHER\r\rDAISY\rBLOND\r"
+        .byte $00
+        JSR rt_print
+        hiasc "COOK.\r\r\r\r"
+        .byte $00
+        JSR rt_print
+        hiasc "PRESS RETURN TO BEGIN PLAY"
         .byte $00
         JSR GETLN1
 
@@ -173,7 +174,7 @@ show_instructions:
 ; so the RTS is only reached if the BRUN fails.
 run_adventure:
         JSR rt_print
-        .hiasc "\r\x04BRUN ADVENTURE\r"
+        hiasc "\r\x04BRUN ADVENTURE\r"
         .byte $00
         RTS
 ; leftover memory, not used: lines here can be deleted to make room
@@ -267,14 +268,14 @@ rt_return_body:
 rt_print_body:
         JSR rt_args
         LDY #$00
-rt_print_body.loop:
+rt_print_body__loop:
         LDA (rt_operands),Y
         INY
         CMP #$00
-        BEQ rt_print_body.done
+        BEQ rt_print_body__done
         JSR COUT
-        JMP rt_print_body.loop
-rt_print_body.done:
+        JMP rt_print_body__loop
+rt_print_body__done:
         TYA
         TAX
         JSR rt_return
@@ -295,11 +296,11 @@ rt_copy_body:
         TXA
         TAY
         DEY
-rt_copy_body.loop:
+rt_copy_body__loop:
         LDA (rt_ptr1),Y
         STA (rt_ptr2),Y
         DEY
-        BNE rt_copy_body.loop
+        BNE rt_copy_body__loop
         LDA (rt_ptr1),Y
         STA (rt_ptr2),Y
         LDX #$04
@@ -357,23 +358,23 @@ rt_compare_body:
         LDA WORK+1
         STA rt_ptr1+1
         LDY #$00
-rt_compare_body.loop:
+rt_compare_body__loop:
         LDA (rt_ptr1),Y
         CMP (rt_ptr2),Y
-        BNE rt_compare_body.differ
+        BNE rt_compare_body__differ
         INY
         DEX
         TXA
-        BEQ rt_compare_body.equal
-        JMP rt_compare_body.loop
-rt_compare_body.differ:
+        BEQ rt_compare_body__equal
+        JMP rt_compare_body__loop
+rt_compare_body__differ:
         LDA #$01
         STA cmp_result
-        JMP rt_compare_body.done
-rt_compare_body.equal:
+        JMP rt_compare_body__done
+rt_compare_body__equal:
         LDA #$00
         STA cmp_result
-rt_compare_body.done:
+rt_compare_body__done:
         LDX #$02
         JSR rt_return
 BUMP16_body:
@@ -426,22 +427,22 @@ MULTIPLY_body:
         LDA #$00
         STA mul_result
         STA mul_result+1
-MULTIPLY_body.loop:
+MULTIPLY_body__loop:
         LDA scratch_word
-        BEQ MULTIPLY_body.done
+        BEQ MULTIPLY_body__done
         LSR mul_count
-        BCC MULTIPLY_body.no_add
+        BCC MULTIPLY_body__no_add
         JSR BUMP16
         .word mul_multiplicand
         .word mul_result
-MULTIPLY_body.no_add:
+MULTIPLY_body__no_add:
         ASL mul_multiplicand
         ROL mul_multiplicand+1
         LDY scratch_word
         DEY
         STY scratch_word
-        JMP MULTIPLY_body.loop
-MULTIPLY_body.done:
+        JMP MULTIPLY_body__loop
+MULTIPLY_body__done:
         LDA mul_dest
         STA rt_ptr1
         LDA mul_dest+1
@@ -455,6 +456,6 @@ MULTIPLY_body.done:
         LDX #$02
         JSR rt_return
         .incbin "data/autoload_1DCC.bin"    ; $1DCC-$1FFF leftover memory, not used by the code (see NOTES.md)
-        .org $2000
+        .assert * = $2000, error, "the hi-res page (the title picture) must be at $2000"
 title_1987:
         .incbin "data/title_1987.bin"    ; $2000-$3FFF 

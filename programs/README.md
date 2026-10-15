@@ -2,7 +2,7 @@
 
 Settings for `tools/trace6502.py`, which finds the code in each binary for the optional Ghidra
 pseudocode step. (The build itself assembles `src/` and does not use these.) One JSON file per
-program. Places are named by the source's symbols (`tbl_actions`, `cache_load_block.bload`,
+program. Places are named by the source's symbols (`tbl_actions`, `cache_load_block__bload`,
 `start+13`), so the descriptions stay right when the source moves things; four hex digits give
 a fixed address.
 

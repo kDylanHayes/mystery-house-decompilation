@@ -38,5 +38,15 @@ class Walkthrough(unittest.TestCase):
         self.assertEqual(self.m.screens, expected('walkthrough.screens.txt'))
 
 
+class UnknownWords(unittest.TestCase):
+    """Words the game does not know: the replies are built by patching the word into a message
+    template inside the code, and must come out as recorded."""
+
+    def test_replies(self):
+        m, reason = play.play(os.path.join(helpers.build(), 'files'), commands('errors.txt'))
+        self.assertEqual(m.out, expected('errors.expected.txt'))
+        self.assertEqual(m.screens, expected('errors.screens.txt'))
+
+
 if __name__ == '__main__':
     unittest.main()

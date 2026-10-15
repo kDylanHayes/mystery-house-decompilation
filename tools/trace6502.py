@@ -4,7 +4,7 @@
 usage: trace6502.py [--symbols syms.csv] <program.json> <bin> <out.json> [listing.s [labels.csv]]
 
 --symbols takes the assembler's symbol table, so the program description can name places
-(start, tbl_actions, cache_load_block.bload) rather than give addresses.
+(start, tbl_actions, cache_load_block__bload) rather than give addresses.
 
 The program description (see programs/*.json) gives the load address, entry points, jump
 tables, the address of the inline-argument macro library, and labels. The output JSON tells the

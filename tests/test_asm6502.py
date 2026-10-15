@@ -46,8 +46,8 @@ class AddressingModes(unittest.TestCase):
         _, b = assemble(' .org $1000\nback:\n BNE fwd\n BEQ back\nfwd:\n RTS\n')
         self.assertEqual(b, bytes([0xD0, 0x02, 0xF0, 0xFC, 0x60]))
 
-    def test_local_labels_with_dots(self):
-        _, b = assemble(' .org $1000\nf:\nf.loop:\n DEX\n BNE f.loop\n')
+    def test_local_labels(self):
+        _, b = assemble(' .org $1000\nf:\nf__loop:\n DEX\n BNE f__loop\n')
         self.assertEqual(b, bytes([0xCA, 0xD0, 0xFD]))
 
 
@@ -76,10 +76,28 @@ class Directives(unittest.TestCase):
 
     def test_incbin_upto_cuts_the_blob(self):
         files = {'blob.bin': bytes(range(10))}
-        _, b = assemble(' .org $1000\n .byte $AA\n .incbin "blob.bin", upto $1004\n .org $1004\n .byte $BB\n', files)
+        _, b = assemble(' .org $1000\n .byte $AA\n incbin_upto "blob.bin", 10, $1004\n .byte $BB\n', files)
         self.assertEqual(b, bytes([0xAA, 0, 1, 2, 0xBB]))
-        _, b = assemble(' .org $1000\n .incbin "blob.bin", upto $2000\n', files)
+        _, b = assemble(' .org $1000\n incbin_upto "blob.bin", 10, $2000\n', files)
         self.assertEqual(b, bytes(range(10)))
+        with self.assertRaises(SystemExit):     # the length must match the file
+            assemble(' .org $1000\n incbin_upto "blob.bin", 9, $2000\n', files)
+
+    def test_incbin_start_and_size(self):
+        files = {'blob.bin': bytes(range(10))}
+        _, b = assemble(' .org $1000\n .incbin "blob.bin", 2, 3\n .incbin "blob.bin", 8\n', files)
+        self.assertEqual(b, bytes([2, 3, 4, 8, 9]))
+
+    def test_ca65_macro_definitions_are_skipped(self):
+        _, b = assemble('.macro hiasc str\n .byte 1\n.endmacro\n .feature string_escapes\n'
+                        ' .org $1000\n hiasc "AB\\r"\n')
+        self.assertEqual(b, bytes([0xC1, 0xC2, 0x8D]))
+
+    def test_assert_severity(self):
+        assemble(' .org $1000\n .assert 0, warning, "only a warning"\n')
+        with self.assertRaises(SystemExit) as e:
+            assemble(' .org $1000\n .assert 0, error, "stop"\n')
+        self.assertIn('stop', str(e.exception))
 
     def test_include_searches_extra_directories(self):
         inc = tempfile.mkdtemp()

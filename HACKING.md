@@ -15,7 +15,8 @@ Needs only python3. The build:
    picture files from `src/pictures/` (`tools/picfile.py`), with the tables `ADVENTURE` includes
    for them (`build/gen/messages.inc`, `pictures.inc`), and the four BASIC programs from
    `src/basic/` (`tools/basic.py`);
-2. assembles `src/adventure.s` and `src/autoload.s` into `build/` with `tools/asm6502.py`;
+2. assembles `src/adventure.s` and `src/autoload.s` into `build/` with `tools/asm6502.py`
+   (ca65 builds the same; see below);
 3. makes the files derived from those (`tools/diskfiles.py`): `BLOCK DIRECTORY` and
    `MESSAGE OBJECT`, the disk's copies of two `ADVENTURE` tables; `STARTUP`, the state "play
    again" loads, and `SAVED GAME`, from `src/startup.txt` and `src/saved_game.txt`
@@ -60,7 +61,8 @@ If a change is meant to alter what the game prints or draws, regenerate the expe
 tests/play/walkthrough.screens.txt` and check the difference.
 
 `.github/workflows/build.yml` runs on every push and pull request: the tests, then
-`./build.sh --check`, then a check that the committed generated files (`assets/`,
+`./build.sh --check`, then `tools/ca65_check.sh` (ca65 and ld65 must build the same programs),
+then a check that the committed generated files (`assets/`,
 `extracted/`) are what the source produces (PNGs excepted: their compressed bytes depend on the
 zlib version). The built disk is attached to each run as an artifact.
 
@@ -73,23 +75,29 @@ start it. `src/game.inc` holds the constants for the data (vocabulary ids
 `V_*`/`N_*`, rule opcodes `C_*`/`A_*`, record field offsets, message numbers) and
 `src/apple2.inc` the hardware, Monitor and DOS addresses. `src/autoload.s` is the 1987 loader.
 
-Assembler syntax (see `tools/asm6502.py`): `label:`, `name = value`, `.org`, `.byte`, `.word`,
-`.hiasc "text"` (Apple II high-bit text), `.incbin` (with `, upto addr` to cut it short so it
-fits before a table), `.include` (also searched in `-I` directories), and `a:` to force
-absolute addressing. Expressions take `+ - * / & |`, `<` (low byte) and `>` (high byte).
+The source is standard **ca65** syntax (cc65 2.18 or later). The build assembles it with the
+bundled `tools/asm6502.py`, so it needs only python3; `tools/ca65_check.sh` assembles the same
+source with ca65 and ld65 and checks they produce exactly the same programs (CI runs it). The
+syntax used: `label:`, `name = value`, `.org` (once), `.byte`, `.word`, `.incbin`, `.include`,
+`.assert expr, error, "message"`, `a:` to force absolute addressing, and two macros from
+`src/macros.inc`: `hiasc "text"` (Apple II high-bit text) and `incbin_upto "file", length,
+limit` (as much of a blob as fits before an address). Expressions take `+ - * / & |`,
+comparisons, `*` (the current address), `<` (low byte) and `>` (high byte).
 
 Conventions:
 
 * Names in CAPITALS (`CUROOM`, `ZWORK`, `OBJBASE`, `AC1600`, `RBASEPIC`, ...) are the original
   author's, recovered from the binary. Everything else is named after what it does.
-* Local labels are scoped with a dot: `draw_picture.next_point` belongs to `draw_picture`.
-* Routines that take operands inline after the `JSR` keep them as `.word` / `.hiasc` lines
+* A label inside a routine is named after it with a double underscore:
+  `draw_picture__next_point` belongs to `draw_picture`.
+* Routines that take operands inline after the `JSR` keep them as `.word` / `hiasc` lines
   straight after the call (the `rt_*` library, `lookup_word`).
 * Everything refers to everything else by name, so code and tables can move: insert or delete
   bytes anywhere and the rest follows (`tests/test_shift.py` proves it by padding the source in
-  five places and playing the whole game). Only four places are pinned with `.org`: `$0800`
-  (where DOS loads the file), `OBJBASE` `$0900` and `ROOMBASE` `$0D00` (inside `$0830-$10FE`,
-  the range SAVE, RESTORE and STARTUP copy), and the hi-res page at `$2000` (hardware).
+  five places and playing the whole game). Only four places are fixed: `$0800` (the `.org`, where
+  DOS loads the file), and, checked with `.assert`, `OBJBASE` `$0900` and `ROOMBASE` `$0D00`
+  (inside `$0830-$10FE`, the range SAVE, RESTORE and STARTUP copy) and the hi-res page at
+  `$2000` (hardware); the leftover memory in front of each shrinks to reach it exactly.
   `.assert`s stop the build if the room table leaves the saved range or the file grows into the
   picture cache at `$7D00`.
 * Names and routine comments live only in `src/`. The Ghidra step reads them from the
@@ -187,6 +195,7 @@ grow or shrink, but adding or removing a file, or a new `BLOCK` file, is not sup
 | `build.sh` | the build | hand |
 | `tools/` | the build tools (see `tools/README.md`) | hand |
 | `tests/` | tests for the tools and the build | hand |
+| `src/macros.inc`, `src/ld65.cfg` | the ca65 macros, and the ld65 configuration `tools/ca65_check.sh` uses | hand |
 | `.github/workflows/` | CI: tests, matching build, generated files up to date | hand |
 | `ghidra_scripts/` | the Ghidra post-script for the optional pseudocode | hand |
 | `programs/` | code-tracing settings for the Ghidra step (see `programs/README.md`) | hand |

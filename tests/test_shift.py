@@ -57,6 +57,11 @@ class Shifted(unittest.TestCase):
         with open(os.path.join(self.shifted, 'ADVENTURE.bin'), 'rb') as f:
             self.assertLessEqual(0x0800 + len(f.read()), 0x7D00)
 
+    def test_unknown_words_get_the_same_replies(self):
+        # the replies are patched into text inside read_command, which moves too
+        m, reason = play.play(os.path.join(self.shifted, 'files'), commands('errors.txt'))
+        self.assertEqual(m.out, expected('errors.expected.txt'))
+
     def test_the_game_plays_the_same(self):
         self.assertEqual(self.reason, 'quit to DOS')
         self.assertEqual(self.m.out, expected('walkthrough.expected.txt'))

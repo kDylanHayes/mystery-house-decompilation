@@ -3,25 +3,31 @@
 
 usage: asm6502.py [-I dir]... <source.s> <out.bin> [listing.txt [symbols.csv]]
 
+The sources are standard ca65 syntax (cc65 2.18+): ca65 + ld65 build the same bytes (see
+tools/ca65_check.sh). This assembler implements the subset they use, so the build needs only
+python3.
+
 -I adds a directory to search for .include and .incbin files after the including file's own.
 
 symbols.csv lists every label and every constant defined outside game.inc (name,address,kind,file),
 with the comment block written directly above each label; build.sh feeds it to Ghidra.
 
-Syntax (a subset of the common ca65/Merlin conventions):
+Syntax (the subset of ca65 the sources use):
 
   label:                 define a label at the current address
   name = expr            define a constant
-  .org expr              set the address (the first .org is the load address)
+  .org expr              the load address (once, at the start)
   .byte expr, ...        bytes; "text" emits ASCII
-  .hiasc "text", ...     ASCII with bit 7 set, as the Apple II prints it; \\r and \\xNN escapes
   .word expr, ...        little-endian words
-  .incbin "file"         raw bytes, path relative to the source file
-  .incbin "file", upto expr   as much of the file as fits before address expr: leftover bytes in
-                         front of a table that is generated (and may grow) shrink to make room
-  .include "file"        another source file, relative to this one
-  .assert expr, "message"   stop with the message unless expr is non-zero (checked when the
-                         final addresses are known), e.g. .assert * <= $7D00, "too long"
+  .incbin "file"[, start[, size]]   raw bytes, path relative to the source file or -I
+  .include "file"        another source file
+  .assert expr[, error | warning][, "message"]   checked when the final addresses are known
+  .feature ...           accepted and ignored (macros.inc turns on ca65's string escapes)
+  .macro / .endmacro     skipped: the two macros the sources define are built in:
+    hiasc "text", ...                   ASCII with bit 7 set, as the Apple II prints it; \\r and
+                                        \\xNN escapes
+    incbin_upto "file", length, limit   as much of the file (length bytes: checked) as fits
+                                        before the address limit
   LDA a:expr             force absolute addressing for a zero-page address
   ; comment
 
@@ -239,8 +245,20 @@ class Assembler:
         block = []
         with open(path, encoding='ascii') as f:
             source = f.readlines()
+        in_macro = False
         for n, raw in enumerate(source, 1):
             line = raw.rstrip('\n')
+            # ca65 macro definitions: the two the sources use (hiasc, incbin_upto) are built in
+            word = line.split(';')[0].split()[:1]
+            if word and word[0].lower() == '.macro':
+                in_macro = True
+                continue
+            if in_macro:
+                if word and word[0].lower() == '.endmacro':
+                    in_macro = False
+                continue
+            if word and word[0].lower() == '.feature':
+                continue
             if line.startswith(';'):
                 block.append(line[1:].strip())
             else:
@@ -336,35 +354,49 @@ class Assembler:
                             out += bytes(v - pc)
                         pc = v
                         continue
-                    if lw in ('.byte', '.hiasc'):
+                    if lw in ('.byte', '.hiasc', 'hiasc'):
                         for a in self.split_args(rest):
                             if a.startswith('"'):
                                 s = self.string(a)
-                                emitted += bytes(c | 0x80 for c in s) if lw == '.hiasc' else s
+                                emitted += bytes(c | 0x80 for c in s) if lw != '.byte' else s
                             else:
                                 v, _ = self.value(a, 0)
                                 if final and not -128 <= v <= 255:
                                     raise AsmError('byte out of range: %s' % a)
                                 emitted.append(v & 0xFF)
                     elif lw == '.assert':
+                        # .assert expr[, error | warning][, "message"]  (the ca65 form)
                         args = self.split_args(rest)
                         ok, known = self.value(args[0], 1)
+                        severity = args[1].lower() if len(args) > 1 and not args[1].startswith('"') else 'error'
+                        message = args[-1][1:-1] if len(args) > 1 and args[-1].startswith('"') else 'assertion failed'
                         if final and not ok:
-                            raise AsmError(args[1][1:-1] if len(args) > 1 else 'assertion failed')
+                            if severity in ('warning', 'ldwarning'):
+                                print('%s:%d: warning: %s' % (src, n, message), file=sys.stderr)
+                            else:
+                                raise AsmError(message)
                     elif lw == '.word':
                         for a in self.split_args(rest):
                             v, _ = self.value(a, 0)
                             emitted += bytes((v & 0xFF, (v >> 8) & 0xFF))
-                    elif lw == '.incbin':
+                    elif lw in ('.incbin', 'incbin_upto'):
                         args = self.split_args(rest)
                         with open(self.find(src, args[0][1:-1]), 'rb') as f:
                             blob = f.read()
-                        if len(args) > 1:
-                            m2 = re.match(r'upto\s+(.+)$', args[1])
-                            if not m2:
-                                raise AsmError('expected: .incbin "file", upto address')
-                            limit, _ = self.value(m2.group(1), pc + len(blob))
+                        if lw == 'incbin_upto':
+                            # incbin_upto "file", length, limit (the macro in src/macros.inc)
+                            length = self.eval(args[1])
+                            if length != len(blob):
+                                raise AsmError('%s is %d bytes, not %d' % (args[0], len(blob), length))
+                            limit, _ = self.value(args[2], pc + len(blob))
                             blob = blob[:max(0, limit - pc)]
+                        elif len(args) > 1:
+                            # .incbin "file", start[, size]  (the ca65 form)
+                            start = self.eval(args[1])
+                            size = self.eval(args[2]) if len(args) > 2 else len(blob) - start
+                            if start + size > len(blob):
+                                raise AsmError('%s has only %d bytes' % (args[0], len(blob)))
+                            blob = blob[start:start + size]
                         emitted += blob
                     else:
                         emitted = self.instruction(word.upper(), rest, pc)

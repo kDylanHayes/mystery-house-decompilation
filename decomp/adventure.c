@@ -666,14 +666,14 @@ void lookup_word(void)
     word_id = word_id + 1;
     rt_compare(8, &word_buf);
     if (cmp_result == 0) {
-lookup_word.done:
+lookup_word__done:
                     /* WARNING: Subroutine does not return */
       rt_return(2);
     }
     BUMPIT(8, &WORK);
     if (*WORK == 0xff) {
       word_id = 0xff;
-      goto lookup_word.done;
+      goto lookup_word__done;
     }
     if (*WORK == 0) {
       rt_inc16(&WORK);
@@ -683,7 +683,7 @@ lookup_word.done:
       rt_inc16(&WORK);
       for (; counter != 0; counter = counter - 1) {
         rt_compare(8, &word_buf);
-        if (cmp_result == 0) goto lookup_word.done;
+        if (cmp_result == 0) goto lookup_word__done;
         BUMPIT(8, &WORK);
       }
     }
@@ -1230,25 +1230,25 @@ void AC3700(void)
   do {
     if (*ZAWORK == 0xff) {
       MESSLSTR(0x98);
-AC3700.done:
+AC3700__done:
       AC9000(0);
       return;
     }
     if ((ZAWORK[1] == AX) && (ZAWORK[2] == CURONO)) {
       if (ZAWORK[7] == 2) {
         MESSLSTR(0x97);
-        goto AC3700.done;
+        goto AC3700__done;
       }
       if (ZAWORK[7] == 1) {
-AC3700.take:
+AC3700__take:
         ZAWORK[2] = 0xfe;
         ZAWORK[7] = 1;
-        goto AC3700.done;
+        goto AC3700__done;
       }
       AWORK2._0_1_ = CUROOM[9];
       bVar1 = 0xb;
       for (AWORK3._0_1_ = ZAWORK[10]; (byte)AWORK3 != 0; AWORK3._0_1_ = (byte)AWORK3 - 1) {
-        if (ZAWORK[bVar1] == (byte)AWORK2) goto AC3700.take;
+        if (ZAWORK[bVar1] == (byte)AWORK2) goto AC3700__take;
         bVar1 = bVar1 + 1;
       }
     }
@@ -1269,14 +1269,14 @@ void AC3800(void)
   do {
     if (*ZAWORK == 0xff) {
       MESSLSTR(0x25);
-AC3800.done:
+AC3800__done:
       AC9000(0);
       return;
     }
     if ((ZAWORK[1] == noun) && (ZAWORK[2] == 0xfe)) {
       ZAWORK[2] = CURONO;
       ZAWORK[7] = 1;
-      goto AC3800.done;
+      goto AC3800__done;
     }
     BUMPIT(ZAWORK[9], &ZAWORK);
   } while( true );
@@ -1412,14 +1412,14 @@ void hposn(byte param_1,byte param_2,char param_3)
   bVar3 = true;
   hgr_horiz = 0;
   bVar2 = param_2;
-  if (param_3 == '\0') goto hposn.div7;
+  if (param_3 == '\0') goto hposn__div7;
   hgr_horiz = 0x23;
   bVar3 = 0xfb < param_2;
   bVar1 = param_2 + 5;
   do {
     hgr_horiz = hgr_horiz + 1;
     bVar2 = bVar1;
-hposn.div7:
+hposn__div7:
     bVar1 = (bVar2 - 7) - !bVar3;
     bVar3 = true;
   } while ((bVar1 & ~bVar2 & 0x80) != 0);
@@ -1525,7 +1525,7 @@ void move_left_or_right(char param_1)
       bVar3 = 0x27;
     }
     bVar2 = 0xc0;
-move_left_or_right.new_byte:
+move_left_or_right__new_byte:
     hmask = bVar2;
     hgr_horiz = bVar3;
     if ((char)(hgr_bits * '\x02' + '@') < '\0') {
@@ -1541,7 +1541,7 @@ move_left_or_right.new_byte:
   bVar3 = param_1 + 1;
   bVar4 = 0x27 < bVar3;
   bVar2 = 0x81;
-  if ((!bVar4) || (bVar3 = 0, bVar2 = 0x81, bVar4)) goto move_left_or_right.new_byte;
+  if ((!bVar4) || (bVar3 = 0, bVar2 = 0x81, bVar4)) goto move_left_or_right__new_byte;
   if ((hgr_dx._1_1_ & 4) != 0) {
     bVar3 = hmask & 0x7f & *(byte *)hbasl;
     if (bVar3 == 0) {
@@ -1557,12 +1557,12 @@ move_left_or_right.new_byte:
   }
   if (1 < bVar3) {
     bVar3 = hbasl._1_1_ + 4;
-    if ((bVar3 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
+    if ((bVar3 & hgr_con_1c) != 0) goto move_up_or_down__store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-move_down.next_third:
+move_down__next_third:
       bVar4 = 0x1f < bVar3;
       bVar3 = (bVar3 - 0x20) + cVar8;
     }
@@ -1579,11 +1579,11 @@ move_down.next_third:
         bVar4 = false;
         cVar8 = '\x01';
         bVar3 = hgr_page;
-        if (bVar5) goto move_down.next_third;
+        if (bVar5) goto move_down__next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto move_up_or_down.store_hbash;
+    goto move_up_or_down__store_hbash;
   }
   bVar3 = 0;
   bVar2 = hbasl._1_1_;
@@ -1591,7 +1591,7 @@ move_down.next_third:
     bVar3 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-move_up_or_down.up_third:
+move_up_or_down__up_third:
       hbasl._0_1_ = bVar3;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1609,7 +1609,7 @@ move_up_or_down.up_third:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar3 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar1) goto move_up_or_down.up_third;
+      if (!bVar5 && 0xf >= bVar1) goto move_up_or_down__up_third;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -1620,7 +1620,7 @@ move_up_or_down.up_third:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar3 = (bVar2 - 4) + bVar3;
-move_up_or_down.store_hbash:
+move_up_or_down__store_hbash:
   hbasl = CONCAT11(bVar3,(byte)hbasl);
   return;
 }
@@ -1691,12 +1691,12 @@ void xdraw_move_ud_plot(byte param_1)
   }
   if (1 < bVar1) {
     bVar1 = hbasl._1_1_ + 4;
-    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
+    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down__store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-move_down.next_third:
+move_down__next_third:
       bVar4 = 0x1f < bVar1;
       bVar1 = (bVar1 - 0x20) + cVar8;
     }
@@ -1713,11 +1713,11 @@ move_down.next_third:
         bVar4 = false;
         cVar8 = '\x01';
         bVar1 = hgr_page;
-        if (bVar5) goto move_down.next_third;
+        if (bVar5) goto move_down__next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto move_up_or_down.store_hbash;
+    goto move_up_or_down__store_hbash;
   }
   bVar1 = 0;
   bVar3 = hbasl._1_1_;
@@ -1725,7 +1725,7 @@ move_down.next_third:
     bVar1 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-move_up_or_down.up_third:
+move_up_or_down__up_third:
       hbasl._0_1_ = bVar1;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar3 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1743,7 +1743,7 @@ move_up_or_down.up_third:
       bVar3 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar1 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar2) goto move_up_or_down.up_third;
+      if (!bVar5 && 0xf >= bVar2) goto move_up_or_down__up_third;
     }
     else {
       bVar3 = hbasl._1_1_ + 0x1f;
@@ -1754,7 +1754,7 @@ move_up_or_down.up_third:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar1 = (bVar3 - 4) + bVar1;
-move_up_or_down.store_hbash:
+move_up_or_down__store_hbash:
   hbasl = CONCAT11(bVar1,(byte)hbasl);
   return;
 }
@@ -1807,12 +1807,12 @@ void draw_move_ud_plot(byte param_1)
   }
   if (1 < bVar1) {
     bVar1 = hbasl._1_1_ + 4;
-    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
+    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down__store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-move_down.next_third:
+move_down__next_third:
       bVar4 = 0x1f < bVar1;
       bVar1 = (bVar1 - 0x20) + cVar8;
     }
@@ -1829,11 +1829,11 @@ move_down.next_third:
         bVar4 = false;
         cVar8 = '\x01';
         bVar1 = hgr_page;
-        if (bVar5) goto move_down.next_third;
+        if (bVar5) goto move_down__next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto move_up_or_down.store_hbash;
+    goto move_up_or_down__store_hbash;
   }
   bVar1 = 0;
   bVar3 = hbasl._1_1_;
@@ -1841,7 +1841,7 @@ move_down.next_third:
     bVar1 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-move_up_or_down.up_third:
+move_up_or_down__up_third:
       hbasl._0_1_ = bVar1;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar3 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1859,7 +1859,7 @@ move_up_or_down.up_third:
       bVar3 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar1 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar2) goto move_up_or_down.up_third;
+      if (!bVar5 && 0xf >= bVar2) goto move_up_or_down__up_third;
     }
     else {
       bVar3 = hbasl._1_1_ + 0x1f;
@@ -1870,7 +1870,7 @@ move_up_or_down.up_third:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar1 = (bVar3 - 4) + bVar1;
-move_up_or_down.store_hbash:
+move_up_or_down__store_hbash:
   hbasl = CONCAT11(bVar1,(byte)hbasl);
   return;
 }
@@ -1924,12 +1924,12 @@ void draw_move_ud(byte param_1)
   }
   if (1 < bVar2) {
     bVar1 = hbasl._1_1_ + 4;
-    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
+    if ((bVar1 & hgr_con_1c) != 0) goto move_up_or_down__store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-move_down.next_third:
+move_down__next_third:
       bVar4 = 0x1f < bVar1;
       bVar1 = (bVar1 - 0x20) + cVar8;
     }
@@ -1946,11 +1946,11 @@ move_down.next_third:
         bVar4 = false;
         cVar8 = '\x01';
         bVar1 = hgr_page;
-        if (bVar5) goto move_down.next_third;
+        if (bVar5) goto move_down__next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto move_up_or_down.store_hbash;
+    goto move_up_or_down__store_hbash;
   }
   bVar1 = 0;
   bVar2 = hbasl._1_1_;
@@ -1958,7 +1958,7 @@ move_down.next_third:
     bVar1 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-move_up_or_down.up_third:
+move_up_or_down__up_third:
       hbasl._0_1_ = bVar1;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -1976,7 +1976,7 @@ move_up_or_down.up_third:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar1 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar3) goto move_up_or_down.up_third;
+      if (!bVar5 && 0xf >= bVar3) goto move_up_or_down__up_third;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -1987,7 +1987,7 @@ move_up_or_down.up_third:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar1 = (bVar2 - 4) + bVar1;
-move_up_or_down.store_hbash:
+move_up_or_down__store_hbash:
   hbasl = CONCAT11(bVar1,(byte)hbasl);
   return;
 }
@@ -2031,12 +2031,12 @@ void move_up_or_down(void)
   
   if (in_N) {
     bVar3 = hbasl._1_1_ + 4 + in_C;
-    if ((bVar3 & hgr_con_1c) != 0) goto move_up_or_down.store_hbash;
+    if ((bVar3 & hgr_con_1c) != 0) goto move_up_or_down__store_hbash;
     cVar7 = -((char)(byte)hbasl >> 7);
     hbasl._0_1_ = (byte)hbasl * '\x02';
     cVar8 = '\0';
     if (cVar7 == '\0') {
-move_down.next_third:
+move_down__next_third:
       bVar4 = 0x1f < bVar3;
       bVar3 = (bVar3 - 0x20) + cVar8;
     }
@@ -2053,11 +2053,11 @@ move_down.next_third:
         bVar4 = false;
         cVar8 = '\x01';
         bVar3 = hgr_page;
-        if (bVar5) goto move_down.next_third;
+        if (bVar5) goto move_down__next_third;
       }
     }
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar4 << 7);
-    goto move_up_or_down.store_hbash;
+    goto move_up_or_down__store_hbash;
   }
   bVar3 = 0;
   bVar2 = hbasl._1_1_;
@@ -2065,7 +2065,7 @@ move_down.next_third:
     bVar3 = (byte)hbasl * '\x02';
     bVar4 = true;
     if ((bool)-((char)(byte)hbasl >> 7)) {
-move_up_or_down.up_third:
+move_up_or_down__up_third:
       hbasl._0_1_ = bVar3;
       bVar6 = 0xe0 < hbasl._1_1_;
       bVar2 = hbasl._1_1_ + 0x1f + bVar4;
@@ -2083,7 +2083,7 @@ move_up_or_down.up_third:
       bVar2 = hbasl._1_1_;
       bVar6 = bVar4;
       bVar3 = (byte)hbasl;
-      if (!bVar5 && 0xf >= bVar1) goto move_up_or_down.up_third;
+      if (!bVar5 && 0xf >= bVar1) goto move_up_or_down__up_third;
     }
     else {
       bVar2 = hbasl._1_1_ + 0x1f;
@@ -2094,7 +2094,7 @@ move_up_or_down.up_third:
     hbasl = (word)(byte)((byte)hbasl >> 1 | bVar6 << 7);
   }
   bVar3 = (bVar2 - 4) + bVar3;
-move_up_or_down.store_hbash:
+move_up_or_down__store_hbash:
   hbasl = CONCAT11(bVar3,(byte)hbasl);
   return;
 }
@@ -2140,10 +2140,10 @@ void hglin(byte param_1,byte param_2,byte param_3)
   hgr_x._0_1_ = param_1;
   hgr_x._1_1_ = param_2;
   hgr_y = param_3;
-  if ((hgr_dx._1_1_ & hgr_count_hi & 0x80) != 0) goto hglin.step;
+  if ((hgr_dx._1_1_ & hgr_count_hi & 0x80) != 0) goto hglin__step;
   do {
     move_left_or_right(bVar1 << 1);
-hglin.step:
+hglin__step:
     bVar4 = CARRY1((byte)hgr_err,hgr_dy);
     hgr_err._0_1_ = (byte)hgr_err + hgr_dy + 1;
     bVar1 = hgr_err._1_1_ - !bVar4;
@@ -3195,13 +3195,13 @@ void rt_compare_body(byte x)
   do {
     if (rt_ptr1[bVar1] != rt_ptr2[bVar1]) {
       cmp_result = 1;
-      goto rt_compare_body.done;
+      goto rt_compare_body__done;
     }
     bVar1 = bVar1 + 1;
     x = x - 1;
   } while (x != 0);
   cmp_result = 0;
-rt_compare_body.done:
+rt_compare_body__done:
                     /* WARNING: Subroutine does not return */
   rt_return(2);
 }
@@ -3325,7 +3325,7 @@ void draw_picture(void)
   byte bVar1;
   
   load_picture(shown_picture);
-draw_picture.next_point:
+draw_picture__next_point:
   do {
     bVar1 = *picture_ptr;
     if (bVar1 == 0xff) {
@@ -3338,7 +3338,7 @@ draw_picture.next_point:
       if (picture_ptr[1] == 0) {
         pen_up = 1;
         BUMPIT(2, &picture_ptr);
-        goto draw_picture.next_point;
+        goto draw_picture__next_point;
       }
       bVar1 = *picture_ptr;
     }
