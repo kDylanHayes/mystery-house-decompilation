@@ -19,8 +19,8 @@ Everything is python3 with the standard library only. Each script's docstring ha
 | `play.py` | tests | plays the built game on a 6502 emulator with scripted commands (no ROMs needed): transcript, screens |
 | `gamecov.py` | tests | what a set of play scripts exercises: instructions, rules, the routines and rules that never run |
 | `trace6502.py` | Ghidra step | finds the code in a binary (inline operands, jump tables) and writes a plan for Ghidra |
-| `ghidra_symbols.py` | Ghidra step | merges the assembler's names and comments with `symbols/*.csv` for Ghidra |
-| `gen_source.py` | once | generated the first version of `src/` from the original binaries. Kept for reference; running it again would overwrite the hand-edited source |
+| `ghidra_symbols.py` | Ghidra step | merges the assembler's names and comments with `ghidra/symbols/*.csv` for Ghidra |
+| `gen_source.py` | once | generated the first version of `src/` from the original binaries. Kept for reference (the tests check its output still reassembles to the same bytes); never run it over `src/`, which is hand-edited |
 
-`ghidra_scripts/MysteryHouse.java` is the Ghidra post-script: it disassembles exactly what the
+`ghidra/scripts/MysteryHouse.java` is the Ghidra post-script: it disassembles exactly what the
 tracer found, applies the symbols and exports the pseudocode to `decomp/`.

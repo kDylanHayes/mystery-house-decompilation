@@ -6,7 +6,7 @@ usage: trace6502.py [--symbols syms.csv] <program.json> <bin> <out.json> [listin
 --symbols takes the assembler's symbol table, so the program description can name places
 (start, tbl_actions, cache_load_block__bload) rather than give addresses.
 
-The program description (see programs/*.json) gives the load address, entry points, jump
+The program description (see ghidra/programs/*.json) gives the load address, entry points, jump
 tables, the address of the inline-argument macro library, and labels. The output JSON tells the
 Ghidra script exactly which bytes are code, which JSRs carry inline arguments (and so need a
 fall-through override), and which inline arguments are strings or words. A plain listing with the

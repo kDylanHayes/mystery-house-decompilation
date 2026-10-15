@@ -419,7 +419,7 @@ Two `rt_print` strings are completed at run time: `BLOAD BLOCK##,A$####` (`cache
 and `READ MESSAGES,B$####` (`read_message_line`). The digits are `$00` in the file, so a
 disassembler that ends the string at the first `$00` stops in the middle of the text and misses
 the code after it (the cache bookkeeping at `$734A` and the `$0200` save/restore at `$751E`).
-`programs/adventure.json` gives those strings their real length; listings show the patched
+`ghidra/programs/adventure.json` gives those strings their real length; listings show the patched
 digits as `#`.
 
 ## Test coverage

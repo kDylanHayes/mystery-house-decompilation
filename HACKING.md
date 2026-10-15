@@ -115,7 +115,7 @@ Conventions:
   `.assert`s stop the build if the room table leaves the saved range or the file grows into the
   picture cache at `$7D00`.
 * Names and routine comments live only in `src/`. The Ghidra step reads them from the
-  assembler's symbol table; `symbols/*.csv` only adds Ghidra data types and register parameters.
+  assembler's symbol table; `ghidra/symbols/*.csv` only adds Ghidra data types and register parameters.
 
 ## Changing the game
 
@@ -224,9 +224,7 @@ grow or shrink, but adding or removing a file, or a new `BLOCK` file, is not sup
 | `tests/` | tests for the tools and the build | hand |
 | `src/macros.inc`, `src/ld65.cfg` | the ca65 macros, and the ld65 configuration `tools/ca65_check.sh` uses | hand |
 | `.github/workflows/` | CI: tests, matching build, generated files up to date | hand |
-| `ghidra_scripts/` | the Ghidra post-script for the optional pseudocode | hand |
-| `programs/` | code-tracing settings for the Ghidra step (see `programs/README.md`) | hand |
-| `symbols/` | Ghidra data types and register parameters (see `symbols/README.md`) | hand |
+| `ghidra/` | inputs to the optional Ghidra step: tracing settings, data types, the post-script (see `ghidra/README.md`) | hand |
 | `original_source/` | the 1980 source fragments found in the binary, in LISA's tokenized format (an archive) | once |
 | `extracted/` | every file from the built disk; BASIC listed as text | build |
 | `assets/` | game text, pictures, rooms, shapes, title screens | build |

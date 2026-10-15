@@ -83,16 +83,16 @@ python3 -I "$HERE/tools/pictures.py" "$HERE/extracted" "$HERE/assets/text/gameda
 W="$B/ghidra"
 mkdir -p "$W"
 for prog in adventure autoload; do
-	file=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['file'])" "$HERE/programs/$prog.json")
-	load=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['load'])" "$HERE/programs/$prog.json")
-	# names and comments from src/, types and register parameters from symbols/
-	python3 -I "$HERE/tools/ghidra_symbols.py" "$B/$prog.syms.csv" "$HERE/symbols/apple2.csv" \
-		"$HERE/symbols/$prog.csv" "$W/$prog.symbols.csv"
-	python3 -I "$HERE/tools/trace6502.py" --symbols "$B/$prog.syms.csv" "$HERE/programs/$prog.json" "$HERE/extracted/$file" "$W/$prog.plan.json"
+	file=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['file'])" "$HERE/ghidra/programs/$prog.json")
+	load=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['load'])" "$HERE/ghidra/programs/$prog.json")
+	# names and comments from src/, types and register parameters from ghidra/symbols/
+	python3 -I "$HERE/tools/ghidra_symbols.py" "$B/$prog.syms.csv" "$HERE/ghidra/symbols/apple2.csv" \
+		"$HERE/ghidra/symbols/$prog.csv" "$W/$prog.symbols.csv"
+	python3 -I "$HERE/tools/trace6502.py" --symbols "$B/$prog.syms.csv" "$HERE/ghidra/programs/$prog.json" "$HERE/extracted/$file" "$W/$prog.plan.json"
 	"$GHIDRA_INSTALL_DIR/support/analyzeHeadless" "$W" "$prog" \
 		-import "$HERE/extracted/$file" -overwrite \
 		-loader BinaryLoader -loader-baseAddr "0x$load" -processor 6502:LE:16:default \
-		-noanalysis -scriptPath "$HERE/ghidra_scripts" \
+		-noanalysis -scriptPath "$HERE/ghidra/scripts" \
 		-postScript MysteryHouse.java "$W/$prog.plan.json" "$W/$prog.symbols.csv" "$HERE/decomp/$prog.c" \
 		-deleteProject > "$W/$prog.log" 2>&1
 	grep -E "MysteryHouse.java> .*decompiled|ERROR" "$W/$prog.log" || true

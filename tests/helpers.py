@@ -42,7 +42,8 @@ def build(src=SRC, defines=()):
     flags = [a for d in defines for a in ('-D', d)]
     tool('asm6502.py', '-I', g, *flags, os.path.join(SRC, 'adventure.s'), os.path.join(b, 'ADVENTURE.bin'),
          os.path.join(b, 'adventure.lst'), os.path.join(b, 'adventure.syms.csv'))
-    tool('asm6502.py', os.path.join(SRC, 'autoload.s'), os.path.join(b, 'AUTO_LOAD_OBJ.bin'))
+    tool('asm6502.py', os.path.join(SRC, 'autoload.s'), os.path.join(b, 'AUTO_LOAD_OBJ.bin'),
+         os.path.join(b, 'autoload.lst'), os.path.join(b, 'autoload.syms.csv'))
     tool('diskfiles.py', 'make', b, SRC)
     with open(os.path.join(b, 'put.txt')) as f:
         put = [l.rstrip('\n') for l in f]

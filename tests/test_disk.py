@@ -1,6 +1,7 @@
 """The disk: the full build matches the recorded hashes, and files can grow and shrink."""
 import hashlib
 import os
+import shutil
 import tempfile
 import unittest
 
@@ -92,6 +93,41 @@ class Put(unittest.TestCase):
                 free = bool(self.disk[o] & (1 << (s - 8 if s >= 8 else s)))
                 self.assertEqual(free, (t, s) not in used, (t, s))
 
+
+
+class Residue(unittest.TestCase):
+    """mkdisk.py lays src/disk/residue.bin (stale bytes no structure accounts for) under
+    everything else, so the original image, stale data and all, could be rebuilt from one. The
+    project has no residue; here a made-up one fills every free sector."""
+
+    def test_residue_fills_the_free_sectors_and_nothing_else(self):
+        b = helpers.build()
+        clean = read(os.path.join(b, 'mystery_house.do'))
+        vtoc = 17 * 16 * 256
+        free = [t * 16 + sec for t in range(35) for sec in range(16)
+                if clean[vtoc + 0x38 + 4 * t + (0 if sec >= 8 else 1)] >> (sec - 8 if sec >= 8 else sec) & 1]
+        self.assertTrue(free)
+        d = tempfile.mkdtemp(prefix='mh-residue-')
+        disk = os.path.join(d, 'disk')
+        shutil.copytree(os.path.join(helpers.SRC, 'disk'), disk)
+        with open(os.path.join(disk, 'residue.bin'), 'wb') as f:
+            for n in free:
+                o = n * 256
+                f.write(bytes([o & 0xFF, o >> 8 & 0xFF, o >> 16, 0, 1]) + bytes([n & 0xFF]) * 256)
+        with open(os.path.join(b, 'put.txt')) as f:
+            put = [l.rstrip('\n') for l in f]
+        image = os.path.join(d, 'stale.do')
+        helpers.tool('mkdisk.py', 'build', disk, image, *put)
+        stale = read(image)
+        for n in range(35 * 16):
+            sector = stale[n * 256:(n + 1) * 256]
+            want = bytes([n & 0xFF]) * 256 if n in free else clean[n * 256:(n + 1) * 256]
+            self.assertEqual(sector, want, 'sector %d' % n)
+        # the files read back from it are the same
+        out = os.path.join(d, 'files')
+        helpers.tool('dos33.py', image, out)
+        for name in sorted(os.listdir(os.path.join(b, 'files'))):
+            self.assertEqual(read(os.path.join(out, name)), read(os.path.join(b, 'files', name)), name)
 
 if __name__ == '__main__':
     unittest.main()

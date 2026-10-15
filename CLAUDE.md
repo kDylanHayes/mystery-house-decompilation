@@ -33,7 +33,7 @@ build also regenerates the C pseudocode in `decomp/*.c`.
 original disk image, no residue. Edit these, not generated files.
 - `src/game.inc`: verb/noun/condition/action constants used by the rule tables.
 - Names and routine comments live only in `src/`. Rename or document there; the Ghidra step takes
-  them from the assembler's symbol table. `symbols/*.csv` only adds Ghidra data types and register
+  them from the assembler's symbol table. `ghidra/symbols/*.csv` only adds Ghidra data types and register
   parameters (`func:X`); its name column is informational.
 - The source is standard ca65 syntax; keep it that way (`tools/ca65_check.sh`, needs cc65, must
   report both programs byte for byte; CI runs it). A label inside a routine is

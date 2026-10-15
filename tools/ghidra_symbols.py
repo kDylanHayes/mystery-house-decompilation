@@ -4,9 +4,9 @@
 usage: ghidra_symbols.py <assembler symbols.csv> <apple2.csv> <types.csv> <out.csv>
 
 Names and function comments come from the source (the assembler's symbol table: every label,
-and every address constant defined in the program's own .s file). symbols/<program>.csv only
+and every address constant defined in the program's own .s file). ghidra/symbols/<program>.csv only
 adds what Ghidra needs on top: data types and register parameters (func:X), matched to the
-source by name (by address only for names the source does not define). symbols/apple2.csv
+source by name (by address only for names the source does not define). ghidra/symbols/apple2.csv
 names the ROM and I/O addresses. Output: address,name,type,comment for MysteryHouse.java.
 """
 import pathlib

@@ -16,8 +16,8 @@ tests that need it.
 | `test_ca65.py` | ca65 and ld65 build the same programs (skipped without cc65) |
 | `test_basic.py` | the BASIC tokenizer, and every program listing back to its source |
 | `test_formats.py` | the message, picture and saved-state formats round trip |
-| `test_disk.py` | the full build against the recorded hashes; the disk writer |
+| `test_disk.py` | the full build against the recorded hashes; the disk writer, and a stale-data residue showing only in free sectors |
 | `test_play.py` | each script in `play/` gives the recorded transcript and screens; together they exercise the recorded code and rules (`play/coverage.expected.txt`) |
 | `test_bugfix.py` | the bug-fix build (`./build.sh --bugfix`): `play/bugfix.txt` on both builds, each bug present in the original and fixed in the other |
 | `test_shift.py` | padding the source moves the code and tables, and the game plays and decodes the same |
-| `test_analysis.py` | `gamedata.py` against the symbol table, `trace6502.py` against the listing and what the game executes, `source_fragments.py` against `original_source/` |
+| `test_analysis.py` | `gamedata.py` against the symbol table, `trace6502.py` against the listing and what the game executes, `source_fragments.py` against `original_source/`, and `gen_source.py` (which made the first `src/`) still giving source that reassembles to the same bytes |

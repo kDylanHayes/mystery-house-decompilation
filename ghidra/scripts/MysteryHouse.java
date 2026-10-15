@@ -1,5 +1,5 @@
 // Builds a Ghidra program for one Mystery House binary from the plan written by
-// tools/trace6502.py, applies symbols/<name>.csv, and writes pseudocode for every function.
+// tools/trace6502.py, applies ghidra/symbols/<name>.csv, and writes pseudocode for every function.
 //
 // The binaries call a small macro library whose operands sit inline after the JSR (see
 // trace6502.py). Ghidra cannot discover that by itself, so the plan lists every code byte,

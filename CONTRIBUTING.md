@@ -81,7 +81,7 @@ together with the evidence for it.
   (`tests/test_shift.py` checks this). The only pinned addresses are `$0800`, `OBJBASE`,
   `ROOMBASE` and `$2000`.
 * Operands passed inline after a `JSR` stay as `.word` / `hiasc` lines right after the call.
-* Names and routine comments live only in `src/`. `symbols/*.csv` only adds Ghidra types and
+* Names and routine comments live only in `src/`. `ghidra/symbols/*.csv` only adds Ghidra types and
   register parameters. `tools/gen_source.py` is historical: don't rerun it over the source.
 * `original_source/` is an archive of the author's 1980 source fragments. Keep it as it is.
 * Every folder has a README.md. Update it, together with HACKING.md and NOTES.md, when something

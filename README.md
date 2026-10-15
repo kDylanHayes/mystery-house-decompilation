@@ -34,7 +34,7 @@ on tracks 0-2, is kept as a binary.
 * [NOTES.md](NOTES.md): how the engine works: the rule interpreter, data formats, graphics,
   messages, the original source found in the binary, bugs and leftovers
 * a README.md in each folder: [`src/data`](src/data/README.md), [`tools`](tools/README.md),
-  [`programs`](programs/README.md), [`symbols`](symbols/README.md), [`tests`](tests/README.md),
+  [`ghidra`](ghidra/README.md), [`tests`](tests/README.md),
   [`decomp`](decomp/README.md), [`original_source`](original_source/README.md),
   [`src/disk`](src/disk/README.md), [`disk`](disk/README.md)
 

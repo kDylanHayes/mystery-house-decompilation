@@ -74,7 +74,7 @@ class Tracer(unittest.TestCase):
         b = helpers.build()
         out = os.path.join(tempfile.mkdtemp(prefix='mh-trace-'), 'plan.json')
         helpers.tool('trace6502.py', '--symbols', os.path.join(b, 'adventure.syms.csv'),
-                     os.path.join(helpers.ROOT, 'programs', 'adventure.json'),
+                     os.path.join(helpers.ROOT, 'ghidra', 'programs', 'adventure.json'),
                      os.path.join(b, 'ADVENTURE.bin'), out)
         with open(out) as f:
             cls.plan = json.load(f)
@@ -127,6 +127,32 @@ class SourceFragments(unittest.TestCase):
             with open(os.path.join(out, n), 'rb') as a, open(os.path.join(archive, n), 'rb') as b:
                 self.assertEqual(a.read(), b.read(), n)
 
+
+
+class GenSource(unittest.TestCase):
+    """tools/gen_source.py made the first src/ from the binaries (trace plan + names). It is
+    not run any more, but must still work: its output for each program reassembles to the same
+    bytes."""
+
+    def check(self, prog, binary):
+        b = helpers.build()
+        d = tempfile.mkdtemp(prefix='mh-gensource-')
+        ghidra = os.path.join(helpers.ROOT, 'ghidra')
+        plan, syms, out = (os.path.join(d, n) for n in ('plan.json', 'symbols.csv', prog + '.s'))
+        helpers.tool('trace6502.py', '--symbols', os.path.join(b, prog + '.syms.csv'),
+                     os.path.join(ghidra, 'programs', prog + '.json'), os.path.join(b, binary), plan)
+        helpers.tool('ghidra_symbols.py', os.path.join(b, prog + '.syms.csv'),
+                     os.path.join(ghidra, 'symbols', 'apple2.csv'), os.path.join(ghidra, 'symbols', prog + '.csv'), syms)
+        helpers.tool('gen_source.py', prog, os.path.join(b, 'files', binary), plan, syms, out, os.path.join(d, 'data'))
+        helpers.tool('asm6502.py', '-I', os.path.join(b, 'gen'), '-I', helpers.SRC, out, os.path.join(d, 'out.bin'))
+        with open(os.path.join(d, 'out.bin'), 'rb') as f, open(os.path.join(b, binary), 'rb') as g:
+            self.assertEqual(f.read(), g.read())
+
+    def test_adventure(self):
+        self.check('adventure', 'ADVENTURE.bin')
+
+    def test_autoload(self):
+        self.check('autoload', 'AUTO_LOAD_OBJ.bin')
 
 if __name__ == '__main__':
     unittest.main()
