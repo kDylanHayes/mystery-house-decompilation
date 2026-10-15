@@ -12,9 +12,10 @@ make expects in <build dir>: ADVENTURE.bin and AUTO_LOAD_OBJ.bin (assembled), ge
 PIC_SIZES.bin, APPLESOFT.bin (tools/basic.py), and the assembler's adventure.syms.csv. It writes:
 
   BLOCK_DIRECTORY.bin, MESSAGE_OBJECT.bin
-                    the disk's copies of ADVENTURE's picture directory ($5300) and message index
-                    ($5500), cut from the assembled ADVENTURE (at least the original 304 and 336
-                    bytes, longer if the tables grew); the game never reads them
+                    the disk's copies of ADVENTURE's picture directory and message index (found
+                    by name in the symbol table), cut from the assembled ADVENTURE (at least the
+                    original 304 and 336 bytes, longer if the tables grew); the game never reads
+                    them
   STARTUP.bin       the state "play again" loads: ADVENTURE's $0830-$10FE with the changes in
                     src/startup.txt (tools/savefile.py)
   SAVED_GAME.bin    the saved game: STARTUP with the changes in src/saved_game.txt
@@ -49,6 +50,15 @@ FILES = [
 ] + [('BLOCK%d' % n, 'gen/BLOCK%d.bin' % n, 0x4400, 'BLOCK%d.bin' % n) for n in range(1, 20)]
 
 
+def symbols(path):
+    """name -> address from the assembler's symbol table"""
+    out = {}
+    for line in pathlib.Path(path).read_text().splitlines()[1:]:
+        name, addr = line.split(',')[:2]
+        out[name] = int(addr, 16)
+    return out
+
+
 def make(b, src):
     adv = pathlib.Path(os.path.join(b, 'ADVENTURE.bin')).read_bytes()
 
@@ -56,8 +66,10 @@ def make(b, src):
         return sum(1 for l in pathlib.Path(os.path.join(b, 'gen', inc)).read_text().splitlines(True) if l.strip().startswith(kind))
     dir_len = max(0x130, 3 * entries('pictures.inc', '.byte'))
     idx_len = max(0x150, 2 * entries('messages.inc', '.word'))
-    pathlib.Path(os.path.join(b, 'BLOCK_DIRECTORY.bin')).write_bytes(adv[0x5300 - 0x800:0x5300 - 0x800 + dir_len])
-    pathlib.Path(os.path.join(b, 'MESSAGE_OBJECT.bin')).write_bytes(adv[0x5500 - 0x800:0x5500 - 0x800 + idx_len])
+    at = symbols(os.path.join(b, 'adventure.syms.csv'))
+    pd, mi = at['picture_directory'] - 0x800, at['message_index'] - 0x800
+    pathlib.Path(os.path.join(b, 'BLOCK_DIRECTORY.bin')).write_bytes(adv[pd:pd + dir_len])
+    pathlib.Path(os.path.join(b, 'MESSAGE_OBJECT.bin')).write_bytes(adv[mi:mi + idx_len])
     base = os.path.join(b, 'adventure_state.bin')
     pathlib.Path(base).write_bytes(adv[0x0830 - 0x800:0x0830 - 0x800 + STATE])
     syms = os.path.join(b, 'adventure.syms.csv')

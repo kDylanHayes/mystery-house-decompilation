@@ -5,7 +5,8 @@ usage: ghidra_symbols.py <assembler symbols.csv> <apple2.csv> <types.csv> <out.c
 
 Names and function comments come from the source (the assembler's symbol table: every label,
 and every address constant defined in the program's own .s file). symbols/<program>.csv only
-adds what Ghidra needs on top: data types and register parameters (func:X). symbols/apple2.csv
+adds what Ghidra needs on top: data types and register parameters (func:X), matched to the
+source by name (by address only for names the source does not define). symbols/apple2.csv
 names the ROM and I/O addresses. Output: address,name,type,comment for MysteryHouse.java.
 """
 import pathlib
@@ -23,9 +24,13 @@ def read(path, cols):
 
 def main():
     asm, apple2, types, out = sys.argv[1:5]
-    typ = {}
+    # types by name first (they follow a symbol that moves when the source changes), by address
+    # for anything the source does not name
+    by_name, by_addr = {}, {}
     for r in read(types, 4):
-        typ[int(r[0], 16)] = (r[2].strip() if len(r) > 2 else '', r[3].strip() if len(r) > 3 else '')
+        entry = (r[2].strip() if len(r) > 2 else '', r[3].strip() if len(r) > 3 else '')
+        by_name[r[1].strip()] = entry
+        by_addr[int(r[0], 16)] = entry
     rows = {}
     for a, n, t, c in ((r + ['', ''])[:4] for r in read(apple2, 4)):
         rows[(int(a, 16), n.strip())] = (t.strip(), c.strip())
@@ -33,7 +38,7 @@ def main():
         if src in ('apple2.inc', 'game.inc'):
             continue
         a = int(addr, 16)
-        t, c = typ.get(a, ('', ''))
+        t, c = by_name.get(name) or by_addr.get(a, ('', ''))
         if '.' in name:          # local branch label
             t, c = '', ''
         rows[(a, name)] = (t, note or c)

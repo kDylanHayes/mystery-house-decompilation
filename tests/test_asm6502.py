@@ -93,6 +93,22 @@ class Directives(unittest.TestCase):
         self.assertEqual(b, bytes([0xC1, 0xBB, 0xC2]))
 
 
+class CurrentAddressAndAssert(unittest.TestCase):
+    def test_star_is_the_current_address(self):
+        _, b = assemble(' .org $1000\nx: .byte *-x, 2\n LDA #<*\n')
+        self.assertEqual(b, bytes([0, 2, 0xA9, 0x02]))
+
+    def test_comparisons(self):
+        _, b = assemble(' .org $1000\n .byte 1<2, 2<=1, 3=3, 3<>3, 5>4\n')
+        self.assertEqual(b, bytes([1, 0, 1, 0, 1]))
+
+    def test_assert(self):
+        assemble(' .org $1000\n .byte 1\n .assert * <= $1001, "fits"\n')
+        with self.assertRaises(SystemExit) as e:
+            assemble(' .org $1000\n .byte 1,2\n .assert * <= $1001, "too long"\n')
+        self.assertIn('too long', str(e.exception))
+
+
 class Errors(unittest.TestCase):
     def check_error(self, text, words):
         with self.assertRaises(SystemExit) as e:

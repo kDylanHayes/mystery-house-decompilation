@@ -20,11 +20,14 @@ Syntax (a subset of the common ca65/Merlin conventions):
   .incbin "file", upto expr   as much of the file as fits before address expr: leftover bytes in
                          front of a table that is generated (and may grow) shrink to make room
   .include "file"        another source file, relative to this one
+  .assert expr, "message"   stop with the message unless expr is non-zero (checked when the
+                         final addresses are known), e.g. .assert * <= $7D00, "too long"
   LDA a:expr             force absolute addressing for a zero-page address
   ; comment
 
-Expressions: numbers ($hex, %binary, decimal, 'c'), labels, + - * / & |, parentheses, and the
-prefixes < (low byte) and > (high byte). Zero-page addressing is used when the operand's value is
+Expressions: numbers ($hex, %binary, decimal, 'c'), labels, * (the current address), + - * / & |
+and the comparisons < <= > >= = <> (1 or 0), parentheses, and the prefixes < (low byte) and
+> (high byte). Zero-page addressing is used when the operand's value is
 known in the first pass and below $100; anything defined later is assumed to be absolute.
 """
 import pathlib
@@ -88,7 +91,7 @@ class Assembler:
         self.notes = {}       # label -> comment block above it
 
     # ---- expressions ----------------------------------------------------------------
-    TOKEN = re.compile(r"\s*(\$[0-9A-Fa-f]+|%[01]+|\d+|'.'|[A-Za-z_@.][A-Za-z0-9_@.]*|[-+*/&|()<>])")
+    TOKEN = re.compile(r"\s*(\$[0-9A-Fa-f]+|%[01]+|\d+|'.'|[A-Za-z_@.][A-Za-z0-9_@.]*|<=|>=|<>|[-+*/&|()<>=])")
 
     def eval(self, text):
         toks = []
@@ -115,6 +118,14 @@ class Assembler:
         return t
 
     def expr(self):
+        v = self.sum()
+        while self.peek() in ('<', '>', '<=', '>=', '=', '<>') and self.tp > 0:
+            op = self.take()
+            r = self.sum()
+            v = int({'<': v < r, '>': v > r, '<=': v <= r, '>=': v >= r, '=': v == r, '<>': v != r}[op])
+        return v
+
+    def sum(self):
         v = self.term()
         while self.peek() in ('+', '-', '&', '|'):
             op = self.take()
@@ -145,6 +156,8 @@ class Assembler:
 
     def atom(self):
         t = self.take()
+        if t == '*':
+            return self.pc
         if t == '(':
             v = self.expr()
             if self.take() != ')':
@@ -306,6 +319,7 @@ class Assembler:
                         line = m.group(2)
                         if not line.strip():
                             continue
+                    self.pc = pc
                     parts = line.strip().split(None, 1)
                     word = parts[0]
                     rest = parts[1] if len(parts) > 1 else ''
@@ -332,6 +346,11 @@ class Assembler:
                                 if final and not -128 <= v <= 255:
                                     raise AsmError('byte out of range: %s' % a)
                                 emitted.append(v & 0xFF)
+                    elif lw == '.assert':
+                        args = self.split_args(rest)
+                        ok, known = self.value(args[0], 1)
+                        if final and not ok:
+                            raise AsmError(args[1][1:-1] if len(args) > 1 else 'assertion failed')
                     elif lw == '.word':
                         for a in self.split_args(rest):
                             v, _ = self.value(a, 0)

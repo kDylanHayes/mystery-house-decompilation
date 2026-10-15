@@ -20,14 +20,14 @@ def tool(*args):
     return r.stdout
 
 
-_built = None
+_built = {}
 
 
-def build():
-    """Build everything once per test run; returns the build directory."""
-    global _built
-    if _built:
-        return _built
+def build(src=SRC):
+    """Build everything from a source tree (once per test run); returns the build directory."""
+    if src in _built:
+        return _built[src]
+    SRC = src
     b = tempfile.mkdtemp(prefix='mh-test-')
     g = os.path.join(b, 'gen')
     os.makedirs(g)
@@ -45,5 +45,5 @@ def build():
         put = [l.rstrip('\n') for l in f]
     tool('mkdisk.py', 'build', os.path.join(SRC, 'disk'), os.path.join(b, 'mystery_house.do'), *put)
     tool('dos33.py', os.path.join(b, 'mystery_house.do'), os.path.join(b, 'files'))
-    _built = b
+    _built[src] = b
     return b

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Recursive-descent code discovery for the Mystery House 6502 binaries.
 
-usage: trace6502.py <program.json> <bin> <out.json> [listing.s [symbols.csv]]
+usage: trace6502.py [--symbols syms.csv] <program.json> <bin> <out.json> [listing.s [labels.csv]]
+
+--symbols takes the assembler's symbol table, so the program description can name places
+(start, tbl_actions, cache_load_block.bload) rather than give addresses.
 
 The program description (see programs/*.json) gives the load address, entry points, jump
 tables, the address of the inline-argument macro library, and labels. The output JSON tells the
@@ -22,6 +25,7 @@ The macro library (a jump table of 9 entries at LIB) takes its operands inline a
 """
 import pathlib
 import json
+import re
 import sys
 
 OPS = {}
@@ -58,8 +62,21 @@ LIB_ARGS = {0x00: 'ww', 0x03: 'w', 0x06: 'ww', 0x09: 'w', 0x12: 'w', 0x15: 's', 
 LIB_NORETURN = 0x0F
 
 
+# assembler symbols (name -> address), so program descriptions can name places instead of
+# giving addresses that move when the source changes
+SYMBOLS = {}
+
+
 def h(s):
-    return int(s, 16) if isinstance(s, str) else s
+    """An address: an int, four hex digits, or a symbol name with an optional +offset."""
+    if not isinstance(s, str):
+        return s
+    if re.fullmatch(r'[0-9A-F]{4}', s):
+        return int(s, 16)
+    m = re.fullmatch(r'([A-Za-z_][\w.]*)(?:\+(\d+))?', s)
+    if m and m.group(1) in SYMBOLS:
+        return SYMBOLS[m.group(1)] + int(m.group(2) or 0)
+    raise SystemExit('unknown address or symbol "%s" (pass --symbols?)' % s)
 
 
 class Program:
@@ -302,6 +319,12 @@ class Program:
 
 
 def main():
+    if '--symbols' in sys.argv:
+        i = sys.argv.index('--symbols')
+        for line in pathlib.Path(sys.argv[i + 1]).read_text().splitlines()[1:]:
+            name, addr = line.split(',')[:2]
+            SYMBOLS[name] = int(addr, 16)
+        del sys.argv[i:i + 2]
     desc = json.loads(pathlib.Path(sys.argv[1]).read_text())
     data = pathlib.Path(sys.argv[2]).read_bytes()
     if len(sys.argv) > 5:

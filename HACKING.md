@@ -85,10 +85,13 @@ Conventions:
 * Local labels are scoped with a dot: `draw_picture.next_point` belongs to `draw_picture`.
 * Routines that take operands inline after the `JSR` keep them as `.word` / `.hiasc` lines
   straight after the call (the `rt_*` library, `lookup_word`).
-* Tables are pinned with `.org`: the engine loads some table addresses as immediate bytes
-  (`LDA #>OBJBASE`), so they must not move. If an edit makes something grow into the next
-  table, the assembler stops with ".org goes backwards". Delete lines from the "leftover memory"
-  just before that table to make room (or `.incbin` a shorter blob).
+* Everything refers to everything else by name, so code and tables can move: insert or delete
+  bytes anywhere and the rest follows (`tests/test_shift.py` proves it by padding the source in
+  five places and playing the whole game). Only four places are pinned with `.org`: `$0800`
+  (where DOS loads the file), `OBJBASE` `$0900` and `ROOMBASE` `$0D00` (inside `$0830-$10FE`,
+  the range SAVE, RESTORE and STARTUP copy), and the hi-res page at `$2000` (hardware).
+  `.assert`s stop the build if the room table leaves the saved range or the file grows into the
+  picture cache at `$7D00`.
 * Names and routine comments live only in `src/`. The Ghidra step reads them from the
   assembler's symbol table; `symbols/*.csv` only adds Ghidra data types and register parameters.
 
@@ -145,11 +148,14 @@ way). The picture area is 255 x 160. Rooms and objects refer to pictures by numb
 (`RBASEPIC`, `OPIC`, `ORPICSTA`). Add pictures at the end of `block19.txt`: it uses 264 of the
 1280 bytes a block may have (a block must fit a $500-byte cache slot).
 
-**Room for more.** Adding messages or pictures makes their tables in `ADVENTURE` longer; the
-leftover bytes after them shrink to make room (`.incbin ..., upto`), so no other change is
-needed until that space runs out: about 70 more pictures, and about 10 more messages. For more
-messages, delete the dead code that follows the message index (`dead_init_tail` to
-`dead_disk_error`, about 150 bytes; nothing calls it).
+**Room for more.** Growth after the hi-res page (new rules, words, messages - 2 bytes each in
+the index - or pictures - 3 bytes each in the directory -, code) moves everything after it and is
+absorbed by the fill at the end of `ADVENTURE`, 654 bytes; the build says so if it runs out.
+Then delete leftover memory (`src/data/README.md` lists it; several KB) or the dead code
+(about 400 bytes in two pieces: `dead_init_tail` up to the shape table, and `dead_read_message`
+up to `run_rules`; nothing calls either). Below the
+hi-res page, the noun table can grow into the 927 leftover bytes before `$2000`, and the
+object table into the 355 before `ROOMBASE`.
 
 **A BASIC program.** `src/basic/` holds the disk's BASIC programs as listings: `HELLO.bas`
 (the start-up credits), `MYSTERY.HELLO.bas` (loads the title and shows the 1987 notice),

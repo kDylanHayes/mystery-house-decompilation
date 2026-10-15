@@ -49,7 +49,8 @@ Unlicense (`LICENSE`); DOS 3.3 (`src/disk/dos33.bin`) is Apple's and excluded.
 
 - The engine passes operands inline after `JSR` (the `rt_*` macro library at `$7600`); the
   tracer and the source keep those as `.word` / `.hiasc` lines after the call.
-- Tables are pinned with `.org` because the engine loads their addresses as immediates. If an edit
-  overflows into the next table, delete lines from the "leftover memory" just before it.
+- The source is shiftable: always refer to addresses by name (`.word label`, `#<label`), never
+  as numbers. Only `$0800`, `OBJBASE`, `ROOMBASE` and `$2000` are pinned. `tests/test_shift.py`
+  pads the source and replays the game; it fails if anything still depends on a fixed address.
 - Names in CAPITALS (`CUROOM`, `ZWORK`, `AC1600`, ...) are the original author's, recovered from
   the binary; keep them.

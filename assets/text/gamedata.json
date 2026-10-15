@@ -9968,5 +9968,18 @@
    192,
    48
   ]
- ]
+ ],
+ "addresses": {
+  "CMD_RULES": 17664,
+  "FLOOR_SLOTS": 28927,
+  "MSGINDEX": 21760,
+  "NOUNS": 5888,
+  "OBJBASE": 2304,
+  "PICDIR": 21248,
+  "ROOMBASE": 3328,
+  "SHAPES": 22272,
+  "SWITCH": 2106,
+  "TURN_RULES": 17408,
+  "VERBS": 16384
+ }
 }

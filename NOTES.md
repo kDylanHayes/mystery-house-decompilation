@@ -256,6 +256,15 @@ into hex in `READ MESSAGES,B$xxxx` (self-modifying again) and reads one line fro
 text file, which `init_game` OPENs. `word_wrap` breaks the line at 39 columns. A room
 description is printed without the short pause that follows other messages.
 
+## Shiftable source
+
+The engine loads several table addresses as immediate pairs (`LDA #<OBJBASE / LDA #>OBJBASE`)
+and keeps five pointers to tables inside its code (`command_rules_addr`, `objbase_addr`, ...).
+The source writes all of them as names, so the tables and code can move; only `$0800`,
+`OBJBASE`, `ROOMBASE` (inside the saved state) and the hi-res page are pinned.
+`tests/test_shift.py` pads the source in five places, moving nearly every routine and table,
+and plays the full solution on the result: same text, same screens.
+
 ## Original names
 
 The source fragments name more than the action handlers. Lining their instructions up with the

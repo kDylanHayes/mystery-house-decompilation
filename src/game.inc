@@ -273,3 +273,7 @@ SW_PORCH_DOOR_OPEN    = 12  ; the front door is open (seen from the porch)
 SW_CABINET_MOVED      = 13  ; the kitchen cabinet was moved, showing the bricked-up wall
 SW_KITCHEN_DOOR_OPEN  = 14  ; the kitchen's outside door is open
 SW_DARK_WARNED        = 16  ; set after turn 35: stops the "IT IS GETTING DARK" warning
+
+; memory the engine relies on
+STATE_END   = $10FF   ; SAVE/RESTORE and STARTUP cover $0830-$10FE (BSAVE ...,A$830,L$8CF)
+CACHE_START = $7D00   ; the picture cache (5 slots of $500): ADVENTURE must end below it

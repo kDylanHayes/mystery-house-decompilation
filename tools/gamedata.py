@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Decode Mystery House's game database from the ADVENTURE image into readable text and JSON.
 
-usage: gamedata.py <extracted dir> <out dir>
+usage: gamedata.py <extracted dir> <out dir> [adventure.syms.csv]
 
 Everything the engine needs at run time is inside the ADVENTURE file ($0800-$7CFF); this tool
 reads the tables at their run-time addresses (see NOTES.md for the layouts) plus the MESSAGES
-text file, and writes:
+text file. With the assembler's symbol table it finds the tables by name (the source lets them
+move); without it, it uses the original addresses. It writes:
   messages.txt      every message by number, as the game prints it
   vocabulary.txt    verb and noun groups with their numbers and synonyms
   rooms.txt         room descriptions, exits and pictures
@@ -22,7 +23,8 @@ import sys
 
 LOAD = 0x0800
 
-# Run-time addresses of the tables (names follow the original source where it survives).
+# Run-time addresses of the tables in the original (names follow the original source where it
+# survives); use_symbols() replaces them with the addresses of a build.
 VERBS = 0x4000        # verb groups
 NOUNS = 0x1700        # noun groups
 OBJBASE = 0x0900      # object records, linked by ONEXT, ended by $FF
@@ -49,6 +51,26 @@ BUILTIN_MESSAGES = {
     0x7F: 'IM NOT CARRYING THAT',
     0x89: 'I CANT GO IN THAT DIRECTION',
 }
+
+# symbol in src/adventure.s -> the variable here holding its address
+TABLE_SYMBOLS = {'verb_table': 'VERBS', 'noun_table': 'NOUNS', 'OBJBASE': 'OBJBASE',
+                 'ROOMBASE': 'ROOMBASE', 'SWITCH': 'SWITCH', 'turn_rules': 'TURN_RULES',
+                 'command_rules': 'CMD_RULES', 'picture_directory': 'PICDIR',
+                 'message_index': 'MSGINDEX', 'shape_table': 'SHAPES', 'floor_slots': 'FLOOR_SLOTS'}
+
+
+def use_symbols(path):
+    """Take the tables' addresses from the assembler's symbol table (name,address,...)."""
+    found = {}
+    for line in pathlib.Path(path).read_text().splitlines()[1:]:
+        name, addr = line.split(',')[:2]
+        if name in TABLE_SYMBOLS:
+            found[TABLE_SYMBOLS[name]] = int(addr, 16)
+    missing = set(TABLE_SYMBOLS.values()) - set(found)
+    if missing:
+        raise SystemExit('%s has no address for %s' % (path, ', '.join(sorted(missing))))
+    globals().update(found)
+
 
 def switch_names():
     """SW_* names from src/game.inc, if it is there: switch number -> name."""
@@ -314,6 +336,8 @@ def short(s, n=40):
 
 
 def main():
+    if len(sys.argv) > 3:
+        use_symbols(sys.argv[3])
     g = Game(sys.argv[1])
     out = sys.argv[2]
     os.makedirs(out, exist_ok=True)
@@ -332,10 +356,10 @@ def main():
     with open(os.path.join(out, 'vocabulary.txt'), 'w') as f:
         f.write('# Only the first 8 letters of a word are significant. A command is VERB NOUN,\n'
                 '# NOUN VERB, or one word; the parser at $6300 tries the verb table on the first\n'
-                '# word and the noun table on the second.\n\nVERBS ($4000)\n')
+                '# word and the noun table on the second.\n\nVERBS ($%04X)\n' % VERBS)
         for i, ws in enumerate(verbs, 1):
             f.write('%3d  %s\n' % (i, ', '.join(ws)))
-        f.write('\nNOUNS ($1700)\n')
+        f.write('\nNOUNS ($%04X)\n' % NOUNS)
         for i, ws in enumerate(nouns, 1):
             f.write('%3d  %s\n' % (i, ', '.join(ws)))
 
@@ -381,12 +405,13 @@ def main():
         f.write('\n')
 
     with open(os.path.join(out, 'rules.txt'), 'w') as f:
-        f.write('# Game logic. After each command the engine scans the command rules ($4500)\n'
+        f.write('# Game logic. After each command the engine scans the command rules ($%04X)\n'
                 '# for the first one whose room/verb/noun and conditions match, runs its actions and\n'
                 '# stops ("I DONT UNDERSTAND WHAT YOU MEAN" if none match). It then runs every\n'
-                '# matching turn rule ($4400). SW_* are the game flags at $083A (src/game.inc).\n\n')
-        write_rules(f, 'COMMAND RULES ($4500)', cmd_rules)
-        write_rules(f, 'TURN RULES ($4400)', turn_rules)
+                '# matching turn rule ($%04X). SW_* are the game flags at $%04X (src/game.inc).\n\n'
+                % (CMD_RULES, TURN_RULES, SWITCH))
+        write_rules(f, 'COMMAND RULES ($%04X)' % CMD_RULES, cmd_rules)
+        write_rules(f, 'TURN RULES ($%04X)' % TURN_RULES, turn_rules)
 
     write_map(out, rooms, cmd_rules, msgs, nm)
 
@@ -399,6 +424,7 @@ def main():
         'pictures': {n: {'block': b, 'offset': o} for n, (b, o) in pics.items()},
         'command_rules': enc(cmd_rules), 'turn_rules': enc(turn_rules),
         'floor_slots': [(g.b(FLOOR_SLOTS + 2 * i), g.b(FLOOR_SLOTS + 2 * i + 1)) for i in range(21)],
+        'addresses': {k: globals()[k] for k in sorted(TABLE_SYMBOLS.values())},
     }, indent=1))
     print('%d verbs, %d nouns, %d messages, %d rooms, %d objects, %d pictures, %d command rules, '
           '%d turn rules' % (len(verbs), len(nouns), len(msgs), len(rooms), len(objs), len(pics),

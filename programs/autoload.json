@@ -2,7 +2,9 @@
   "name": "AUTO_LOAD_OBJ",
   "file": "AUTO_LOAD_OBJ.bin",
   "load": "0FFD",
-  "entries": ["0FFD"],
-  "lib": "1C00",
+  "entries": [
+    "start"
+  ],
+  "lib": "rt_copy",
   "labels": {}
 }

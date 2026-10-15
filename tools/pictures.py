@@ -27,7 +27,7 @@ import zlib
 W, H = 280, 192
 SCALE = 2
 LOAD = 0x0800
-SHAPES = 0x5700
+SHAPES = 0x5700        # the shape table in the original; gamedata.json gives a build's
 
 
 def png(path, width, height, rows):
@@ -176,7 +176,7 @@ def main():
         cv.save(os.path.join(out, 'pictures', 'pic_%02d.png' % n), height=161)
         picture_svg(os.path.join(out, 'pictures', 'pic_%02d.svg' % n), blocks[blk], off)
 
-    table = adv[SHAPES - LOAD:]
+    table = adv[gd.get('addresses', {}).get('SHAPES', SHAPES) - LOAD:]
     nshapes = table[0]
     for n in range(1, nshapes + 1):
         cv = Canvas()

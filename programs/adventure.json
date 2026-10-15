@@ -3,46 +3,46 @@
   "file": "ADVENTURE.bin",
   "load": "0800",
   "entries": [
-    "0800",
-    "6215",
-    "5651",
-    "5912",
-    "6A7A",
-    "6AC0",
-    "6BFC",
-    "6C9A",
-    "6D31",
-    "6D44"
+    "start",
+    "disk_error_handler",
+    "dead_init_tail",
+    "dead_read_message",
+    "hplot0",
+    "xdraw_move_ud_plot",
+    "hfind",
+    "xdraw0",
+    "hcolor_bkgnd",
+    "xdraw_shape"
   ],
-  "lib": "7600",
+  "lib": "rt_copy",
   "jump_tables": [
     {
-      "addr": "5AB7",
+      "addr": "tbl_conditions",
       "count": 11,
       "name": "tbl_conditions"
     },
     {
-      "addr": "6535",
+      "addr": "tbl_actions",
       "count": 30,
       "name": "tbl_actions"
     }
   ],
   "labels": {},
   "always_branches": [
-    "6BE1"
+    "hglin.always"
   ],
   "data_only": [
     [
-      "0800",
-      "080D"
+      "start",
+      "start+13"
     ]
   ],
   "old_libs": [
-    "4A00"
+    "old_rt_copy"
   ],
   "inline_text_length": {
-    "7330": 23,
-    "7504": 23,
-    "5957": 23
+    "cache_load_block.bload": 23,
+    "read_message_line": 23,
+    "dead_read_message_cmd": 23
   }
 }

@@ -268,7 +268,7 @@ obj_52: .byte 52, N_REFRIGER, NOWHERE, 94, 0, 155, 17, OFIXED, 0, obj_53-obj_52,
 obj_53: .byte 53, N_DAGGER, 26, 95, 0, 171, 86, OMOVABLE, 117, obj_54-obj_53, 1, 38
 obj_54: .byte 54, N_LINE, 26, 96, 0, 73, 35, OFIXED, 0, obj_end-obj_54, 1, 38
 obj_end: .byte $FF
-        .incbin "data/adventure_0B9D.bin"    ; $0B9D-$0CFF leftover memory, not used by the code (see NOTES.md)
+        .incbin "data/adventure_0B9D.bin", upto $0D00    ; $0B9D-$0CFF leftover memory, not used by the code (see NOTES.md)
 
 ; ==== rooms ==========================================================================
 ; RTBLSIZ bytes per room, indexed by room number (room 0 unused): RROOMNO, RMSG, the six
@@ -318,12 +318,12 @@ ROOMBASE:
         .byte 39, 78, 0, 0, 0, 0, 0, 33, 42, 42   ; 39 IN THE ATTIC
         .byte 40, 81, 0, 0, 0, 0, 0, 0, 43, 43   ; 40 IN A STORAGE ROOM
         .byte 41, 85, 0, 0, 0, 0, 0, 0, 44, 44   ; 41 IN THE TOWER
+        .assert * <= STATE_END, "the room table must end inside the saved state ($0830-$10FE)"
         .incbin "data/adventure_0EA4.bin"    ; $0EA4-$16FF leftover memory, not used by the code (see NOTES.md)
 
 ; ==== nouns ==========================================================================
 ; Word groups: head word, synonym count, synonyms; all WORDLEN characters, high-bit ASCII.
 ; The group number is the noun's id (N_* in game.inc). Ends with HV.
-        .org $1700
 noun_table:
         .hiasc "DAISY   "            ; N_DAISY = 1
         .byte 1
@@ -575,14 +575,13 @@ noun_table:
         .hiasc "ADVENTUR"
         .hiasc "DONE    "            ; N_DONE = 89
         .byte $FF
-        .incbin "data/adventure_1C61.bin"    ; $1C61-$1FFF leftover memory, not used by the code (see NOTES.md)
+        .incbin "data/adventure_1C61.bin", upto $2000    ; $1C61-$1FFF leftover memory, not used by the code (see NOTES.md)
         .org $2000
 title_1980:
         .incbin "data/title_1980.bin"    ; $2000-$3FFF 
 
 ; ==== verbs ==========================================================================
 ; Same layout as the nouns; ids are V_* in game.inc.
-        .org $4000
 verb_table:
         .hiasc "GO      "            ; V_GO = 1
         .byte 5
@@ -731,7 +730,6 @@ verb_table:
 ; ==== turn rules =====================================================================
 ; Every matching rule runs after each command. Rule layout: room, verb, noun (ANY matches
 ; all), length, number of conditions, number of actions, conditions (C_*), actions (A_*).
-        .org $4400
 turn_rules:
 
 ; always
@@ -804,7 +802,6 @@ turn_rules_end:
 ; ==== command rules ==================================================================
 ; Tried in order after each command; the first match runs and ends the search. The generic
 ; GET/DROP/LOOK/SAVE/... rules at the end catch anything earlier rules don't.
-        .org $4500
 command_rules:
 
 ; room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...), GO, STAIRS
@@ -2831,15 +2828,12 @@ command_rules_end:
 ; ==== picture directory ==============================================================
 ; Picture n is at offset in file BLOCKblock; load_picture reads entry n at PICDIR + 3n. The
 ; table and the BLOCK files are built from src/pictures/ (tools/picfile.py).
-        .org $5300
         .include "pictures.inc"    ; generated from src/pictures/ by tools/picfile.py
-        ; leftover memory, not used; shrinks automatically when pictures are added
-        .incbin "data/adventure_5426.bin", upto $5500
+        .incbin "data/adventure_5426.bin"    ; leftover memory, not used (see NOTES.md)
 
 ; ==== message index ==================================================================
 ; Byte offset of each message in the MESSAGES text file (also saved as MESSAGE OBJECT). The
 ; table and MESSAGES are built from src/messages.txt (tools/msgfile.py).
-        .org $5500
         .include "messages.inc"    ; generated from src/messages.txt by tools/msgfile.py
         .byte $08
 
@@ -2906,12 +2900,10 @@ dead_disk_error:
         .hiasc "\rA DISK ERROR HAS OCCURED"
         .byte $00
         RTS
-        ; fill; shrinks automatically when messages are added (the index above grows)
-        .incbin "data/adventure_56EC.bin", upto $5700
+        .incbin "data/adventure_56EC.bin"    ; fill
 
 ; ==== shape table ====================================================================
 ; Applesoft shape table for the small objects (notes, matches, welcome mat, a door).
-        .org $5700
 shape_table:
         .byte 6, 0
         .word shape_1-shape_table
@@ -3088,7 +3080,7 @@ run_command_rules:
         STA rule_ptr+1
         JMP run_command_rules.loop
 command_rules_addr:
-        .byte $00,$45
+        .word command_rules
 run_command_rules.loop:
         JSR test_rule
         LDA cmp_result
@@ -3114,7 +3106,7 @@ run_turn_rules:
         STA rule_ptr+1
         JMP run_turn_rules.loop
 turn_rules_addr:
-        .byte $00,$44
+        .word turn_rules
 run_turn_rules.loop:
         JSR test_rule
         JSR next_rule
@@ -3321,7 +3313,7 @@ find_object:
         STA found_obj+1
         JMP find_object.loop
 objbase_addr:
-        .byte $00,$09
+        .word OBJBASE
 find_object.loop:
         LDY #OBJECTNO
         LDA (found_obj),Y
@@ -3340,7 +3332,6 @@ find_object.next:
 find_object.found:
         RTS
         .incbin "data/adventure_5BB9.bin"    ; $5BB9-$5DFF fill
-        .org $5E00
 
 ; The game loop. Draw first, then read and act: a change made by an action shows on the next
 ; turn's redraw.
@@ -3356,7 +3347,6 @@ main.turn:
         .word turns
         JMP main.turn
         .incbin "data/adventure_5E19.bin"    ; $5E19-$60FF leftover memory, not used by the code (see NOTES.md)
-        .org $6100
 
 ; Start (or restart) a game: room 1, turn 1, switches and picture cache cleared, CUROOM at
 ; room 1, HPLOT colour white, the custom DOS error handler installed, MESSAGES opened (once),
@@ -3459,7 +3449,7 @@ init_switches:
         .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
         .byte $00,$00,$00,$00
 disk_error_handler_ptr:
-        .byte $15,$62
+        .word disk_error_handler
 
 ; Installed in dos_error_vector by init_game. Prints the message, then falls into
 ; messages_open (see there).
@@ -3475,7 +3465,6 @@ messages_open:
         .byte $00                 ; $FF once MESSAGES has been OPENed (init_game)
         RTS
         .incbin "data/adventure_6234.bin"    ; $6234-$62FF leftover memory: the assembler's symbol table (see NOTES.md)
-        .org $6300
 
 ; Prompt, read a line and parse it into verb and noun numbers. The first word must be a verb
 ; and the second a noun; an unknown word prints "I DONT KNOW HOW TO <word> SOMETHING" (or
@@ -4669,6 +4658,7 @@ hglin.next:
         STA hgr_err
         LDA hgr_err+1
         ADC hgr_dx+1
+hglin.always:
         BVC hglin.plot             ; always taken: V is clear here
 
 ; Applesoft MSKTBL: the bit for each of the 7 pixels in a hi-res byte (bit 7 is the colour bit)
@@ -4991,7 +4981,6 @@ get_var_y:
 nothing:
         RTS
         .incbin "data/adventure_6E01.bin"    ; $6E01-$6FFF fill
-        .org $7000
 
 ; Draw the objects in the current room. An OMOVED object (taken and dropped) goes in the next
 ; floor slot, and only in the room's permanent view. Any other object is drawn at its own
@@ -5139,7 +5128,6 @@ floor_slots:
 saved_picture:
         .byte $00
         .incbin "data/adventure_712A.bin"    ; $712A-$71FF fill
-        .org $7200
 
 ; picture_ptr = the start of picture X: look up its (block, offset) in picture_directory
 ; (PICDIR + 3 * X) and make sure the block is in the cache.
@@ -5308,6 +5296,7 @@ cache_load_block:
         INY
         LDA cache_addr_text,Y
         STA bload_addr_digits+3    ; patch the BLOAD command below
+cache_load_block.bload:
         JSR rt_print
         .hiasc "\x04BLOAD BLOCK"
 bload_block_digits:
@@ -5389,7 +5378,7 @@ MESSLSTR.from_file:
         STA ZWORK+1
         JMP MESSLSTR.index
 message_index_addr:
-        .byte $00,$55
+        .word message_index
 MESSLSTR.index:
         LDA #$00
         STA scratch_word+1
@@ -5852,7 +5841,6 @@ MULTIPLY_body.done:
         LDX #2
         JSR rt_return
         .incbin "data/adventure_77CC.bin"    ; $77CC-$78FF fill
-        .org $7900
 
 ; Redraw the room: CUROOM from CURONO, clear the screen, and if the room is lit (LAMPSTAT =
 ; ON) draw its current picture and the objects. Then print the description without the usual
@@ -5887,7 +5875,7 @@ set_curoom:
         STA room_offset
         JMP set_curoom.compute
 roombase_addr:
-        .byte $00,$0D
+        .word ROOMBASE
 set_curoom.compute:
         LDX #RTBLSIZ
         JSR MULTIPLY
@@ -5902,7 +5890,6 @@ set_curoom.compute:
         RTS
 stale_hglin_copy:
         .incbin "data/stale_hglin_copy.bin"    ; $7956-$79FF 
-        .org $7A00
 
 ; Draw shown_picture: a stream of (x, y) pairs, each a line from the previous point, except
 ; that 00 00 makes the next point start a new line and FF FF ends the picture. Points are
@@ -5970,4 +5957,9 @@ draw_picture.advance:
         JMP draw_picture.next_point
 draw_picture.done:
         RTS
-        .incbin "data/adventure_7A72.bin"    ; $7A72-$7CFF fill
+
+; ---- end of ADVENTURE ------------------------------------------------------------------------
+; Everything after the hi-res page is free to move: the fill below shrinks as the code and data
+; above grow, and the file always ends at $7CFF, below the picture cache.
+        .assert * <= CACHE_START, "ADVENTURE has grown into the picture cache at $7D00: delete leftover memory or dead code"
+        .incbin "data/adventure_7A72.bin", upto CACHE_START    ; fill

@@ -53,7 +53,7 @@ if [ $CHECK = 1 ] && [ $MATCH = 0 ]; then
 fi
 
 # assets come from the built disk, so edits show up in them
-python3 -I "$HERE/tools/gamedata.py" "$HERE/extracted" "$HERE/assets/text"
+python3 -I "$HERE/tools/gamedata.py" "$HERE/extracted" "$HERE/assets/text" "$B/adventure.syms.csv"
 python3 -I "$HERE/tools/pictures.py" "$HERE/extracted" "$HERE/assets/text/gamedata.json" "$HERE/assets"
 
 [ -n "${GHIDRA_INSTALL_DIR:-}" ] || { echo "GHIDRA_INSTALL_DIR not set: decomp/*.c left as is"; exit 0; }
@@ -65,7 +65,7 @@ for prog in adventure autoload; do
 	# names and comments from src/, types and register parameters from symbols/
 	python3 -I "$HERE/tools/ghidra_symbols.py" "$B/$prog.syms.csv" "$HERE/symbols/apple2.csv" \
 		"$HERE/symbols/$prog.csv" "$W/$prog.symbols.csv"
-	python3 -I "$HERE/tools/trace6502.py" "$HERE/programs/$prog.json" "$HERE/extracted/$file" "$W/$prog.plan.json"
+	python3 -I "$HERE/tools/trace6502.py" --symbols "$B/$prog.syms.csv" "$HERE/programs/$prog.json" "$HERE/extracted/$file" "$W/$prog.plan.json"
 	"$GHIDRA_INSTALL_DIR/support/analyzeHeadless" "$W" "$prog" \
 		-import "$HERE/extracted/$file" -overwrite \
 		-loader BinaryLoader -loader-baseAddr "0x$load" -processor 6502:LE:16:default \
