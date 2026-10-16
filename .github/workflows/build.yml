@@ -43,6 +43,13 @@ jobs:
           name: mystery_house.do
           path: build/mystery_house.do
 
+      # matching progress in objdiff's report format (tools/progress.py), for decomp.dev and
+      # other progress dashboards
+      - uses: actions/upload-artifact@v4
+        with:
+          name: report
+          path: build/report.json
+
       - uses: actions/upload-artifact@v4
         with:
           name: mystery_house_bugfix.do

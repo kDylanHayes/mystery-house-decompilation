@@ -34,7 +34,8 @@ tools/ca65_check.sh
 ```
 
 1. `./build.sh --check` must say "all 30 files match the original" and
-   "build/mystery_house.do: matches disk/SHA256".
+   "build/mystery_house.do: matches disk/SHA256". Its progress line must say everything
+   matches; when it does not, `build/report.json` names the routines that changed.
 2. The tests take about two minutes. Run them from the repository root as shown;
    running a single test file directly cannot import `tests/helpers.py`.
 3. `./build.sh --bugfix` builds the game with the documented bugs fixed into `build/bugfix/`.

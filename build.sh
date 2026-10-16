@@ -14,7 +14,8 @@
 #
 # Builds every file of the game from src/ and the disk image around them (build/mystery_house.do,
 # bootable), checks each file against the original disk's (disk/FILES.sha256) and the image
-# against disk/SHA256, extracts the built disk into extracted/ and regenerates the assets.
+# against disk/SHA256, writes the matching progress (build/report.json, objdiff's format),
+# extracts the built disk into extracted/ and regenerates the assets.
 set -eu
 CHECK=0
 BUGFIX=0
@@ -70,6 +71,12 @@ else
 	echo "build/mystery_house.do: differs from disk/SHA256"
 	MATCH=0
 fi
+# matching progress, routine by routine, as an objdiff report (tools/progress.py); a matching
+# build also refreshes the listings and symbol tables in disk/expected/, so renames reach them
+if [ $MATCH = 1 ]; then
+	python3 -I "$HERE/tools/progress.py" map "$B" "$HERE/extracted" "$HERE/disk/FILES.sha256" "$HERE/disk/expected" --quiet
+fi
+python3 -I "$HERE/tools/progress.py" report "$B" "$HERE/extracted" "$HERE/disk/expected" "$HERE/disk/FILES.sha256" "$B/report.json"
 if [ $CHECK = 1 ] && [ $MATCH = 0 ]; then
 	echo "check failed: the build does not match the recorded hashes" >&2
 	exit 1

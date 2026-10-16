@@ -1,0 +1,373 @@
+0FFD  AD 53 C0     LDA MIXSET
+1000  A2 FF        LDX #$FF
+1002  9A           TXS
+1003  AD 50 C0     LDA TXTCLR
+1006  AD 57 C0     LDA HIRES
+1009  20 15 1C     JSR rt_print
+100C  8D 8D 8D 8D  hiasc "\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\rENTER G FOR GAME OR I FOR INSTRUCTIONS"
+1045  00           .byte $00
+1046  20 6F FD     JSR GETLN1
+1049  AD 00 02     LDA input_buffer
+104C  C9 C7        CMP #'G'|$80
+104E  D0 03        BNE start__not_game
+1050  4C 7B 1B     JMP run_adventure
+1053  C9 C9        CMP #'I'|$80
+1055  F0 03        BEQ show_instructions
+1057  4C 09 10     JMP start__menu
+105A  AD 51 C0     LDA TXTSET
+105D  20 58 FC     JSR HOME
+1060  20 15 1C     JSR rt_print
+1063  8D C9 CE D3  hiasc "\rINSTRUCTIONS FOR HI-RES ADVENTURE\r\r\r"
+1088  00           .byte $00
+1089  20 15 1C     JSR rt_print
+108C  C1 C4 D6 C5  hiasc "ADVENTURE IS ONE OF THE MOST FACINATING\rAND CHALLENGING GAMES AVAILABLE FOR\rYOUR APPLE COMPUTER. WINNING IS QUITE\rA CHALLENGE IN A GAME WHERE IT MAY TAKE\r"
+1126  00           .byte $00
+1127  20 15 1C     JSR rt_print
+112A  C8 CF D5 D2  hiasc "HOURS TO MOVE AND WEEKS TO SOLVE A \rPUZZLE. HI-RES ADVENTURE #1 ('MYSTERY\rHOUSE') TAKES PLACE IN AN OLD HOUSE\r"
+1198  00           .byte $00
+1199  20 15 1C     JSR rt_print
+119C  D7 C9 D4 C8  hiasc "WITH MANY ROOMS. AS YOU ENTER THE\rHOUSE, SEVEN OTHER PERSONS WILL BE\rIN THE LIVING ROOM. EVENTUALLY THEY\rARE DISPERSED THROUGHOUT THE HOUSE AND\r"
+122C  00           .byte $00
+122D  20 15 1C     JSR rt_print
+1230  D9 CF D5 A0  hiasc "YOU START FINDING THEM - DEAD! YOU MUST\rFIND THE KILLER BEFORE HE(SHE?) ENDS UP\rKILLING YOU.\r\r"
+128E  00           .byte $00
+128F  20 15 1C     JSR rt_print
+1292  D0 D2 C5 D3  hiasc "PRESS RETURN TO CONTINUE"
+12AA  00           .byte $00
+12AB  20 6F FD     JSR GETLN1
+12AE  20 58 FC     JSR HOME
+12B1  20 15 1C     JSR rt_print
+12B4  8D 8D D9 CF  hiasc "\r\rYOU PROGRESS THROUGH THE HOUSE BY\r"
+12D8  00           .byte $00
+12D9  20 15 1C     JSR rt_print
+12DC  D0 D2 CF D6  hiasc "PROVIDING TWO WORD COMMANDS WHICH \rUSUALLY CONTAIN A VERB AND THEN A \rNOUN BUT AREN'T ALWAYS IN THAT ORDER.\r"
+1348  00           .byte $00
+1349  20 15 1C     JSR rt_print
+134C  C5 D8 C1 CD  hiasc "EXAMPLES ARE 'WATER ON' AND 'OPEN\rDOOR'. IF A SET OF WORDS DOESNT SEEM\rTO BE WORKING TRY DIFFERENT TERMINOLOGY\r\r"
+13BC  00           .byte $00
+13BD  20 15 1C     JSR rt_print
+13C0  C9 C6 A0 D9  hiasc "IF YOU SHOULD FIND A STAIRCASE YOU MAY\rTRY 'UP STAIRS' OR 'GO STAIRS'.\r"
+1407  00           .byte $00
+1408  20 15 1C     JSR rt_print
+140B  D3 CF CD C5  hiasc "SOME OF THE ACTIONS YOU CAN TAKE ARE\rGET, DROP, GO, LOOK, READ, CLIMB\rMOVE, HIT, KILL ETC.\r\r"
+1467  00           .byte $00
+1468  20 15 1C     JSR rt_print
+146B  D0 D2 C5 D3  hiasc "PRESS RETURN TO CONTINUE"
+1483  00           .byte $00
+1484  20 6F FD     JSR GETLN1
+1487  20 58 FC     JSR HOME
+148A  20 15 1C     JSR rt_print
+148D  8D 8D 8D 8D  hiasc "\r\r\r\r\rYOU MAY GO IN THE DIRECTIONS NORTH, \rSOUTH, EAST, WEST, UP AND DOWN. TYPE\rNORTH OR N TO GO NORTH. THE OTHER\r"
+14FE  00           .byte $00
+14FF  20 15 1C     JSR rt_print
+1502  C4 C9 D2 C5  hiasc "DIRECTIONS MAY ALSO BE ABBREVIATED AS\rWELL. WHEN YOUR WAY IS BLOCKED AND\rYOU CAN'T USE DIRECTIONS TO MOVE \r"
+156D  00           .byte $00
+156E  20 15 1C     JSR rt_print
+1571  D9 CF D5 A0  hiasc "YOU MAY HAVE TO REFER TO THE ACTUAL\rOBJECT IN YOUR WAY. IN THESE CASES\rYOU COULD TYPE 'GO DOOR', 'GO HOLE',\r'GO GATE' ETC.\r\r"
+15ED  00           .byte $00
+15EE  20 15 1C     JSR rt_print
+15F1  D0 D2 C5 D3  hiasc "PRESS RETURN TO CONTINUE"
+1609  00           .byte $00
+160A  20 6F FD     JSR GETLN1
+160D  20 58 FC     JSR HOME
+1610  20 15 1C     JSR rt_print
+1613  8D 8D 8D C9  hiasc "\r\r\rIN GENERAL THE TOP OF THE SCREEN IS\rNORTH. THE BOTTOM IS SOUTH, THE LEFT\rSIDE IS WEST AND THE RIGHT SIDE IS\r"
+1682  00           .byte $00
+1683  20 15 1C     JSR rt_print
+1686  C5 C1 D3 D4  hiasc "EAST. BECAUSE OF THE DIFFICULTY OF\rDRAWING DOORWAYS TO THE SOUTH OR THE\rBOTTOM OF THE SCREEN, THERE ARE ONE\r"
+16F2  00           .byte $00
+16F3  20 15 1C     JSR rt_print
+16F6  CF D2 A0 D4  hiasc "OR TWO ROOMS WHERE THE DOORWAYS DO NOT\rMATCH UP TO THE NORMAL DIRECTIONS.\r\r"
+1741  00           .byte $00
+1742  20 15 1C     JSR rt_print
+1745  C9 C6 A0 D9  hiasc "IF YOU WANT A CLOSER LOOK AT SOMETHING\rSAY LOOK (OBJECT). TO RETURN TO THE\rMAIN VIEW SAY LOOK ROOM.\r\r"
+17AA  00           .byte $00
+17AB  20 15 1C     JSR rt_print
+17AE  D3 C1 D6 C5  hiasc "SAVE GAME AND RESTORE GAME MAY\rALSO BE USED.\r\r\rPRESS RETURN TO CONTINUE"
+17F5  00           .byte $00
+17F6  20 6F FD     JSR GETLN1
+17F9  20 58 FC     JSR HOME
+17FC  20 15 1C     JSR rt_print
+17FF  8D 8D 8D C1  hiasc "\r\r\rA NOTE OF CAUTION: CARRYING MORE THAN\rONE NOTE MAY BE CONFUSING AS THE"
+1848  00           .byte $00
+1849  20 15 1C     JSR rt_print
+184C  8D C3 CF CD  hiasc "\rCOMPUTER WILL ARBITRARILY DECIDE WHICH\rONE TO READ OR DROP.\r\r"
+188A  00           .byte $00
+188B  20 15 1C     JSR rt_print
+188E  D3 C8 CF D5  hiasc "SHOULD YOU WISH TO REVIEW PAST COMMANDS\rYOU MAY PRESS RETURN WITHOUT TYPING TO\r"
+18DD  00           .byte $00
+18DE  20 15 1C     JSR rt_print
+18E1  C6 CC C9 D0  hiasc "FLIP/FLOP BETWEEN GRAPHICS AND TEXT.\r\rIF YOUR COPY SHOULD EVER FAIL TO LOAD\r(OR GET MUNCHED BY A HUNGRY DISK DRIVE)\r"
+1955  00           .byte $00
+1956  20 15 1C     JSR rt_print
+1959  D3 C5 CE C4  hiasc "SEND IT WITH FIVE DOLLARS TO:\r\r"
+1978  00           .byte $00
+1979  20 15 1C     JSR rt_print
+197C  A0 A0 A0 A0  hiasc "     ON-LINE SYSTEMS\r     36575 MUDGE RANCH ROAD\r"
+19AD  00           .byte $00
+19AE  20 15 1C     JSR rt_print
+19B1  A0 A0 A0 A0  hiasc "     COARSEGOLD CA. 93614\r\r"
+19CC  00           .byte $00
+19CD  20 15 1C     JSR rt_print
+19D0  8D 8D 8D D0  hiasc "\r\r\rPRESS RETURN TO CONTINUE"
+19EB  00           .byte $00
+19EC  20 6F FD     JSR GETLN1
+19EF  20 58 FC     JSR HOME
+19F2  20 15 1C     JSR rt_print
+19F5  8D 8D        hiasc "\r\r"
+19F7  00           .byte $00
+19F8  20 15 1C     JSR rt_print
+19FB  C1 D4 A0 D4  hiasc "AT THE START OF THE GAME THERE\r"
+1A1A  00           .byte $00
+1A1B  20 15 1C     JSR rt_print
+1A1E  D7 C9 CC CC  hiasc "WILL BE SEVEN OTHER PEOPLE IN\rTHE HOUSE WITH YOU. THEIR NAMES,\rOCCUPATIONS, AND HAIRCOLOR ARE\rAS FOLLOWS:\r\r"
+1A89  00           .byte $00
+1A8A  20 15 1C     JSR rt_print
+1A8D  D4 CF CD A0  hiasc "TOM      SAM       SALLY\rBLOND    BRUNETTE  REDHEAD\rPLUMBER  MECHANIC  SEAMSTRESS\r\rDR. GREEN  JOE          BILL\r"
+1AFD  00           .byte $00
+1AFE  20 15 1C     JSR rt_print
+1B01  C2 D2 D5 CE  hiasc "BRUNETTE   BRUNETTE     BLOND\rSURGEON    GRAVEDIGGER  BUTCHER\r\rDAISY\rBLOND\r"
+1B4C  00           .byte $00
+1B4D  20 15 1C     JSR rt_print
+1B50  C3 CF CF CB  hiasc "COOK.\r\r\r\r"
+1B59  00           .byte $00
+1B5A  20 15 1C     JSR rt_print
+1B5D  D0 D2 C5 D3  hiasc "PRESS RETURN TO BEGIN PLAY"
+1B77  00           .byte $00
+1B78  20 6F FD     JSR GETLN1
+1B7B  20 15 1C     JSR rt_print
+1B7E  8D 84 C2 D2  hiasc "\r\x04BRUN ADVENTURE\r"
+1B8F  00           .byte $00
+1B90  60           RTS
+1B91  C9 A0 D6 C1  .byte $C9,$A0,$D6,$C1,$CC,$CC,$C5,$D9,$A0,$C3,$C1,$AE,$A0,$B9,$B3,$B0
+1BA1  B6 B5 8D 8D  .byte $B6,$B5,$8D,$8D,$00,$20,$15,$18,$8D,$8D,$8D,$D0,$D2,$C5,$D3,$D3
+1BB1  A0 D2 C5 D4  .byte $A0,$D2,$C5,$D4,$D5,$D2,$CE,$A0,$D4,$CF,$A0,$C3,$CF,$CE,$D4,$C9
+1BC1  CE D5 C5 00  .byte $CE,$D5,$C5,$00,$20,$6F,$FD,$20,$15,$18,$8D,$8D,$8D,$8D,$8D,$8D
+1BD1  00 20 15 18  .byte $00,$20,$15,$18,$C1,$D4,$A0,$D4,$C8,$C5,$A0,$D3,$D4,$C1,$D2,$D4
+1BE1  A0 CF C6 A0  .byte $A0,$CF,$C6,$A0,$D4,$C8,$C5,$A0,$C7,$C1,$CD,$C5,$A0,$D4,$C8,$C5
+1BF1  D2 C5 8D 00  .byte $D2,$C5,$8D,$00,$20,$15,$18,$D7,$C9,$CC,$CC,$A0,$C2,$C5,$A0
+1C00  4C 7D 1C     JMP rt_copy_body
+1C03  4C A8 1C     JMP BUMPIT_body
+1C06  4C 2A 1D     JMP BUMP16_body
+1C09  4C F0 1C     JMP rt_compare_body
+1C0C  4C 2C 1C     JMP rt_args_body
+1C0F  4C 50 1C     JMP rt_return_body
+1C12  4C CD 1C     JMP rt_inc16_body
+1C15  4C 66 1C     JMP rt_print_body
+1C18  4C 57 1D     JMP MULTIPLY_body
+1C1B  C1 C1 C1 C1  .byte $C1,$C1,$C1,$C1,$C1,$C1,$C1,$C1,$A0,$A0,$A0,$A0,$A0,$A0,$A0,$A0
+1C2B  A0           .byte $A0
+1C2C  68           PLA
+1C2D  85 7D        STA rt_ptr1
+1C2F  68           PLA
+1C30  85 7E        STA rt_ptr1+1
+1C32  68           PLA
+1C33  85 71        STA rt_operands
+1C35  68           PLA
+1C36  85 72        STA rt_operands+1
+1C38  48           PHA
+1C39  A5 71        LDA rt_operands
+1C3B  48           PHA
+1C3C  A5 7E        LDA rt_ptr1+1
+1C3E  48           PHA
+1C3F  A5 7D        LDA rt_ptr1
+1C41  48           PHA
+1C42  A5 71        LDA rt_operands
+1C44  18           CLC
+1C45  69 01        ADC #$01
+1C47  85 71        STA rt_operands
+1C49  A5 72        LDA rt_operands+1
+1C4B  69 00        ADC #$00
+1C4D  85 72        STA rt_operands+1
+1C4F  60           RTS
+1C50  68           PLA
+1C51  68           PLA
+1C52  68           PLA
+1C53  18           CLC
+1C54  86 7D        STX rt_ptr1
+1C56  65 7D        ADC rt_ptr1
+1C58  85 7D        STA rt_ptr1
+1C5A  68           PLA
+1C5B  69 00        ADC #$00
+1C5D  85 7E        STA rt_ptr1+1
+1C5F  A5 7E        LDA rt_ptr1+1
+1C61  48           PHA
+1C62  A5 7D        LDA rt_ptr1
+1C64  48           PHA
+1C65  60           RTS
+1C66  20 0C 1C     JSR rt_args
+1C69  A0 00        LDY #$00
+1C6B  B1 71        LDA (rt_operands),Y
+1C6D  C8           INY
+1C6E  C9 00        CMP #$00
+1C70  F0 06        BEQ rt_print_body__done
+1C72  20 ED FD     JSR COUT
+1C75  4C 6B 1C     JMP rt_print_body__loop
+1C78  98           TYA
+1C79  AA           TAX
+1C7A  20 0F 1C     JSR rt_return
+1C7D  20 0C 1C     JSR rt_args
+1C80  A0 00        LDY #$00
+1C82  B1 71        LDA (rt_operands),Y
+1C84  85 7D        STA rt_ptr1
+1C86  C8           INY
+1C87  B1 71        LDA (rt_operands),Y
+1C89  85 7E        STA rt_ptr1+1
+1C8B  C8           INY
+1C8C  B1 71        LDA (rt_operands),Y
+1C8E  85 81        STA rt_ptr2
+1C90  C8           INY
+1C91  B1 71        LDA (rt_operands),Y
+1C93  85 82        STA rt_ptr2+1
+1C95  8A           TXA
+1C96  A8           TAY
+1C97  88           DEY
+1C98  B1 7D        LDA (rt_ptr1),Y
+1C9A  91 81        STA (rt_ptr2),Y
+1C9C  88           DEY
+1C9D  D0 F9        BNE rt_copy_body__loop
+1C9F  B1 7D        LDA (rt_ptr1),Y
+1CA1  91 81        STA (rt_ptr2),Y
+1CA3  A2 04        LDX #$04
+1CA5  20 0F 1C     JSR rt_return
+1CA8  86 7C        STX rt_temp
+1CAA  20 0C 1C     JSR rt_args
+1CAD  A0 00        LDY #$00
+1CAF  B1 71        LDA (rt_operands),Y
+1CB1  85 81        STA rt_ptr2
+1CB3  C8           INY
+1CB4  B1 71        LDA (rt_operands),Y
+1CB6  85 82        STA rt_ptr2+1
+1CB8  A0 00        LDY #$00
+1CBA  B1 81        LDA (rt_ptr2),Y
+1CBC  18           CLC
+1CBD  65 7C        ADC rt_temp
+1CBF  91 81        STA (rt_ptr2),Y
+1CC1  C8           INY
+1CC2  B1 81        LDA (rt_ptr2),Y
+1CC4  69 00        ADC #$00
+1CC6  91 81        STA (rt_ptr2),Y
+1CC8  A2 02        LDX #$02
+1CCA  20 0F 1C     JSR rt_return
+1CCD  20 0C 1C     JSR rt_args
+1CD0  A0 00        LDY #$00
+1CD2  B1 71        LDA (rt_operands),Y
+1CD4  85 81        STA rt_ptr2
+1CD6  C8           INY
+1CD7  B1 71        LDA (rt_operands),Y
+1CD9  85 82        STA rt_ptr2+1
+1CDB  A0 00        LDY #$00
+1CDD  B1 81        LDA (rt_ptr2),Y
+1CDF  18           CLC
+1CE0  69 01        ADC #$01
+1CE2  91 81        STA (rt_ptr2),Y
+1CE4  C8           INY
+1CE5  B1 81        LDA (rt_ptr2),Y
+1CE7  69 00        ADC #$00
+1CE9  91 81        STA (rt_ptr2),Y
+1CEB  A2 02        LDX #$02
+1CED  20 0F 1C     JSR rt_return
+1CF0  86 7C        STX rt_temp
+1CF2  20 0C 1C     JSR rt_args
+1CF5  A0 00        LDY #$00
+1CF7  B1 71        LDA (rt_operands),Y
+1CF9  85 81        STA rt_ptr2
+1CFB  C8           INY
+1CFC  B1 71        LDA (rt_operands),Y
+1CFE  85 82        STA rt_ptr2+1
+1D00  A5 77        LDA WORK
+1D02  85 7D        STA rt_ptr1
+1D04  A5 78        LDA WORK+1
+1D06  85 7E        STA rt_ptr1+1
+1D08  A0 00        LDY #$00
+1D0A  B1 7D        LDA (rt_ptr1),Y
+1D0C  D1 81        CMP (rt_ptr2),Y
+1D0E  D0 08        BNE rt_compare_body__differ
+1D10  C8           INY
+1D11  CA           DEX
+1D12  8A           TXA
+1D13  F0 0B        BEQ rt_compare_body__equal
+1D15  4C 0A 1D     JMP rt_compare_body__loop
+1D18  A9 01        LDA #$01
+1D1A  8D 51 08     STA cmp_result
+1D1D  4C 25 1D     JMP rt_compare_body__done
+1D20  A9 00        LDA #$00
+1D22  8D 51 08     STA cmp_result
+1D25  A2 02        LDX #$02
+1D27  20 0F 1C     JSR rt_return
+1D2A  20 0C 1C     JSR rt_args
+1D2D  A0 00        LDY #$00
+1D2F  B1 71        LDA (rt_operands),Y
+1D31  85 7D        STA rt_ptr1
+1D33  C8           INY
+1D34  B1 71        LDA (rt_operands),Y
+1D36  85 7E        STA rt_ptr1+1
+1D38  C8           INY
+1D39  B1 71        LDA (rt_operands),Y
+1D3B  85 81        STA rt_ptr2
+1D3D  C8           INY
+1D3E  B1 71        LDA (rt_operands),Y
+1D40  85 82        STA rt_ptr2+1
+1D42  18           CLC
+1D43  A0 00        LDY #$00
+1D45  B1 7D        LDA (rt_ptr1),Y
+1D47  71 81        ADC (rt_ptr2),Y
+1D49  91 81        STA (rt_ptr2),Y
+1D4B  C8           INY
+1D4C  B1 7D        LDA (rt_ptr1),Y
+1D4E  71 81        ADC (rt_ptr2),Y
+1D50  91 81        STA (rt_ptr2),Y
+1D52  A2 04        LDX #$04
+1D54  20 0F 1C     JSR rt_return
+1D57  8E 83 08     STX mul_count
+1D5A  20 0C 1C     JSR rt_args
+1D5D  A0 00        LDY #$00
+1D5F  B1 71        LDA (rt_operands),Y
+1D61  85 7D        STA rt_ptr1
+1D63  8D 85 08     STA mul_dest
+1D66  C8           INY
+1D67  B1 71        LDA (rt_operands),Y
+1D69  85 7E        STA rt_ptr1+1
+1D6B  8D 86 08     STA mul_dest+1
+1D6E  A0 00        LDY #$00
+1D70  B1 7D        LDA (rt_ptr1),Y
+1D72  8D 7F 08     STA mul_multiplicand
+1D75  C8           INY
+1D76  B1 7D        LDA (rt_ptr1),Y
+1D78  8D 80 08     STA mul_multiplicand+1
+1D7B  A0 00        LDY #$00
+1D7D  A9 00        LDA #$00
+1D7F  8D 84 08     STA mul_carry
+1D82  A2 08        LDX #$08
+1D84  8E 7D 08     STX scratch_word
+1D87  A9 00        LDA #$00
+1D89  8D 81 08     STA mul_result
+1D8C  8D 82 08     STA mul_result+1
+1D8F  AD 7D 08     LDA scratch_word
+1D92  F0 1C        BEQ MULTIPLY_body__done
+1D94  4E 83 08     LSR mul_count
+1D97  90 07        BCC MULTIPLY_body__no_add
+1D99  20 06 1C     JSR BUMP16
+1D9C  7F 08        .word mul_multiplicand
+1D9E  81 08        .word mul_result
+1DA0  0E 7F 08     ASL mul_multiplicand
+1DA3  2E 80 08     ROL mul_multiplicand+1
+1DA6  AC 7D 08     LDY scratch_word
+1DA9  88           DEY
+1DAA  8C 7D 08     STY scratch_word
+1DAD  4C 8F 1D     JMP MULTIPLY_body__loop
+1DB0  AD 85 08     LDA mul_dest
+1DB3  85 7D        STA rt_ptr1
+1DB5  AD 86 08     LDA mul_dest+1
+1DB8  85 7E        STA rt_ptr1+1
+1DBA  AD 81 08     LDA mul_result
+1DBD  A0 00        LDY #$00
+1DBF  91 7D        STA (rt_ptr1),Y
+1DC1  C8           INY
+1DC2  AD 82 08     LDA mul_result+1
+1DC5  91 7D        STA (rt_ptr1),Y
+1DC7  A2 02        LDX #$02
+1DC9  20 0F 1C     JSR rt_return
+1DCC  20 54 4F 20  .incbin "data/autoload_1DCC.bin"
+2000               .assert * = $2000, error, "the hi-res page (the title picture) must be at $2000"
+2000  00 00 00 00  .incbin "data/title_1987.bin"

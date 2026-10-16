@@ -13,7 +13,10 @@ engine for a port (keep it in step with the source and gamedata.json).
 match the original" and "build/mystery_house.do: matches disk/SHA256". The disk is the clean one
 (no stale third-party data; see `disk/README.md`), so its hash differs from the TOSEC original's.
 
-`./build.sh --check` fails unless everything matches (CI runs it). `./build.sh --bugfix`
+`./build.sh --check` fails unless everything matches (CI runs it). The build also prints the
+matching progress and writes `build/report.json` (objdiff's report format, `tools/progress.py`,
+against the original programs in `disk/expected/`, whose listings and symbol tables it
+refreshes after a matching build). `./build.sh --bugfix`
 builds the game with its documented bugs fixed (`.ifdef BUGFIX` blocks in `src/adventure.s`,
 original code in the `.else`) into `build/bugfix/`; fix game bugs that way so the default build
 keeps matching. Run the tests with

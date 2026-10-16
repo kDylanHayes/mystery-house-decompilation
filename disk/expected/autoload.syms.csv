@@ -1,0 +1,66 @@
+name,address,kind,file,comment
+rt_operands,0071,const,autoload.s,
+WORK,0077,const,autoload.s,
+rt_temp,007C,const,autoload.s,
+rt_ptr1,007D,const,autoload.s,
+rt_ptr2,0081,const,autoload.s,
+HI_CR,008D,const,apple2.inc,
+HI_SPACE,00A0,const,apple2.inc,
+input_buffer,0200,const,autoload.s,
+cmp_result,0851,const,autoload.s,
+scratch_word,087D,const,autoload.s,
+mul_multiplicand,087F,const,autoload.s,
+mul_result,0881,const,autoload.s,
+mul_count,0883,const,autoload.s,
+mul_carry,0884,const,autoload.s,
+mul_dest,0885,const,autoload.s,
+start,0FFD,label,autoload.s,Show the title picture with four lines of text and ask for G (game) or I (instructions).
+start__menu,1009,label,autoload.s,
+start__not_game,1053,label,autoload.s,
+show_instructions,105A,label,autoload.s,Full-screen text: six pages of instructions ending with the cast of characters, each page waiting for RETURN (GETLN1), then on to the game.
+run_adventure,1B7B,label,autoload.s,Print CTRL-D BRUN ADVENTURE: DOS takes it as a command and loads the game over this program, so the RTS is only reached if the BRUN fails.
+rt_copy,1C00,label,autoload.s,---- the macro library (see src/adventure.s and NOTES.md) ---- copy X bytes: .word src, dst
+BUMPIT,1C03,label,autoload.s,word at .word addr += X
+BUMP16,1C06,label,autoload.s,word at .word dst += word at .word src
+rt_compare,1C09,label,autoload.s,compare X bytes at (WORK) with .word addr; cmp_result = 0 if equal
+rt_args,1C0C,label,autoload.s,rt_operands = the caller's inline operands
+rt_return,1C0F,label,autoload.s,return to the caller's caller skipping X inline operand bytes
+rt_inc16,1C12,label,autoload.s,word at .word addr += 1
+rt_print,1C15,label,autoload.s,print the inline $00-terminated text
+MULTIPLY,1C18,label,autoload.s,mul_result = word at .word addr * X
+rt_args_body,1C2C,label,autoload.s,
+rt_return_body,1C50,label,autoload.s,
+rt_print_body,1C66,label,autoload.s,
+rt_print_body__loop,1C6B,label,autoload.s,
+rt_print_body__done,1C78,label,autoload.s,
+rt_copy_body,1C7D,label,autoload.s,
+rt_copy_body__loop,1C98,label,autoload.s,
+BUMPIT_body,1CA8,label,autoload.s,
+rt_inc16_body,1CCD,label,autoload.s,
+rt_compare_body,1CF0,label,autoload.s,
+rt_compare_body__loop,1D0A,label,autoload.s,
+rt_compare_body__differ,1D18,label,autoload.s,
+rt_compare_body__equal,1D20,label,autoload.s,
+rt_compare_body__done,1D25,label,autoload.s,
+BUMP16_body,1D2A,label,autoload.s,
+MULTIPLY_body,1D57,label,autoload.s,
+MULTIPLY_body__loop,1D8F,label,autoload.s,
+MULTIPLY_body__no_add,1DA0,label,autoload.s,
+MULTIPLY_body__done,1DB0,label,autoload.s,
+title_1987,2000,label,autoload.s,
+KBD,C000,const,apple2.inc,
+KBDSTRB,C010,const,apple2.inc,
+TXTCLR,C050,const,apple2.inc,
+TXTSET,C051,const,apple2.inc,
+MIXCLR,C052,const,apple2.inc,
+MIXSET,C053,const,apple2.inc,
+LOWSCR,C054,const,apple2.inc,
+HISCR,C055,const,apple2.inc,
+LORES,C056,const,apple2.inc,
+HIRES,C057,const,apple2.inc,
+applesoft_error,EE68,const,apple2.inc,
+HOME,FC58,const,apple2.inc,
+WAIT,FCA8,const,apple2.inc,
+GETLN,FD6A,const,apple2.inc,
+GETLN1,FD6F,const,apple2.inc,
+COUT,FDED,const,apple2.inc,

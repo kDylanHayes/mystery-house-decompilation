@@ -266,6 +266,7 @@ obj_52: .byte 52, N_REFRIGER, NOWHERE, 94, 0, 155, 17, OFIXED, 0, obj_53-obj_52,
 obj_53: .byte 53, N_DAGGER, 26, 95, 0, 171, 86, OMOVABLE, 117, obj_54-obj_53, 1, 38
 obj_54: .byte 54, N_LINE, 26, 96, 0, 73, 35, OFIXED, 0, obj_end-obj_54, 1, 38
 obj_end: .byte $FF
+fill_to_roombase:                      ; leftover memory up to ROOMBASE (shrinks as the objects grow)
         incbin_upto "data/adventure_0B9D.bin", 355, $0D00    ; $0B9D-$0CFF leftover memory, not used by the code (see NOTES.md)
 
 ; ==== rooms ==========================================================================
@@ -573,6 +574,7 @@ noun_table:
         hiasc "ADVENTUR"
         hiasc "DONE    "            ; N_DONE = 89
         .byte $FF
+fill_to_hires:                         ; leftover memory up to the hi-res page (shrinks as the nouns grow)
         incbin_upto "data/adventure_1C61.bin", 927, $2000    ; $1C61-$1FFF leftover memory, not used by the code (see NOTES.md)
         .assert * = $2000, error, "the hi-res page must be at $2000"
 title_1980:
@@ -5992,4 +5994,5 @@ draw_picture__done:
 ; Everything after the hi-res page is free to move: the fill below shrinks as the code and data
 ; above grow, and the file always ends at $7CFF, below the picture cache.
         .assert * <= CACHE_START, error, "ADVENTURE has grown into the picture cache at $7D00: delete leftover memory or dead code"
+fill_to_cache:                         ; up to the picture cache (shrinks as anything after $2000 grows)
         incbin_upto "data/adventure_7A72.bin", 654, CACHE_START    ; fill

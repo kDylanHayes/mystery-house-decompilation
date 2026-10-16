@@ -18,6 +18,7 @@ Everything is python3 with the standard library only. Each script's docstring ha
 | `pictures.py` | build | renders the pictures, shapes, rooms and title screens into `assets/`, drawing exactly as the game does (the reference renderer for a port; checked pixel for pixel by `tests/test_pictures.py`) |
 | `source_fragments.py` | once | recovered the original source fragments into `original_source/` |
 | `play.py` | tests | plays the built game on a 6502 emulator with scripted commands (no ROMs needed): transcript, screens |
+| `progress.py` | build | matching progress against the original programs in `disk/expected/`, routine by routine and table by table, written as an objdiff report (`build/report.json`; see `disk/README.md`) |
 | `gamecov.py` | tests | what a set of play scripts exercises: instructions, rules, the routines and rules that never run |
 | `trace6502.py` | Ghidra step | finds the code in a binary (inline operands, jump tables) and writes a plan for Ghidra |
 | `ghidra_symbols.py` | Ghidra step | merges the assembler's names and comments with `ghidra/symbols/*.csv` for Ghidra |

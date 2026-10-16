@@ -15,7 +15,7 @@ original game, or the same game with its documented bugs fixed) and boot it in a
 emulator. To build it yourself:
 
 ```
-./build.sh            # build everything; ./build.sh --check also fails unless it all matches
+./build.sh            # build everything and report the matching progress; --check fails unless it all matches
 ./build.sh --bugfix   # the same game with its documented bugs fixed, in build/bugfix/
 python3 -m unittest discover -s tests
 ```
@@ -55,6 +55,7 @@ on tracks 0-2, is kept as a binary.
 | `original_source/` | 313 lines of the **original 1980 source** (written with the LISA assembler), recovered from stale memory inside the binary |
 | `assets/text/rules.txt` | the game logic: all 358 rules in plain words |
 | `assets/text/map.txt` | every room's exits and the passages rules make |
+| `disk/expected/` | the original programs the build's progress is measured against, routine by routine (`build/report.json`, objdiff's report format) |
 | `tests/play/walkthrough.txt` | a complete solution, played by the tests on an emulated 6502 |
 | `tests/play/` | also a tour of every room and every death: together they run 347 of the 348 command rules and all the turn rules |
 | `assets/text/` | rooms, objects, vocabulary, messages; `gamedata.json` has all of it |

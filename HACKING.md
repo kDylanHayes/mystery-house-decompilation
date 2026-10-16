@@ -27,13 +27,18 @@ Needs only python3. The build:
    so it boots like the original in an Apple II emulator;
 5. checks each file against the original disk's (`disk/FILES.sha256`) and the image against
    `disk/SHA256`, the hash of the clean disk (see `disk/README.md`);
-6. regenerates `assets/` (text, pictures, rooms) from the built disk, so edits show up there;
-7. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
+6. measures the matching progress routine by routine against the original programs in
+   `disk/expected/` (`tools/progress.py`), prints a summary and writes `build/report.json` in
+   objdiff's report format (`disk/README.md`, "Progress");
+7. regenerates `assets/` (text, pictures, rooms) from the built disk, so edits show up there;
+8. if `GHIDRA_INSTALL_DIR` points at Ghidra 12.1.x, regenerates the C pseudocode in `decomp/`.
 
 With unmodified source it must say "all 30 files match the original" and
 "build/mystery_house.do: matches disk/SHA256". Keep it that way for any change that is meant
 to be a cleanup (renames, comments, constants): those never change the bytes.
-`./build.sh --check` turns a mismatch into an error.
+`./build.sh --check` turns a mismatch into an error. When an edit does change the bytes, the
+progress line and `build/report.json` say which routines and tables no longer match, and by
+how much.
 
 `./build.sh --bugfix` builds the game with its documented bugs fixed instead: the source's
 `.ifdef BUGFIX` blocks are assembled (`-D BUGFIX`, as ca65 takes it), and the result goes to

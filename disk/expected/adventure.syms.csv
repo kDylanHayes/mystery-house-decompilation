@@ -1,0 +1,886 @@
+name,address,kind,file,comment
+hgr_shape_ptr,001A,const,adventure.s,
+hgr_bits,001C,const,adventure.s,
+hgr_count_hi,001D,const,adventure.s,
+hbasl,0026,const,adventure.s,
+hmask,0030,const,adventure.s,
+prompt_char,0033,const,adventure.s,
+fake_vartab,004A,const,adventure.s,
+hgr_dx,0050,const,adventure.s,
+hgr_dy,0052,const,adventure.s,
+hgr_quadrant,0053,const,adventure.s,
+hgr_err,0054,const,adventure.s,
+rt_operands,0071,const,adventure.s,
+picdir_index,0073,const,adventure.s,
+picture_ptr,0075,const,adventure.s,
+WORK,0077,const,adventure.s,
+rule_ptr,0079,const,adventure.s,
+counter,007B,const,adventure.s,
+rt_temp,007C,const,adventure.s,
+rt_ptr1,007D,const,adventure.s,
+found_obj,007F,const,adventure.s,
+rt_ptr2,0081,const,adventure.s,
+CUROOM,0083,const,adventure.s,
+ZWORK,0085,const,adventure.s,
+ZAWORK,0087,const,adventure.s,
+HI_CR,008D,const,apple2.inc,
+HI_SPACE,00A0,const,apple2.inc,
+applesoft_errflg,00D8,const,adventure.s,
+applesoft_d9,00D9,const,adventure.s,
+input_buffer,0200,const,adventure.s,
+hgr_x,0320,const,adventure.s,
+hgr_y,0322,const,adventure.s,
+hgr_saved_x,0323,const,adventure.s,
+hgr_color,0324,const,adventure.s,
+hgr_horiz,0325,const,adventure.s,
+hgr_page,0326,const,adventure.s,
+hgr_scale,0327,const,adventure.s,
+hgr_shape_table,0328,const,adventure.s,
+hgr_collisions,032A,const,adventure.s,
+dos_warm_start,03D0,const,adventure.s,
+applesoft_vars,0800,const,adventure.s,
+start,0800,label,adventure.s,BRUN entry point. Resets the stack, points fake_vartab at applesoft_vars ($0800) and enters main. These bytes are only executed once: the relocated HPLOT/DRAW code later keeps its X and Y in var_x ($0805) and var_y ($080C), on top of this code.
+var_x,0805,const,adventure.s,
+var_y,080C,const,adventure.s,
+var_hcolor,0815,label,adventure.s,
+var_shape,081F,label,adventure.s,
+var_rot,0827,label,adventure.s,
+cmd_unused,0830,label,adventure.s,
+input_len,0831,label,adventure.s,
+parse_pos,0832,label,adventure.s,
+word_id,0833,label,adventure.s,
+verb,0834,label,adventure.s,
+noun,0835,label,adventure.s,
+cond_actual,0836,label,adventure.s,
+find_objectno,0838,label,adventure.s,
+shown_picture,0839,label,adventure.s,
+SWITCH,083A,label,adventure.s,
+draw_dy,084E,label,adventure.s,
+draw_dx,084F,label,adventure.s,
+pen_up,0850,label,adventure.s,
+cmp_result,0851,label,adventure.s,
+CURONO,0852,label,adventure.s,
+turns,0853,label,adventure.s,
+verb_word,0855,label,adventure.s,
+noun_word,085D,label,adventure.s,
+old_var_085E,085E,const,adventure.s,
+old_var_085F,085F,const,adventure.s,
+done_word,0865,label,adventure.s,
+word_buf,086D,label,adventure.s,
+blank_word,0875,label,adventure.s,
+scratch_word,087D,label,adventure.s,
+mul_multiplicand,087F,label,adventure.s,
+mul_result,0881,label,adventure.s,
+mul_count,0883,label,adventure.s,
+mul_carry,0884,label,adventure.s,
+mul_dest,0885,label,adventure.s,
+room_offset,0887,label,adventure.s,
+pic_block,0889,label,adventure.s,
+pic_offset,088A,label,adventure.s,
+lru_turn,088C,label,adventure.s,
+floor_slot,088E,label,adventure.s,
+AWORK,0890,label,adventure.s,
+AWORK1,0892,label,adventure.s,
+AWORK2,0894,label,adventure.s,
+AWORK3,0896,label,adventure.s,
+actions_left,0898,label,adventure.s,
+AX,0899,label,adventure.s,
+AY,089A,label,adventure.s,
+AX1,089B,label,adventure.s,
+AY1,089C,label,adventure.s,
+LAMPSTAT,089D,label,adventure.s,
+saved_object_ptr,089E,label,adventure.s,
+msg_no_delay,08A0,label,adventure.s,
+pic_cache,08A1,label,adventure.s,
+OBJBASE,0900,label,adventure.s,
+obj_01,0900,label,adventure.s,id  noun  room  pic  shape  x  y  status  msg  length  npics  pics...
+obj_02,090C,label,adventure.s,
+obj_03,0918,label,adventure.s,
+obj_04,0924,label,adventure.s,
+obj_05,0930,label,adventure.s,
+obj_06,093C,label,adventure.s,
+obj_07,0948,label,adventure.s,
+obj_08,0954,label,adventure.s,
+obj_09,0962,label,adventure.s,
+obj_10,0970,label,adventure.s,
+obj_11,097D,label,adventure.s,
+obj_12,098A,label,adventure.s,
+obj_13,0997,label,adventure.s,
+obj_14,09A3,label,adventure.s,
+obj_15,09AF,label,adventure.s,
+obj_16,09BA,label,adventure.s,
+obj_17,09C6,label,adventure.s,
+obj_18,09D3,label,adventure.s,
+obj_19,09DE,label,adventure.s,
+obj_20,09EB,label,adventure.s,
+obj_21,09F8,label,adventure.s,
+obj_22,0A05,label,adventure.s,
+obj_23,0A11,label,adventure.s,
+obj_24,0A20,label,adventure.s,
+obj_25,0A2D,label,adventure.s,
+obj_26,0A3A,label,adventure.s,
+obj_27,0A47,label,adventure.s,
+obj_28,0A54,label,adventure.s,
+obj_29,0A61,label,adventure.s,
+obj_30,0A6D,label,adventure.s,
+obj_31,0A79,label,adventure.s,
+obj_32,0A85,label,adventure.s,
+obj_33,0A91,label,adventure.s,
+obj_34,0A9D,label,adventure.s,
+obj_35,0AA9,label,adventure.s,
+obj_36,0AB5,label,adventure.s,
+obj_37,0AC1,label,adventure.s,
+obj_38,0ACD,label,adventure.s,
+obj_39,0AD9,label,adventure.s,
+obj_40,0AE5,label,adventure.s,
+obj_41,0AF1,label,adventure.s,
+obj_42,0AFD,label,adventure.s,
+obj_43,0B09,label,adventure.s,
+obj_44,0B15,label,adventure.s,
+obj_45,0B21,label,adventure.s,
+obj_46,0B2D,label,adventure.s,
+obj_47,0B39,label,adventure.s,
+obj_48,0B45,label,adventure.s,
+obj_49,0B51,label,adventure.s,
+obj_50,0B5D,label,adventure.s,
+obj_51,0B6A,label,adventure.s,
+obj_52,0B77,label,adventure.s,
+obj_53,0B84,label,adventure.s,
+obj_54,0B90,label,adventure.s,
+obj_end,0B9C,label,adventure.s,
+fill_to_roombase,0B9D,label,adventure.s,
+ROOMBASE,0D00,label,adventure.s,
+noun_table,1700,label,adventure.s,Word groups: head word, synonym count, synonyms; all WORDLEN characters, high-bit ASCII. The group number is the noun's id (N_* in game.inc). Ends with HV.
+fill_to_hires,1C61,label,adventure.s,
+title_1980,2000,label,adventure.s,
+verb_table,4000,label,adventure.s,Same layout as the nouns; ids are V_* in game.inc.
+turn_rules,4400,label,adventure.s,Every matching rule runs after each command. Rule layout: room, verb, noun (ANY matches all), length, number of conditions, number of actions, conditions (C_*), actions (A_*).
+rule_4400,4400,label,adventure.s,always
+rule_440B,440B,label,adventure.s,always
+rule_4417,4417,label,adventure.s,always
+rule_4420,4420,label,adventure.s,always
+rule_442C,442C,label,adventure.s,always
+rule_443C,443C,label,adventure.s,always
+rule_4446,4446,label,adventure.s,DROP
+rule_444D,444D,label,adventure.s,always
+rule_445A,445A,label,adventure.s,always
+rule_4465,4465,label,adventure.s,room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...)
+turn_rules_end,4474,label,adventure.s,
+command_rules,4500,label,adventure.s,Tried in order after each command; the first match runs and ends the search. The generic GET/DROP/LOOK/SAVE/... rules at the end catch anything earlier rules don't.
+rule_4500,4500,label,adventure.s,room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...), GO, STAIRS
+rule_4508,4508,label,adventure.s,room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...), UP, STAIRS
+rule_4510,4510,label,adventure.s,room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...), LOOK, FENCE
+rule_4518,4518,label,adventure.s,room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...), UP, FENCE
+rule_4520,4520,label,adventure.s,room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...), LOOK, TREE
+rule_4528,4528,label,adventure.s,room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...), GO, TREE
+rule_4530,4530,label,adventure.s,room 1 (IN THE FRONT YARD OF A LARGE ABANDONE...), JUMP, FENCE
+rule_4538,4538,label,adventure.s,room 2 (ON THE PORCH), OPEN, DOOR
+rule_4543,4543,label,adventure.s,room 2 (ON THE PORCH), OPEN, DOOR
+rule_454E,454E,label,adventure.s,room 2 (ON THE PORCH), CLOSE, DOOR
+rule_455C,455C,label,adventure.s,room 2 (ON THE PORCH), CLOSE, DOOR
+rule_4567,4567,label,adventure.s,room 2 (ON THE PORCH), GO, DOOR
+rule_4577,4577,label,adventure.s,room 2 (ON THE PORCH), GO, DOOR
+rule_457F,457F,label,adventure.s,room 2 (ON THE PORCH), GO, STAIRS
+rule_4587,4587,label,adventure.s,room 3 (IN AN ENTRY HALL), LOOK, PERSON
+rule_4591,4591,label,adventure.s,room 3 (IN AN ENTRY HALL), GO, DOOR
+rule_4599,4599,label,adventure.s,room 3 (IN AN ENTRY HALL), GO, STAIRS
+rule_45A5,45A5,label,adventure.s,room 3 (IN AN ENTRY HALL), GO, STAIRS
+rule_45AD,45AD,label,adventure.s,room 3 (IN AN ENTRY HALL), OPEN, DOOR
+rule_45B8,45B8,label,adventure.s,room 3 (IN AN ENTRY HALL), OPEN, DOOR
+rule_45C3,45C3,label,adventure.s,room 3 (IN AN ENTRY HALL), UNLOCK, DOOR
+rule_45D1,45D1,label,adventure.s,room 3 (IN AN ENTRY HALL), UNLOCK, DOOR
+rule_45D9,45D9,label,adventure.s,room 3 (IN AN ENTRY HALL), BREAK, DOOR
+rule_45E1,45E1,label,adventure.s,room 3 (IN AN ENTRY HALL), NORTH,
+rule_45EB,45EB,label,adventure.s,room 3 (IN AN ENTRY HALL), NORTH,
+rule_45F7,45F7,label,adventure.s,room 3 (IN AN ENTRY HALL), NORTH,
+rule_4601,4601,label,adventure.s,room 3 (IN AN ENTRY HALL), EAST,
+rule_460D,460D,label,adventure.s,room 3 (IN AN ENTRY HALL), EAST,
+rule_4615,4615,label,adventure.s,room 3 (IN AN ENTRY HALL), WEST,
+rule_4621,4621,label,adventure.s,room 3 (IN AN ENTRY HALL), WEST,
+rule_4629,4629,label,adventure.s,room 3 (IN AN ENTRY HALL), SOUTH,
+rule_4635,4635,label,adventure.s,room 3 (IN AN ENTRY HALL), SOUTH,
+rule_463D,463D,label,adventure.s,room 3 (IN AN ENTRY HALL), UP, STAIRS
+rule_4645,4645,label,adventure.s,room 3 (IN AN ENTRY HALL), UP,
+rule_464F,464F,label,adventure.s,room 4 (IN THE KITCHEN), GET, CABINET
+rule_4657,4657,label,adventure.s,room 4 (IN THE KITCHEN), MOVE, CABINET
+rule_4662,4662,label,adventure.s,room 4 (IN THE KITCHEN), MOVE, CABINET
+rule_4675,4675,label,adventure.s,room 4 (IN THE KITCHEN), OPEN, CABINET
+rule_467E,467E,label,adventure.s,room 4 (IN THE KITCHEN), CLOSE, CABINET
+rule_4688,4688,label,adventure.s,room 4 (IN THE KITCHEN), LOOK, CABINET
+rule_4693,4693,label,adventure.s,room 4 (IN THE KITCHEN), LOOK, CABINET
+rule_469B,469B,label,adventure.s,room 4 (IN THE KITCHEN), BREAK, WALL
+rule_46AE,46AE,label,adventure.s,room 4 (IN THE KITCHEN), BREAK, BRICKS
+rule_46C1,46C1,label,adventure.s,room 4 (IN THE KITCHEN), BREAK, WALL
+rule_46C9,46C9,label,adventure.s,room 4 (IN THE KITCHEN), OPEN, REFRIGER
+rule_46D8,46D8,label,adventure.s,room 4 (IN THE KITCHEN), OPEN, REFRIGER
+rule_46E3,46E3,label,adventure.s,room 4 (IN THE KITCHEN), CLOSE, REFRIGER
+rule_46F3,46F3,label,adventure.s,room 4 (IN THE KITCHEN), CLOSE, REFRIGER
+rule_46FF,46FF,label,adventure.s,room 4 (IN THE KITCHEN), LOOK, REFRIGER
+rule_470A,470A,label,adventure.s,room 4 (IN THE KITCHEN), LOOK, REFRIGER
+rule_4715,4715,label,adventure.s,room 4 (IN THE KITCHEN), FAUCET, ON
+rule_4720,4720,label,adventure.s,room 4 (IN THE KITCHEN), GET, WATER
+rule_4734,4734,label,adventure.s,room 4 (IN THE KITCHEN), GET, WATER
+rule_473F,473F,label,adventure.s,room 4 (IN THE KITCHEN), GET, WATER
+rule_4747,4747,label,adventure.s,room 4 (IN THE KITCHEN), LIGHT, STOVE
+rule_4750,4750,label,adventure.s,room 4 (IN THE KITCHEN), OPEN, DOOR
+rule_475D,475D,label,adventure.s,room 4 (IN THE KITCHEN), OPEN, DOOR
+rule_4767,4767,label,adventure.s,room 4 (IN THE KITCHEN), CLOSE, DOOR
+rule_4774,4774,label,adventure.s,room 4 (IN THE KITCHEN), CLOSE, DOOR
+rule_477E,477E,label,adventure.s,room 4 (IN THE KITCHEN), LOOK, SINK
+rule_478B,478B,label,adventure.s,room 4 (IN THE KITCHEN), LOOK, SINK
+rule_4793,4793,label,adventure.s,room 4 (IN THE KITCHEN), GO, HOLE
+rule_479E,479E,label,adventure.s,room 4 (IN THE KITCHEN), FAUCET, OFF
+rule_47A9,47A9,label,adventure.s,room 4 (IN THE KITCHEN), GO, DOOR
+rule_47B1,47B1,label,adventure.s,room 4 (IN THE KITCHEN), WEST,
+rule_47BB,47BB,label,adventure.s,room 4 (IN THE KITCHEN), WEST,
+rule_47C3,47C3,label,adventure.s,room 5 (IN A FOREST), UP,
+rule_47CE,47CE,label,adventure.s,room 5 (IN A FOREST), UP,
+rule_47D6,47D6,label,adventure.s,room 13 (THERE IS A VERY TALL PINE TREE IN FRO...), LOOK, TREE
+rule_47DE,47DE,label,adventure.s,room 5 (IN A FOREST), OPEN, DOOR
+rule_47EC,47EC,label,adventure.s,room 13 (THERE IS A VERY TALL PINE TREE IN FRO...), UP, TREE
+rule_47F4,47F4,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), OPEN, DOOR
+rule_4801,4801,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), OPEN, DOOR
+rule_480B,480B,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), CLOSE, DOOR
+rule_4818,4818,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), CLOSE, DOOR
+rule_4822,4822,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), GO, DOOR
+rule_482A,482A,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), EAST,
+rule_4834,4834,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), EAST,
+rule_483E,483E,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), WEST,
+rule_4846,4846,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), LOOK, SHELVES
+rule_484E,484E,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), GET, BOOKS
+rule_4856,4856,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), GET, COUCH
+rule_485E,485E,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), GET, TABLE
+rule_4866,4866,label,adventure.s,room 14 (IN THE OLD, DUSTY LIBRARY), GET, CHAIR
+rule_486E,486E,label,adventure.s,room 15 (IN THE SIDE YARD), OPEN, DOOR
+rule_487B,487B,label,adventure.s,room 15 (IN THE SIDE YARD), OPEN, DOOR
+rule_4885,4885,label,adventure.s,room 15 (IN THE SIDE YARD), CLOSE, DOOR
+rule_4892,4892,label,adventure.s,room 15 (IN THE SIDE YARD), CLOSE, DOOR
+rule_489C,489C,label,adventure.s,room 15 (IN THE SIDE YARD), GO, DOOR
+rule_48A6,48A6,label,adventure.s,room 15 (IN THE SIDE YARD), GO, DOOR
+rule_48B0,48B0,label,adventure.s,room 15 (IN THE SIDE YARD), UP, FENCE
+rule_48B8,48B8,label,adventure.s,room 15 (IN THE SIDE YARD), JUMP, FENCE
+rule_48C0,48C0,label,adventure.s,room 16 (IN THE DINING ROOM)
+rule_48D6,48D6,label,adventure.s,room 16 (IN THE DINING ROOM), POUR, WATER
+rule_48F4,48F4,label,adventure.s,room 16 (IN THE DINING ROOM)
+rule_4900,4900,label,adventure.s,room 16 (IN THE DINING ROOM), OPEN, DOOR
+rule_490D,490D,label,adventure.s,room 16 (IN THE DINING ROOM), OPEN, DOOR
+rule_4917,4917,label,adventure.s,room 16 (IN THE DINING ROOM), CLOSE, DOOR
+rule_4924,4924,label,adventure.s,room 16 (IN THE DINING ROOM), CLOSE, DOOR
+rule_492E,492E,label,adventure.s,room 16 (IN THE DINING ROOM), GO, DOOR
+rule_4936,4936,label,adventure.s,room 16 (IN THE DINING ROOM), NORTH,
+rule_493E,493E,label,adventure.s,room 16 (IN THE DINING ROOM), SOUTH,
+rule_4948,4948,label,adventure.s,room 16 (IN THE DINING ROOM), SOUTH,
+rule_4952,4952,label,adventure.s,room 16 (IN THE DINING ROOM), GET, RUG
+rule_495A,495A,label,adventure.s,room 16 (IN THE DINING ROOM), GET, TABLE
+rule_4962,4962,label,adventure.s,room 16 (IN THE DINING ROOM), LIGHT, LAMP
+rule_496A,496A,label,adventure.s,room 16 (IN THE DINING ROOM), GET, LAMP
+rule_4972,4972,label,adventure.s,room 16 (IN THE DINING ROOM), LOOK, HOLE
+rule_497A,497A,label,adventure.s,room 17 (IN THE FENCED BACK YARD), OPEN, GATE
+rule_4984,4984,label,adventure.s,room 17 (IN THE FENCED BACK YARD), OPEN, GATE
+rule_498C,498C,label,adventure.s,room 17 (IN THE FENCED BACK YARD), OPEN, DOOR
+rule_4999,4999,label,adventure.s,room 17 (IN THE FENCED BACK YARD), OPEN, DOOR
+rule_49A4,49A4,label,adventure.s,room 17 (IN THE FENCED BACK YARD), CLOSE, GATE
+rule_49AE,49AE,label,adventure.s,room 17 (IN THE FENCED BACK YARD), CLOSE, GATE
+rule_49B6,49B6,label,adventure.s,room 17 (IN THE FENCED BACK YARD), CLOSE, DOOR
+rule_49C3,49C3,label,adventure.s,room 17 (IN THE FENCED BACK YARD), CLOSE, DOOR
+rule_49CE,49CE,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GO, DOOR
+rule_49D8,49D8,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GO, DOOR
+rule_49E2,49E2,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GO, DOOR
+rule_49EC,49EC,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GO, DOOR
+rule_49F6,49F6,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GO, GATE
+old_rt_copy,4A00,const,adventure.s,
+rule_4A00,4A00,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GO, GATE
+old_BUMPIT,4A03,const,adventure.s,
+old_BUMP16,4A06,const,adventure.s,
+rule_4A0A,4A0A,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GO, GATE
+rule_4A14,4A14,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GO, GATE
+old_rt_print,4A15,const,adventure.s,
+rule_4A1E,4A1E,label,adventure.s,room 17 (IN THE FENCED BACK YARD), UP, FENCE
+rule_4A26,4A26,label,adventure.s,room 17 (IN THE FENCED BACK YARD), JUMP, FENCE
+rule_4A2E,4A2E,label,adventure.s,room 17 (IN THE FENCED BACK YARD), LOOK, BODY
+rule_4A36,4A36,label,adventure.s,room 17 (IN THE FENCED BACK YARD), GET, BODY
+rule_4A3E,4A3E,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), OPEN, GATE
+rule_4A48,4A48,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), OPEN, GATE
+rule_4A50,4A50,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), CLOSE, GATE
+rule_4A5A,4A5A,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), CLOSE, GATE
+rule_4A62,4A62,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GO, GATE
+rule_4A6C,4A6C,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GO, GATE
+rule_4A74,4A74,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), UP, FENCE
+rule_4A7C,4A7C,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), JUMP, FENCE
+rule_4A84,4A84,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GET, GRAVESTO
+rule_4A8C,4A8C,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), LOOK, GRAVESTO
+rule_4A94,4A94,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), READ, GRAVESTO
+rule_4A9C,4A9C,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), LOOK, PERSON
+rule_4AA4,4AA4,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), LOOK, JOE
+rule_4AAC,4AAC,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), TALK, JOE
+rule_4AB4,4AB4,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), TALK, PERSON
+rule_4ABC,4ABC,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), KILL, PERSON
+rule_4AC4,4AC4,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), KILL, JOE
+rule_4ACC,4ACC,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), WITH, DAGGER
+rule_4ADD,4ADD,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), WITH, DAGGER
+rule_4AE8,4AE8,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), WITH, GUN
+rule_4B01,4B01,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), LOOK, BODY
+rule_4B09,4B09,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GET, BODY
+rule_4B11,4B11,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GET, PERSON
+rule_4B19,4B19,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GET, JOE
+rule_4B21,4B21,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GO, GRAVES
+rule_4B30,4B30,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GO, GRAVES
+rule_4B38,4B38,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GET, SHOVEL
+rule_4B43,4B43,label,adventure.s,room 18 (IN A SMALL FENCED CEMETARY), GET, SHOVEL
+rule_4B4C,4B4C,label,adventure.s,room 19 (IN A SMALL PANTRY), UP, STAIRS
+rule_4B54,4B54,label,adventure.s,room 19 (IN A SMALL PANTRY), GO, STAIRS
+rule_4B5C,4B5C,label,adventure.s,room 19 (IN A SMALL PANTRY), GO, HOLE
+rule_4B67,4B67,label,adventure.s,room 19 (IN A SMALL PANTRY), GO, HOLE
+rule_4B6F,4B6F,label,adventure.s,room 19 (IN A SMALL PANTRY), GET, FOOD
+rule_4B77,4B77,label,adventure.s,room 19 (IN A SMALL PANTRY), GET, JARS
+rule_4B7F,4B7F,label,adventure.s,room 19 (IN A SMALL PANTRY), GET, BOXES
+rule_4B87,4B87,label,adventure.s,room 20 (AT THE NORTH END OF A NARROW NORTH/SO...), UP, STAIRS
+rule_4B8F,4B8F,label,adventure.s,room 20 (AT THE NORTH END OF A NARROW NORTH/SO...), GO, STAIRS
+rule_4B97,4B97,label,adventure.s,room 21 (IN A MOIST BASEMENT), GO, HOLE
+rule_4B9F,4B9F,label,adventure.s,room 21 (IN A MOIST BASEMENT), UP, STAIRS
+rule_4BA7,4BA7,label,adventure.s,room 21 (IN A MOIST BASEMENT), GO, STAIRS
+rule_4BAF,4BAF,label,adventure.s,room 21 (IN A MOIST BASEMENT), GO, DOOR
+rule_4BB7,4BB7,label,adventure.s,room 21 (IN A MOIST BASEMENT), BREAK, WALL
+rule_4BBF,4BBF,label,adventure.s,room 21 (IN A MOIST BASEMENT), GET, TABLE
+rule_4BC7,4BC7,label,adventure.s,room 21 (IN A MOIST BASEMENT), GET, ALGAE
+rule_4BCF,4BCF,label,adventure.s,room 21 (IN A MOIST BASEMENT), WIPE, ALGAE
+rule_4BE0,4BE0,label,adventure.s,room 21 (IN A MOIST BASEMENT), WIPE, ALGAE
+rule_4BEB,4BEB,label,adventure.s,room 21 (IN A MOIST BASEMENT), WIPE, ALGAE
+rule_4BF3,4BF3,label,adventure.s,room 21 (IN A MOIST BASEMENT), GET, BRICKS
+rule_4C02,4C02,label,adventure.s,room 21 (IN A MOIST BASEMENT), LOOK, BODY
+rule_4C0A,4C0A,label,adventure.s,room 21 (IN A MOIST BASEMENT), GET, BODY
+rule_4C12,4C12,label,adventure.s,room 21 (IN A MOIST BASEMENT), GET, DAISY
+rule_4C1A,4C1A,label,adventure.s,room 21 (IN A MOIST BASEMENT), LOOK, TABLE
+rule_4C22,4C22,label,adventure.s,room 21 (IN A MOIST BASEMENT), LOOK, BRICKS
+rule_4C2A,4C2A,label,adventure.s,room 21 (IN A MOIST BASEMENT), LOOK, JEWELS
+rule_4C32,4C32,label,adventure.s,room 22 (AT THE SOUTH END OF A NORTH/SOUTH TUNNEL), GO, HOLE
+rule_4C3A,4C3A,label,adventure.s,room 22 (AT THE SOUTH END OF A NORTH/SOUTH TUNNEL), LOOK, TUNNEL
+rule_4C42,4C42,label,adventure.s,room 23 (AT THE TOP OF A VERY TALL PINE TREE), UP, TREE
+rule_4C4A,4C4A,label,adventure.s,room 23 (AT THE TOP OF A VERY TALL PINE TREE), LOOK, TELESCOP
+rule_4C57,4C57,label,adventure.s,room 23 (AT THE TOP OF A VERY TALL PINE TREE), GO, HOUSE
+rule_4C5F,4C5F,label,adventure.s,room 23 (AT THE TOP OF A VERY TALL PINE TREE), GET, TELESCOP
+rule_4C67,4C67,label,adventure.s,room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...), GO, STAIRS
+rule_4C6F,4C6F,label,adventure.s,room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...), GO, HALL
+rule_4C77,4C77,label,adventure.s,room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...), GO, DOOR
+rule_4C7F,4C7F,label,adventure.s,room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...), LOOK, DOOR
+rule_4C87,4C87,label,adventure.s,room 24 (AT THE JUNCTION OF AN EAST/WEST HALLW...), LOOK, HALL
+rule_4C8F,4C8F,label,adventure.s,room 25 (THERE IS A DOORWAY HERE), GO, DOOR
+rule_4C9C,4C9C,label,adventure.s,room 25 (THERE IS A DOORWAY HERE), GO, DOOR
+rule_4CA4,4CA4,label,adventure.s,room 26 (IN A LARGE BEDROOM), GO, DOOR
+rule_4CAF,4CAF,label,adventure.s,room 26 (IN A LARGE BEDROOM), GET, DAGGER
+rule_4CB9,4CB9,label,adventure.s,room 26 (IN A LARGE BEDROOM), GET, BED
+rule_4CC1,4CC1,label,adventure.s,room 26 (IN A LARGE BEDROOM), GET, TRUNK
+rule_4CC9,4CC9,label,adventure.s,room 27 (THERE IS A DOORWAY HERE), GO, DOOR
+rule_4CD1,4CD1,label,adventure.s,room 28 (IN A SMALL BEDROOM), GO, DOOR
+rule_4CD9,4CD9,label,adventure.s,room 28 (IN A SMALL BEDROOM), LOOK, BODY
+rule_4CE1,4CE1,label,adventure.s,room 28 (IN A SMALL BEDROOM), GET, BODY
+rule_4CE9,4CE9,label,adventure.s,room 28 (IN A SMALL BEDROOM), GET, BED
+rule_4CF1,4CF1,label,adventure.s,room 29 (THERE IS A DOORWAY HERE), GO, DOOR
+rule_4CF9,4CF9,label,adventure.s,room 30 (IN AN OLD NURSERY), GO, DOOR
+rule_4D01,4D01,label,adventure.s,room 30 (IN AN OLD NURSERY), LOOK, BODY
+rule_4D09,4D09,label,adventure.s,room 30 (IN AN OLD NURSERY), GET, BODY
+rule_4D11,4D11,label,adventure.s,room 30 (IN AN OLD NURSERY), GET, CHAIR
+rule_4D19,4D19,label,adventure.s,room 30 (IN AN OLD NURSERY), GET, TRUNK
+rule_4D21,4D21,label,adventure.s,room 30 (IN AN OLD NURSERY), GET, CRADLE
+rule_4D29,4D29,label,adventure.s,room 31 (THERE IS A DOORWAY HERE), GO, DOOR
+rule_4D31,4D31,label,adventure.s,room 32 (IN A BOYS BEDROOM), GO, DOOR
+rule_4D39,4D39,label,adventure.s,room 32 (IN A BOYS BEDROOM), GET, BED
+rule_4D41,4D41,label,adventure.s,room 32 (IN A BOYS BEDROOM), GET, TRUNK
+rule_4D49,4D49,label,adventure.s,room 33 (AT A STAIRWAY), UP, STAIRS
+rule_4D51,4D51,label,adventure.s,room 33 (AT A STAIRWAY), GO, STAIRS
+rule_4D59,4D59,label,adventure.s,room 34 (THERE IS A DOORWAY HERE), GO, DOOR
+rule_4D61,4D61,label,adventure.s,room 35 (IN THE STUDY), GO, DOOR
+rule_4D69,4D69,label,adventure.s,room 35 (IN THE STUDY), LOOK, PICTURE
+rule_4D71,4D71,label,adventure.s,room 35 (IN THE STUDY), GET, TABLE
+rule_4D79,4D79,label,adventure.s,room 35 (IN THE STUDY), GET, CHAIR
+rule_4D81,4D81,label,adventure.s,room 35 (IN THE STUDY), UNSCREW, BOLTS
+rule_4D89,4D89,label,adventure.s,room 35 (IN THE STUDY), GET, PICTURE
+rule_4D98,4D98,label,adventure.s,room 35 (IN THE STUDY), GET, PICTURE
+rule_4DA0,4DA0,label,adventure.s,room 35 (IN THE STUDY), WITH, BUTTERKN
+rule_4DAE,4DAE,label,adventure.s,room 35 (IN THE STUDY), WITH, BUTTERKN
+rule_4DB6,4DB6,label,adventure.s,room 35 (IN THE STUDY), PRESS, BUTTON
+rule_4DC0,4DC0,label,adventure.s,room 35 (IN THE STUDY), PRESS, BUTTON
+rule_4DCA,4DCA,label,adventure.s,room 35 (IN THE STUDY), CLOSE, WALL
+rule_4DD2,4DD2,label,adventure.s,room 35 (IN THE STUDY), GO, WALL
+rule_4DE1,4DE1,label,adventure.s,room 36 (IN A MUSTY CRAWLSPACE), GO, STAIRS
+rule_4DE9,4DE9,label,adventure.s,room 36 (IN A MUSTY CRAWLSPACE), OPEN, WALL
+rule_4DF1,4DF1,label,adventure.s,room 36 (IN A MUSTY CRAWLSPACE), BREAK, WALL
+rule_4DF9,4DF9,label,adventure.s,room 37 (ON A STAIRWAY), GO, STAIRS
+rule_4E01,4E01,label,adventure.s,room 38 (IN THE BATHROOM), GO, DOOR
+rule_4E09,4E09,label,adventure.s,room 38 (IN THE BATHROOM), FAUCET, ON
+rule_4E14,4E14,label,adventure.s,room 38 (IN THE BATHROOM), GET, WATER
+rule_4E28,4E28,label,adventure.s,room 38 (IN THE BATHROOM), GET, WATER
+rule_4E33,4E33,label,adventure.s,room 38 (IN THE BATHROOM), GET, WATER
+rule_4E3B,4E3B,label,adventure.s,room 38 (IN THE BATHROOM), FAUCET, OFF
+rule_4E46,4E46,label,adventure.s,room 38 (IN THE BATHROOM), FLUSH, TOILET
+rule_4E4E,4E4E,label,adventure.s,room 38 (IN THE BATHROOM), LOOK, BODY
+rule_4E56,4E56,label,adventure.s,room 38 (IN THE BATHROOM), GET, BODY
+rule_4E5E,4E5E,label,adventure.s,room 38 (IN THE BATHROOM), GET, SHOWER
+rule_4E66,4E66,label,adventure.s,room 38 (IN THE BATHROOM), GO, TOILET
+rule_4E6E,4E6E,label,adventure.s,room 39 (IN THE ATTIC), HELP
+rule_4E79,4E79,label,adventure.s,room 39 (IN THE ATTIC), GO, STAIRS
+rule_4E81,4E81,label,adventure.s,room 39 (IN THE ATTIC), OPEN, TRAPDOOR
+rule_4E90,4E90,label,adventure.s,room 39 (IN THE ATTIC), OPEN, TRAPDOOR
+rule_4E9B,4E9B,label,adventure.s,room 39 (IN THE ATTIC), OPEN, TRAPDOOR
+rule_4EA3,4EA3,label,adventure.s,room 39 (IN THE ATTIC), CLOSE, TRAPDOOR
+rule_4EB2,4EB2,label,adventure.s,room 39 (IN THE ATTIC), CLOSE, TRAPDOOR
+rule_4EBD,4EBD,label,adventure.s,room 39 (IN THE ATTIC), CLOSE, TRAPDOOR
+rule_4EC5,4EC5,label,adventure.s,room 39 (IN THE ATTIC), GO, TRAPDOOR
+rule_4ED0,4ED0,label,adventure.s,room 39 (IN THE ATTIC), GO, TRAPDOOR
+rule_4EDB,4EDB,label,adventure.s,room 39 (IN THE ATTIC), GO, TRAPDOOR
+rule_4EE3,4EE3,label,adventure.s,room 39 (IN THE ATTIC), UP, LADDER
+rule_4EEE,4EEE,label,adventure.s,room 39 (IN THE ATTIC), UP, LADDER
+rule_4EF6,4EF6,label,adventure.s,room 39 (IN THE ATTIC), GO, DOOR
+rule_4EFE,4EFE,label,adventure.s,room 39 (IN THE ATTIC), LOOK, WINDOW
+rule_4F06,4F06,label,adventure.s,room 39 (IN THE ATTIC), GET, LADDER
+rule_4F0E,4F0E,label,adventure.s,room 39 (IN THE ATTIC), BREAK, WINDOW
+rule_4F16,4F16,label,adventure.s,room 39 (IN THE ATTIC), GO, WINDOW
+rule_4F21,4F21,label,adventure.s,room 40 (IN A STORAGE ROOM), GO, DOOR
+rule_4F29,4F29,label,adventure.s,room 40 (IN A STORAGE ROOM), GET, BOXES
+rule_4F31,4F31,label,adventure.s,room 40 (IN A STORAGE ROOM), GET, TRUNK
+rule_4F39,4F39,label,adventure.s,room 40 (IN A STORAGE ROOM), OPEN, TRUNK
+rule_4F4B,4F4B,label,adventure.s,room 40 (IN A STORAGE ROOM), OPEN, TRUNK
+rule_4F56,4F56,label,adventure.s,room 40 (IN A STORAGE ROOM), OPEN, TRUNK
+rule_4F61,4F61,label,adventure.s,room 40 (IN A STORAGE ROOM), OPEN, TRUNK
+rule_4F69,4F69,label,adventure.s,room 40 (IN A STORAGE ROOM), CLOSE, TRUNK
+rule_4F78,4F78,label,adventure.s,room 40 (IN A STORAGE ROOM), CLOSE, TRUNK
+rule_4F83,4F83,label,adventure.s,room 40 (IN A STORAGE ROOM), LOOK, TRUNK
+rule_4F8E,4F8E,label,adventure.s,room 40 (IN A STORAGE ROOM), LOOK, TRUNK
+rule_4F9C,4F9C,label,adventure.s,room 40 (IN A STORAGE ROOM), LOOK, TRUNK
+rule_4FAA,4FAA,label,adventure.s,room 40 (IN A STORAGE ROOM), UNLOCK, TRUNK
+rule_4FBE,4FBE,label,adventure.s,room 40 (IN A STORAGE ROOM), UNLOCK, TRUNK
+rule_4FCF,4FCF,label,adventure.s,room 40 (IN A STORAGE ROOM), UNLOCK, TRUNK
+rule_4FDD,4FDD,label,adventure.s,room 40 (IN A STORAGE ROOM), UNLOCK, TRUNK
+rule_4FEB,4FEB,label,adventure.s,room 40 (IN A STORAGE ROOM), GO, WINDOW
+rule_4FF5,4FF5,label,adventure.s,room 41 (IN THE TOWER), GO, TRAPDOOR
+rule_4FFD,4FFD,label,adventure.s,room 41 (IN THE TOWER), LOOK, PERSON
+rule_5008,5008,label,adventure.s,room 41 (IN THE TOWER), LOOK, DAISY
+rule_5013,5013,label,adventure.s,room 41 (IN THE TOWER), LOOK, DAISY
+rule_501B,501B,label,adventure.s,room 41 (IN THE TOWER), KILL, DAISY
+rule_5023,5023,label,adventure.s,room 41 (IN THE TOWER), WITH, DAGGER
+rule_502E,502E,label,adventure.s,room 41 (IN THE TOWER), WITH, DAGGER
+rule_503A,503A,label,adventure.s,room 41 (IN THE TOWER), WITH, DAGGER
+rule_5045,5045,label,adventure.s,room 41 (IN THE TOWER), WITH, GUN
+rule_5061,5061,label,adventure.s,room 41 (IN THE TOWER), WITH, GUN
+rule_506C,506C,label,adventure.s,room 41 (IN THE TOWER), WITH, GUN
+rule_507D,507D,label,adventure.s,room 41 (IN THE TOWER), WITH, GUN
+rule_5088,5088,label,adventure.s,room 41 (IN THE TOWER), GET, BODY
+rule_5090,5090,label,adventure.s,room 41 (IN THE TOWER), WITH, BUTTERKN
+rule_509C,509C,label,adventure.s,room 41 (IN THE TOWER), WITH, BUTTERKN
+rule_50A7,50A7,label,adventure.s,room 41 (IN THE TOWER), WITH, SLEDGEHA
+rule_50B3,50B3,label,adventure.s,room 41 (IN THE TOWER), WITH, SLEDGEHA
+rule_50BE,50BE,label,adventure.s,room 41 (IN THE TOWER), GET, NOTE
+rule_50C9,50C9,label,adventure.s,room 41 (IN THE TOWER), GET, NOTE
+rule_50D2,50D2,label,adventure.s,room 41 (IN THE TOWER), GET, KNIFE
+rule_50DA,50DA,label,adventure.s,room 41 (IN THE TOWER), LOOK, BODY
+rule_50E2,50E2,label,adventure.s,room 41 (IN THE TOWER), CLOSE, TRAPDOOR
+rule_50EA,50EA,label,adventure.s,LOOK, WINDOW
+rule_50F2,50F2,label,adventure.s,LOOK, NOTE
+rule_50FD,50FD,label,adventure.s,READ, NOTE
+rule_5108,5108,label,adventure.s,LOOK, ROOM
+rule_510F,510F,label,adventure.s,LIGHT, MATCHES
+rule_511E,511E,label,adventure.s,LIGHT, MATCHES
+rule_5126,5126,label,adventure.s,POUR, WATER
+rule_5137,5137,label,adventure.s,POUR, WATER
+rule_513F,513F,label,adventure.s,LOOK, TREE
+rule_5149,5149,label,adventure.s,UP, TREE
+rule_5153,5153,label,adventure.s,LIGHT, CANDLE
+rule_5168,5168,label,adventure.s,UNLIGHT, CANDLE
+rule_5177,5177,label,adventure.s,BREAK, WINDOW
+rule_517F,517F,label,adventure.s,GO, WINDOW
+rule_5187,5187,label,adventure.s,WITH, GUN
+rule_5198,5198,label,adventure.s,WITH, GUN
+rule_51A6,51A6,label,adventure.s,LOOK, GUN
+rule_51AE,51AE,label,adventure.s,READ, NOTE
+rule_51B9,51B9,label,adventure.s,READ, NOTE
+rule_51C4,51C4,label,adventure.s,READ, NOTE
+rule_51CF,51CF,label,adventure.s,NORTH,
+rule_51D6,51D6,label,adventure.s,SOUTH,
+rule_51DD,51DD,label,adventure.s,EAST,
+rule_51E4,51E4,label,adventure.s,WEST,
+rule_51EB,51EB,label,adventure.s,UP,
+rule_51F2,51F2,label,adventure.s,DOWN,
+rule_51F9,51F9,label,adventure.s,GET
+rule_5200,5200,label,adventure.s,DROP
+rule_5207,5207,label,adventure.s,LOOK, NOTE
+rule_5212,5212,label,adventure.s,LOOK, NOTE
+rule_521D,521D,label,adventure.s,LOOK, NOTE
+rule_5228,5228,label,adventure.s,LOOK, NOTE
+rule_5230,5230,label,adventure.s,READ, NOTE
+rule_5238,5238,label,adventure.s,SAVE, GAME
+rule_523F,523F,label,adventure.s,DRINK, WATER
+rule_5250,5250,label,adventure.s,RESTORE, GAME
+rule_5257,5257,label,adventure.s,QUIT,
+rule_525E,525E,label,adventure.s,HELP
+rule_5268,5268,label,adventure.s,HELP
+rule_5270,5270,label,adventure.s,LOOK
+rule_5278,5278,label,adventure.s,INVENTOR,
+rule_527F,527F,label,adventure.s,FUCK
+rule_5288,5288,label,adventure.s,LIGHT, CANDLE
+rule_5293,5293,label,adventure.s,LIGHT, CANDLE
+rule_529B,529B,label,adventure.s,SLEEP
+command_rules_end,52A3,label,adventure.s,
+picture_directory,5300,label,pictures.inc,generated by tools/picfile.py from src/pictures/: do not edit
+message_index,5500,label,messages.inc,generated by tools/msgfile.py from src/messages.txt: do not edit
+dead_init_tail,5651,label,adventure.s,unreachable older copy of the end of init_game (shape table at $6D00; also sets the DOS language flag)
+dead_blank_word,56A8,label,adventure.s,
+dead_done_word,56B0,label,adventure.s,
+dead_init_tables,56B8,label,adventure.s,
+dead_disk_error_ptr,56CC,label,adventure.s,
+dead_disk_error,56CE,label,adventure.s,the older disk-error handler: unlike the shipped one (disk_error_handler), its RTS follows the text directly; the shipped build put the OPEN-once flag in between
+shape_table,5700,label,adventure.s,Applesoft shape table for the small objects (notes, matches, welcome mat, a door).
+shape_1,572A,label,adventure.s,
+shape_2,5730,label,adventure.s,
+shape_3,5764,label,adventure.s,
+shape_4,57A4,label,adventure.s,
+shape_5,580D,label,adventure.s,
+shape_6,589A,label,adventure.s,
+shape_7,590C,label,adventure.s,
+dead_read_message,5912,label,adventure.s,Unreachable older version of MESSLSTR's file path.
+dead_read_message__print_loop,594A,label,adventure.s,
+dead_read_message_cmd,5957,label,adventure.s,
+old_read_digits,596B,label,adventure.s,
+dead_offset_to_hex,5993,label,adventure.s,
+dead_split_nibbles,59C1,label,adventure.s,
+dead_nibbles_to_ascii,59DF,label,adventure.s,
+dead_nibbles_to_ascii__loop,59E1,label,adventure.s,
+dead_hex_digits,59F1,label,adventure.s,
+run_rules,5A00,label,adventure.s,Run the game logic for the command just parsed: the command rules first, then the turn rules.
+old_hex_in,5A01,const,adventure.s,
+old_hex_out,5A02,const,adventure.s,
+old_hex_hi,5A06,const,adventure.s,
+old_hex_lo,5A07,const,adventure.s,
+run_command_rules,5A07,label,adventure.s,Try each command rule in order. The first one whose header and conditions match runs its actions and ends the search (test_rule leaves cmp_result = 1). If the table ends with no match, say "I DONT UNDERSTAND WHAT YOU MEAN".
+old_msg_offset,5A0A,const,adventure.s,
+command_rules_addr,5A18,label,adventure.s,
+run_command_rules__loop,5A1A,label,adventure.s,
+run_command_rules__done,5A33,label,adventure.s,
+run_turn_rules,5A34,label,adventure.s,Run every matching turn rule (match timers, darkness, the winning check), whatever happened to the command.
+turn_rules_addr,5A45,label,adventure.s,
+run_turn_rules__loop,5A47,label,adventure.s,
+test_rule,5A55,label,adventure.s,Test the rule at rule_ptr: room, verb and noun must match (ANY matches everything). If they do, WORK steps through the conditions; each condition handler continues at cond_pass or cond_fail, and when all have passed rule_done runs the actions. cmp_result: 0 = header did not match, 1 = header matched (and conditions passed unless a condition reset it to 0).
+test_rule__check_verb,5A6A,label,adventure.s,
+test_rule__check_noun,5A7A,label,adventure.s,
+test_rule__matched,5A8A,label,adventure.s,
+next_condition,5A9C,label,adventure.s,Dispatch the condition at WORK through tbl_conditions, or run the actions when counter (conditions left) reaches 0. Condition handlers read their operands at (WORK),Y.
+next_condition__dispatch,5AA3,label,adventure.s,
+tbl_conditions,5AB7,label,adventure.s,
+cond_obj_in_room,5ACD,label,adventure.s,Condition 3: object ARG_X is in room ARG_Y.
+cond_turns_gt,5AEA,label,adventure.s,Condition 5: turns > ARG_X. Fails whenever the turn counter's high byte is set, so from turn 256 on it is never true.
+cond_switch_eq,5AFF,label,adventure.s,Condition 6: SWITCH[ARG_X] == ARG_Y.
+cond_view_is,5B18,label,adventure.s,Condition 9: the picture on screen is ARG_X (close-up views).
+cond_obj_pic_is,5B26,label,adventure.s,Condition 10: object ARG_X is drawn as picture ARG_Y.
+cond_pass,5B43,label,adventure.s,Condition true: step WORK past it (opcode + X operand bytes) and test the next one.
+cond_fail,5B51,label,adventure.s,Condition false: the rule does not run.
+rule_done,5B59,label,adventure.s,All conditions passed (cmp_result still 1): run the rule's actions.
+rule_done__run,5B61,label,adventure.s,
+next_rule,5B65,label,adventure.s,Advance rule_ptr (and WORK) by RULE_LEN. cmp_result = HV at the end of the table, else 0.
+next_rule__at_end,5B85,label,adventure.s,
+find_object,5B8B,label,adventure.s,found_obj = the record of object X. Walks OBJBASE by ONEXT; hitting HV is a BRK (the source comments it ";UH-OH, KABOOM!").
+objbase_addr,5B9B,label,adventure.s,
+find_object__loop,5B9D,label,adventure.s,
+find_object__next,5BAB,label,adventure.s,
+find_object__found,5BB8,label,adventure.s,
+main,5E00,label,adventure.s,The game loop. Draw first, then read and act: a change made by an action shows on the next turn's redraw.
+main__turn,5E03,label,adventure.s,
+init_game,6100,label,adventure.s,Start (or restart) a game: room 1, turn 1, switches and picture cache cleared, CUROOM at room 1, HPLOT colour white, the custom DOS error handler installed, MESSAGES opened (once), hi-res page 1 with four lines of text.
+init_game__opened,61C3,label,adventure.s,
+init_blank_word,61DB,label,adventure.s,
+init_done_word,61E3,label,adventure.s,
+init_pic_cache,61EB,label,adventure.s,
+init_switches,61FF,label,adventure.s,
+disk_error_handler_ptr,6213,label,adventure.s,
+disk_error_handler,6215,label,adventure.s,Installed in dos_error_vector by init_game. Prints the message, then falls into messages_open (see there).
+messages_open,6232,label,adventure.s,The flag byte sits between the text's terminator and the RTS, so rt_print "returns" into it: it executes $00 (BRK) before init_game has run and $FF (an undocumented 3-byte opcode that swallows the RTS) afterwards. A disk error therefore never returns cleanly. The older handler (dead_disk_error) had the RTS straight after the text.
+read_command,6300,label,adventure.s,Prompt, read a line and parse it into verb and noun numbers. The first word must be a verb and the second a noun; an unknown word prints "I DONT KNOW HOW TO <word> SOMETHING" (or "... <verb> A <noun>") by copying the words into the message text, and asks again. A blank second word looks up as N_NONE (eight spaces is in the noun table).
+read_command__unknown_verb,6343,label,adventure.s,
+unknown_verb_text,6362,label,adventure.s,
+read_command__unknown_noun,6379,label,adventure.s,
+unknown_noun_verb,63A1,label,adventure.s,
+unknown_noun_text,63AC,label,adventure.s,
+print_prompt,63B9,label,adventure.s,Print the separator and ENTER COMMAND.
+get_line,63DB,label,adventure.s,Read a line into input_buffer. GETLN prints the prompt in $33, set here to '?', so the question mark follows ENTER COMMAND on the same line. RETURN on an empty line toggles between the picture (mixed mode) and a full text page, so earlier messages can be reread.
+get_line__empty,63F2,label,adventure.s,
+get_line__show_picture,6404,label,adventure.s,
+next_word,6418,label,adventure.s,Copy the next word of input_buffer, from parse_pos, into word_buf (blank-padded, first WORDLEN characters kept; the rest of a longer word is skipped). The end of the line is marked with INPUT_END first.
+next_word__skip_blanks,642C,label,adventure.s,
+next_word__start_word,643B,label,adventure.s,
+next_word__store_char,643D,label,adventure.s,
+next_word__next_char,6440,label,adventure.s,
+next_word__done,6454,label,adventure.s,
+lookup_word,6458,label,adventure.s,Called as  JSR lookup_word / .word table. Looks word_buf up in a word table: word[WORDLEN]  count  synonym[WORDLEN] * count     count 0 = none; HV ends the table word_id = the group's number (1 = first group), or NOT_FOUND. Uses the inline-operand convention itself: rt_args fetches the table address, rt_return skips it.
+lookup_word__next_group,646B,label,adventure.s,
+lookup_word__check_synonyms,6493,label,adventure.s,
+lookup_word__synonyms,649F,label,adventure.s,
+lookup_word__next_synonym,64A8,label,adventure.s,
+lookup_word__done,64C6,label,adventure.s,
+text_mode,64CB,label,adventure.s,$FF while get_line shows the full text page instead of the picture.
+run_actions,6500,label,adventure.s,Run the rule's actions: AWORK = WORK (just past the conditions), actions_left = RULE_NACT. Each action handler (ACnn00) leaves through AC9000, which steps AWORK past it and dispatches the next one through tbl_actions.
+next_action,6511,label,adventure.s,Dispatch the action at AWORK, or return when none are left.
+stop_actions,6534,label,adventure.s,Ends the action list early: the movement actions (ACNEWROM) and the game-ending ones leave through here.
+tbl_actions,6535,label,adventure.s,
+AC1100,6571,label,adventure.s,action 1: SWITCH[Y] += X
+AC1200,658D,label,adventure.s,action 2: SWITCH[Y] -= X
+AC1300,65A8,label,adventure.s,action 3: SWITCH[X] = Y
+AC1400,65B9,label,adventure.s,action 4: list objects carried
+AC1400__loop,65C1,label,adventure.s,
+AC1400__next,65D1,label,adventure.s,
+AC1400__list_it,65DE,label,adventure.s,
+AC1400__done,65E9,label,adventure.s,
+AC1500,65EE,label,adventure.s,action 5: put object X in room Y
+AC1500__loop,6604,label,adventure.s,
+AC1500__check_id,660D,label,adventure.s,
+AC1500__found,661F,label,adventure.s,
+AC1600,662B,label,adventure.s,action 6: move to room X (current view of the room left reverts to its base view)
+AC1700,6669,label,adventure.s,action 7: show picture X in this room
+AC1800,6676,label,adventure.s,action 8: make picture X this room's permanent view
+AC1900,6687,label,adventure.s,action 9: print message X
+AC2000,6694,label,adventure.s,action 10: light on
+AC2100,669E,label,adventure.s,action 11: light off
+AC2200,66A8,label,adventure.s,action 12: unused (BRK)
+AC2300,66A9,label,adventure.s,action 13: quit
+AC2400,66B1,label,adventure.s,action 14: unused (BRK)
+AC2500,66B2,label,adventure.s,action 15: save game (BSAVE SAVED GAME,A$830,L$8CF)
+AC2600,66D9,label,adventure.s,Action 16: restore game. BLOADs the save file over $0830-$10FE (variables, objects, rooms), empties the picture cache so blocks are reloaded, then puts back the action pointer saved before the load. Bug: both bytes are stored into AWORK's low byte; the high byte keeps the value from the save file.
+AC2600__clear_cache,6703,label,adventure.s,
+AC2700,671B,label,adventure.s,Action 17: game over. "WOULD YOU LIKE TO PLAY AGAIN": N quits (AC2300), anything else BLOADs STARTUP (the initial objects and rooms), clears the screen and restarts at main.
+AC2700__quit,6786,label,adventure.s,
+AC2800,6789,label,adventure.s,action 18: put object X in room Y at (x, y)
+AC2800__loop,67AD,label,adventure.s,
+AC2800__found,67C3,label,adventure.s,
+AC2900,67DD,label,adventure.s,action 19: object Y's picture = X (OPIC only)
+AC2900__loop,67F3,label,adventure.s,
+AC2900__check_id,67FC,label,adventure.s,
+AC2900__found,680E,label,adventure.s,
+AC3000,681A,label,adventure.s,action 20: switch to the permanent view for this room
+AC3100,6827,label,adventure.s,action 21: go north
+AC3200,6831,label,adventure.s,action 22: go south
+AC3300,683B,label,adventure.s,action 23: go east
+AC3400,6845,label,adventure.s,action 24: go west
+AC3500,684F,label,adventure.s,action 25: go up
+AC3600,6859,label,adventure.s,action 26: go down
+ACNEWROM,6863,label,adventure.s,Move through exit AX of the current room (0 = "I CANT GO IN THAT DIRECTION"). The room left reverts to its permanent view. Bug: AWORK2's low byte is never set to the new room number before the multiply, so CUROOM is wrong until draw_room rebuilds it from CURONO at the start of the next turn; nothing reads it in between. Ends the action list.
+ACNEWROM__move,6872,label,adventure.s,
+ACNEWROM__done,68A7,label,adventure.s,
+AC3700,68AC,label,adventure.s,Action 27: take the object named by the command's noun. Only an object in this room counts. OFIXED -> "IT DOESNT MOVE". OMOVED objects can always be taken; an OMOVABLE one only when the picture on screen is one it appears in (ORPICSTA). Otherwise "I DONT SEE IT HERE".
+AC3700__loop,68BA,label,adventure.s,
+AC3700__next,68E4,label,adventure.s,
+AC3700__not_fixed,68F1,label,adventure.s,
+AC3700__check_pic,6909,label,adventure.s,
+AC3700__take,6920,label,adventure.s,
+AC3700__not_here,692F,label,adventure.s,
+AC3700__done,6934,label,adventure.s,
+AC3800,6939,label,adventure.s,Action 28: drop the object named by the command's noun into this room, as OMOVED (drawn in the next floor slot). Not carried -> "I DONT UNDERSTAND WHAT YOU MEAN".
+AC3800__loop,6941,label,adventure.s,
+AC3800__next,696A,label,adventure.s,
+AC3800__not_carried,6977,label,adventure.s,
+AC3800__done,697C,label,adventure.s,
+AC3900,6981,label,adventure.s,action 29: set room X's views to picture Y
+AC9000,69BA,label,adventure.s,Common exit of every action handler: AWORK += 1 + X (the opcode and X operand bytes), one fewer action left, next one.
+stale_basic,69CA,label,adventure.s,
+hgr,6A00,label,adventure.s,---- relocated Applesoft hi-res routines ($6A00-$6DB8) --------------------------------- ---- relocated Applesoft hi-res routines ($6A00-$6DB8) --------------------------------------- A copy of the Applesoft ROM's hi-res graphics code (HGR, HPOSN, HPLOT, HGLIN, DRAW and their helpers), moved into the game and changed in three ways: Applesoft's HGR.* zero-page variables ($E0-$EA) live at $0320-$032A instead; the HPLOT/DRAW arguments are read from the engine's own Applesoft-style variables at applesoft_vars (VAR_* offsets in game.inc) instead of from BASIC; and DRAW's scale is fixed at 1. Names follow the Applesoft routines (HPOSN, MOVE.UP.OR.DOWN, ...). Routines marked "not called by the game" came along with the copy. The hi-res screen: 280 x 192 pixels, 7 pixels per byte (bit 0 leftmost, bit 7 selects the colour group), 40 bytes per row. Rows are interleaved in memory: row y is at $2000 + $400 * (y & 7) + $80 * ((y >> 3) & 7) + $28 * (y >> 6) so moving up or down a row means adjusting HBASL/HBASH (hbasl) rather than adding 40. HGR: show hi-res page 1 in mixed mode (four text lines at the bottom) and clear it.
+hclr,6A0E,label,adventure.s,HCLR: clear the page to black (hgr_bits = 0), via BKGND.
+bkgnd,6A10,label,adventure.s,
+hclr__loop,6A1B,label,adventure.s,
+hposn,6A2E,label,adventure.s,Applesoft HPOSN: put the pen at (X + 256 * Y-register, A): hbasl = the row's address, hgr_horiz = the byte column (x / 7) and hmask = the pixel's bit (x mod 7), and hgr_bits = the colour pattern for that column.
+hposn__div7_count,6A62,label,adventure.s,
+hposn__div7,6A63,label,adventure.s,
+hgr_set_bits,6A75,label,adventure.s,Set hgr_bits from the colour in A, shifted for an odd byte column.
+hplot0,6A7A,label,adventure.s,Applesoft HPLOT0: HPOSN then plot the point.
+hplot_here,6A7D,label,adventure.s,
+move_left_or_right,6A88,label,adventure.s,Applesoft MOVE.LEFT.OR.RIGHT: move the pen one pixel; N set = right, clear = left. Shifts hmask and steps hgr_horiz to the next byte (wrapping from column 0 to 39 and back).
+move_left_or_right__store_mask,6A91,label,adventure.s,
+move_left_or_right__left_byte,6A94,label,adventure.s,
+move_left_or_right__left_edge,6A99,label,adventure.s,
+move_left_or_right__new_byte,6A9B,label,adventure.s,
+color_shift,6AA2,label,adventure.s,Applesoft COLOR.SHIFT: on odd byte columns the green/violet bit patterns swap, so flip hgr_bits for colours that need it.
+color_shift__done,6AAD,label,adventure.s,
+move_left_or_right__right,6AAE,label,adventure.s,
+xdraw_move_ud_plot,6AC0,label,adventure.s,XDRAW0's plot-and-move step (the XOR version of draw_move_ud_plot). Not called by the game.
+draw_move_ud_plot,6AD8,label,adventure.s,DRAW0's step: plot the point if the vector's plot bit (bit 2) is set, then move. Counts a collision in hgr_collisions when the pixel was already on.
+draw_move_ud,6AD9,label,adventure.s,As draw_move_ud_plot, entered for the second axis of a step.
+draw_move_ud__plot,6AEA,label,adventure.s,
+draw_move_ud__move,6AEE,label,adventure.s,
+move_up_or_down,6AF9,label,adventure.s,Applesoft MOVE.UP.OR.DOWN: move the pen one row; N clear = up, N set = down (move_down). Within a block of 8 rows a row is $400 bytes from the next; crossing a block or a third of the screen changes HBASL as well (the row layout is described at hgr).
+move_up_or_down__up_block,6B11,label,adventure.s,
+move_up_or_down__up_lo,6B1C,label,adventure.s,
+move_up_or_down__up_third,6B21,label,adventure.s,
+move_up_or_down__up_ror,6B23,label,adventure.s,
+move_up_or_down__up_line,6B25,label,adventure.s,
+move_up_or_down__store_hbash,6B27,label,adventure.s,
+move_down,6B2B,label,adventure.s,Move the pen down one row.
+move_down__store_lo,6B4A,label,adventure.s,
+move_down__next_third,6B51,label,adventure.s,
+move_down__ror,6B53,label,adventure.s,
+hlinrl,6B57,label,adventure.s,Applesoft HLINRL: a line relative to (0,0): clear the start point and fall into HGLIN. Not called by the game.
+hglin,6B64,label,adventure.s,Applesoft HGLIN: draw a line from the current point (HGR.X, HGR.Y) to (A + 256 * X, Y): a Bresenham-style walk of |dx| + |dy| steps, each moving one pixel horizontally or vertically and plotting it. Leaves the pen at the end point.
+hglin__dx_positive,6B7C,label,adventure.s,
+hglin__dy_set,6B97,label,adventure.s,
+hglin__step_x,6BAD,label,adventure.s,
+hglin__step,6BB2,label,adventure.s,
+hglin__plot,6BBC,label,adventure.s,
+hglin__next,6BCF,label,adventure.s,
+hglin__always,6BE1,label,adventure.s,
+hgr_msktbl,6BE3,label,adventure.s,Applesoft MSKTBL: the bit for each of the 7 pixels in a hi-res byte (bit 7 is the colour bit)
+hgr_con_1c,6BEA,label,adventure.s,a $1C constant that MOVE.UP.OR.DOWN tests with BIT (bits 2-4: the row within a block of 8)
+hgr_cos_table,6BEB,label,adventure.s,Applesoft COS table: step sizes for each rotation, indexed by DRAW0
+hfind,6BFC,label,adventure.s,Applesoft HFIND: work out HGR.X / HGR.Y from the screen position (HBASL, HMASK, HGR.HORIZ). Not called by the game.
+hfind__count_bits,6C26,label,adventure.s,
+hfind__no_carry,6C37,label,adventure.s,
+hglin__done,6C3A,label,adventure.s,
+draw0,6C3B,label,adventure.s,Applesoft DRAW0: draw the shape at (X, Y-register) at the pen with rotation and scale from A (here always 0 and 1). Each shape byte holds up to three vectors: 2 bits of direction (up, right, down, left) and a plot bit; a 00 byte ends the shape.
+draw0__vector,6C62,label,adventure.s,
+draw0__scale_loop,6C6D,label,adventure.s,
+draw0__step_y,6C7A,label,adventure.s,
+draw0__next_step,6C85,label,adventure.s,
+draw0__next_byte,6C95,label,adventure.s,
+xdraw0,6C9A,label,adventure.s,Applesoft XDRAW0: DRAW0 with each point XORed onto the screen. Not called by the game.
+xdraw0__vector,6CC1,label,adventure.s,
+xdraw0__scale_loop,6CCC,label,adventure.s,
+xdraw0__step_y,6CD9,label,adventure.s,
+xdraw0__next_step,6CE4,label,adventure.s,
+xdraw0__next_byte,6CF4,label,adventure.s,
+hfns,6CF9,label,adventure.s,HFNS: read var_hcolor, var_y and var_x and position the pen there (HPOSN).
+hplot_xy,6D0E,label,adventure.s,HPLOT var_x,var_y: position the pen and plot a point.
+hplot_to_xy,6D14,label,adventure.s,HPLOT TO var_x,var_y: a line from the pen to the point (HGLIN).
+hcolor_bkgnd,6D31,label,adventure.s,HCOLOR then BKGND: fill the screen with the colour. Not called by the game.
+draw_shape,6D37,label,adventure.s,DRAW var_shape AT var_x,var_y.
+xdraw_shape,6D44,label,adventure.s,XDRAW var_shape AT var_x,var_y. Not called by the game.
+find_shape,6D51,label,adventure.s,Point hgr_shape_ptr at shape var_shape (1..count) in the shape table. The Applesoft code read SCALE= here; this copy loads 1 instead (LDA #$01 / NOP).
+find_shape__in_range,6D7B,label,adventure.s,
+find_shape__no_carry,6D81,label,adventure.s,
+get_hcolor,6D90,label,adventure.s,A = var_hcolor (an error unless < 256).
+get_var,6D92,label,adventure.s,A = the low byte of the variable whose high byte is at applesoft_vars + Y; a non-zero high byte is an error.
+get_var__done,6D99,label,adventure.s,
+get_var_x,6D9A,label,adventure.s,X (low) and Y-register (high) = var_x; an error unless < 280.
+quantity_error,6DAC,label,adventure.s,Bad argument: Applesoft's ILLEGAL QUANTITY error in ROM.
+get_var_y,6DAF,label,adventure.s,A = var_y; an error unless < 192.
+nothing,6E00,label,adventure.s,Called every turn from main; does nothing.
+draw_objects,7000,label,adventure.s,Draw the objects in the current room. An OMOVED object (taken and dropped) goes in the next floor slot, and only in the room's permanent view. Any other object is drawn at its own position when the picture on screen is in its ORPICSTA list. OFIXED objects (the people) are drawn that way too.
+draw_objects__loop,700D,label,adventure.s,
+draw_objects__check_room,7018,label,adventure.s,
+draw_objects__next,7021,label,adventure.s,
+draw_objects__in_room,702E,label,adventure.s,
+draw_objects__check_pic,703C,label,adventure.s,
+draw_objects__visible,7057,label,adventure.s,
+draw_objects__moved,705D,label,adventure.s,
+draw_object_in_place,706D,label,adventure.s,Draw the object at ZWORK at its OXCOORD/OYCOORD.
+draw_object_on_floor,708C,label,adventure.s,dropped object: next floor_slots position
+draw_object,70B6,label,adventure.s,Draw picture or shape X offset by draw_dx/draw_dy: a shape (OSHAPE = 1) with the relocated DRAW, otherwise the vector picture through draw_picture. shown_picture is saved and restored around it, because draw_picture draws shown_picture.
+draw_object__shape,70E5,label,adventure.s,
+draw_objects__done,70FE,label,adventure.s,
+floor_slots,70FF,label,adventure.s,
+saved_picture,7129,label,adventure.s,
+load_picture,7200,label,adventure.s,picture_ptr = the start of picture X: look up its (block, offset) in picture_directory (PICDIR + 3 * X) and make sure the block is in the cache.
+find_cached_block,723B,label,adventure.s,Cache lookup, then picture_ptr = slot buffer + pic_offset.
+cache_lookup,724E,label,adventure.s,Find pic_block in the five cache slots. A hit records the current turn in the slot; a miss evicts the least recently used slot and loads the block into it.
+cache_lookup__loop,725A,label,adventure.s,
+cache_lookup__hit,7278,label,adventure.s,
+cache_lookup__miss,7297,label,adventure.s,
+cache_lookup__done,72A0,label,adventure.s,
+cache_choose_victim,72A1,label,adventure.s,Pick the slot with the oldest turn (cache_victim, ZWORK = its buffer).
+cache_choose_victim__loop,72AF,label,adventure.s,
+cache_choose_victim__check_lo,72BC,label,adventure.s,
+cache_choose_victim__older,72C7,label,adventure.s,
+cache_choose_victim__next,72EE,label,adventure.s,
+cache_load_block,72FD,label,adventure.s,Load BLOCKn into the victim slot by patching the digits of the DOS command below and printing it, then record the block and the turn in the slot.
+cache_load_block__bload,7330,label,adventure.s,
+bload_block_digits,733F,label,adventure.s,
+bload_addr_digits,7344,label,adventure.s,
+cache_addr_text,7365,label,adventure.s,
+block_num_text,7379,label,adventure.s,
+cache_slots,73A3,label,adventure.s,
+cache_victim,73AD,label,adventure.s,
+MESSLSTR,7400,label,adventure.s,Print message X. Four short ones are built in; the rest are read from the MESSAGES file: message_index gives the byte offset, read_message_line READs that line into input_buffer, word_wrap breaks it at 39 columns. Afterwards a short pause unless msg_no_delay is $FF (room descriptions).
+MESSLSTR__try_not_carrying,742A,label,adventure.s,
+MESSLSTR__try_dont_understand,744A,label,adventure.s,
+MESSLSTR__try_getting_dark,7475,label,adventure.s,
+MESSLSTR__from_file,7493,label,adventure.s,
+message_index_addr,74A0,label,adventure.s,
+MESSLSTR__index,74A2,label,adventure.s,
+MESSLSTR__print_loop,74DD,label,adventure.s,
+MESSLSTR__put_char,74E5,label,adventure.s,
+MESSLSTR__pause,74F8,label,adventure.s,
+MESSLSTR__done,7503,label,adventure.s,
+read_message_line,7504,label,adventure.s,READ MESSAGES,B$xxxx (offset patched in by MESSLSTR) and let DOS read one line into input_buffer via GETLN1. The first two bytes of the line are saved around the CTRL-D that ends the READ, because printing it disturbs them.
+read_offset_digits,7518,label,adventure.s,
+offset_to_hex,7540,label,adventure.s,msg_offset -> four ASCII hex digits in hex_out.
+split_nibbles,756E,label,adventure.s,hex_in -> hex_hi (high nibble), hex_lo (low nibble).
+nibbles_to_ascii,758C,label,adventure.s,Map the four nibbles in hex_out to ASCII digits.
+nibbles_to_ascii__loop,758E,label,adventure.s,
+word_wrap,759E,label,adventure.s,Break the $8D-terminated line at ZWORK into lines of at most 39 columns at spaces, and replace the final $8D with $00.
+word_wrap__scan,75A5,label,adventure.s,
+word_wrap__next_char,75B0,label,adventure.s,
+word_wrap__at_margin,75B4,label,adventure.s,
+word_wrap__back_to_space,75BA,label,adventure.s,
+word_wrap__break_line,75C1,label,adventure.s,
+word_wrap__done,75D0,label,adventure.s,
+hex_digits,75D5,label,adventure.s,
+hex_in,75E5,label,adventure.s,
+hex_out,75E6,label,adventure.s,
+hex_hi,75EA,label,adventure.s,
+hex_lo,75EB,label,adventure.s,
+msg_offset,75EE,label,adventure.s,
+rt_copy,7600,label,adventure.s,---- the macro library --------------------------------------------------------------------- A jump table; each entry takes its operands inline after the JSR (see NOTES.md).
+BUMPIT,7603,label,adventure.s,word at .word addr += X
+BUMP16,7606,label,adventure.s,word at .word dst += word at .word src
+rt_compare,7609,label,adventure.s,compare X bytes at (WORK) with .word addr; cmp_result = 0 if equal
+rt_args,760C,label,adventure.s,rt_operands = the caller's inline operands
+rt_return,760F,label,adventure.s,return to the caller's caller skipping X inline operand bytes
+rt_inc16,7612,label,adventure.s,word at .word addr += 1
+rt_print,7615,label,adventure.s,print the inline $00-terminated text
+MULTIPLY,7618,label,adventure.s,mul_result = word at .word addr * X
+rt_args_body,762C,label,adventure.s,rt_args: the routine that called it was itself called with inline operands; point rt_operands at them (its caller's return address + 1).
+rt_return_body,7650,label,adventure.s,rt_return: return from the routine that called it to that routine's caller, skipping X inline operand bytes. Never returns to its own caller.
+rt_print_body,7666,label,adventure.s,rt_print: print the inline text up to $00 with COUT, then skip it.
+rt_print_body__loop,766B,label,adventure.s,
+rt_print_body__done,7678,label,adventure.s,
+rt_copy_body,767D,label,adventure.s,rt_copy: copy X bytes from src to dst (copies from the end down).
+rt_copy_body__loop,7698,label,adventure.s,
+BUMPIT_body,76A8,label,adventure.s,BUMPIT: add X to the word at addr.
+rt_inc16_body,76CD,label,adventure.s,rt_inc16: add 1 to the word at addr.
+rt_compare_body,76F0,label,adventure.s,rt_compare: compare X bytes at (WORK) with addr; cmp_result = 0 if equal, 1 if not.
+rt_compare_body__loop,770A,label,adventure.s,
+rt_compare_body__differ,7718,label,adventure.s,
+rt_compare_body__equal,7720,label,adventure.s,
+rt_compare_body__done,7725,label,adventure.s,
+BUMP16_body,772A,label,adventure.s,BUMP16: word at dst += word at src.
+MULTIPLY_body,7757,label,adventure.s,MULTIPLY: the word at addr *= X (8-step shift and add through mul_result).
+MULTIPLY_body__loop,778F,label,adventure.s,
+MULTIPLY_body__no_add,77A0,label,adventure.s,
+MULTIPLY_body__done,77B0,label,adventure.s,
+draw_room,7900,label,adventure.s,Redraw the room: CUROOM from CURONO, clear the screen, and if the room is lit (LAMPSTAT = ON) draw its current picture and the objects. Then print the description without the usual pause.
+draw_room__describe,791A,label,adventure.s,
+set_curoom,792D,label,adventure.s,CUROOM = ROOMBASE + CURONO * RTBLSIZ.
+roombase_addr,793B,label,adventure.s,
+set_curoom__compute,793D,label,adventure.s,
+stale_hglin_copy,7956,label,adventure.s,
+draw_picture,7A00,label,adventure.s,Draw shown_picture: a stream of (x, y) pairs, each a line from the previous point, except that 00 00 makes the next point start a new line and FF FF ends the picture. Points are offset by draw_dx/draw_dy and clamped to MAX_X / MAX_Y.
+draw_picture__next_point,7A06,label,adventure.s,
+draw_picture__check_newline,7A18,label,adventure.s,
+draw_picture__reload_x,7A32,label,adventure.s,
+draw_picture__point,7A35,label,adventure.s,
+draw_picture__x_ok,7A3F,label,adventure.s,
+draw_picture__y_ok,7A4F,label,adventure.s,
+draw_picture__line_to,7A64,label,adventure.s,
+draw_picture__advance,7A67,label,adventure.s,
+draw_picture__done,7A71,label,adventure.s,
+fill_to_cache,7A72,label,adventure.s,
+dos_error_vector,9D5A,const,adventure.s,
+dos_language_flag,AAB6,const,adventure.s,
+KBD,C000,const,apple2.inc,
+KBDSTRB,C010,const,apple2.inc,
+TXTCLR,C050,const,apple2.inc,
+TXTSET,C051,const,apple2.inc,
+MIXCLR,C052,const,apple2.inc,
+MIXSET,C053,const,apple2.inc,
+LOWSCR,C054,const,apple2.inc,
+HISCR,C055,const,apple2.inc,
+LORES,C056,const,apple2.inc,
+HIRES,C057,const,apple2.inc,
+applesoft_error,EE68,const,apple2.inc,
+HOME,FC58,const,apple2.inc,
+WAIT,FCA8,const,apple2.inc,
+GETLN,FD6A,const,apple2.inc,
+GETLN1,FD6F,const,apple2.inc,
+COUT,FDED,const,apple2.inc,
