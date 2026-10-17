@@ -14,7 +14,7 @@ The original disk image is not kept here.
 `./build.sh` ends with a line like
 
 ```
-progress: 165/165 functions, 11873/11873 code bytes, 58156/58156 data bytes match the original (100.00%); 30/30 files complete
+progress: 165/165 functions, 11873/11873 code bytes, 58156/58156 data bytes match the original (fuzzy 100.00%); 30/30 files complete
 ```
 
 and writes `build/report.json`, the same numbers per routine and per table in the report format
@@ -25,7 +25,10 @@ against the same-named one in `expected/`, line by line of the listing, an opera
 label compared by the name rather than the address (as objdiff does with relocations). Code
 that only moves still matches; a changed instruction does not, and the report says which
 routine and how alike it still is. The other 28 files count as data, whole files against
-`FILES.sha256`. CI uploads the report as the `report` artifact of every run.
+`FILES.sha256`. CI uploads the report as the `1987_report` artifact of every run, the name
+progress dashboards such as [ByteMatch](https://bytematch.dev) and decomp.dev look for
+(`<version>_report`; the version is the 1987 public-domain release). The fuzzy match percentage
+is weighted by code size, as objdiff and those sites compute it.
 
 ## Why the disk changed
 

@@ -19,8 +19,10 @@ JSON with the proto field names; 64-bit counts as strings):
              rather than by its address (what objdiff does with relocations). So code that only
              moves, because something before it grew, still matches; a changed instruction or
              byte does not. Items are found by name in the original and in the build.
-             fuzzy_match_percent is how alike the two line sequences are (difflib), 100 for a
-             match. A unit is complete when its whole file is the original's.
+             An item's fuzzy_match_percent is how alike the two line sequences are (difflib),
+             100 for a match; a unit's and the report's are the functions' weighted by code
+             size, 100 with no code, the arithmetic objdiff and ByteMatch use. A unit is
+             complete when its whole file is the original's.
   categories "programs" (the two programs) and "files" (the rest).
 
 <expected dir> (disk/expected/) holds the original programs, which are public domain and the
@@ -30,7 +32,9 @@ labels the operands refer to. "map" writes them from a build, and refuses unless
 that build matches FILES.sha256; build.sh refreshes the listings and symbol tables after every
 matching build, so renames reach them (the programs themselves never change).
 
-build.sh writes build/report.json and prints the summary; CI uploads it.
+build.sh writes build/report.json and prints the summary; CI uploads it as the artifact
+1987_report (ByteMatch and decomp.dev look for <version>_report; the version is the 1987
+public-domain release).
 """
 import csv
 import difflib
@@ -130,8 +134,9 @@ def measures(entries, complete):
     total_code, total_data = sum(e[1] for e in code), sum(e[1] for e in data)
     matched_code = sum(e[1] for e in code if e[2])
     matched_data = sum(e[1] for e in data if e[2])
-    total = total_code + total_data
-    fuzzy = sum(e[1] * e[3] for e in entries) / total if total else 100.0
+    # as objdiff (and ByteMatch, decomp.dev) count it: the functions' match, weighted by their
+    # size; 100 when there is no code
+    fuzzy = sum(e[1] * e[3] for e in code) / total_code if total_code else 100.0
     pct = lambda a, b: 100.0 * a / b if b else 100.0
     return {
         'fuzzy_match_percent': round(fuzzy, 4),
@@ -155,7 +160,7 @@ def add(total, m):
         total[k] = str(int(total.get(k, '0')) + int(m[k]))
     for k in ('total_functions', 'matched_functions', 'total_units', 'complete_units'):
         total[k] = total.get(k, 0) + m[k]
-    size = int(m['total_code']) + int(m['total_data'])
+    size = int(m['total_code'])            # fuzzy is weighted by code, as objdiff sums it
     total['_fuzzy'] = total.get('_fuzzy', 0.0) + m['fuzzy_match_percent'] * size
     total['_size'] = total.get('_size', 0) + size
 
@@ -252,7 +257,7 @@ def section_fuzzy(entries):
 def summary(r):
     m = r['measures']
     return ('progress: %d/%d functions, %s/%s code bytes, %s/%s data bytes match the original '
-            '(%.2f%%); %d/%d files complete' % (
+            '(fuzzy %.2f%%); %d/%d files complete' % (
                 m['matched_functions'], m['total_functions'], m['matched_code'], m['total_code'],
                 m['matched_data'], m['total_data'], m['fuzzy_match_percent'],
                 m['complete_units'], m['total_units']))

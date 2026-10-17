@@ -92,6 +92,24 @@ class OneRoutineChanged(unittest.TestCase):
         self.assertFalse(adv['metadata']['complete'])
         self.assertEqual(adv['measures']['matched_functions'], adv['measures']['total_functions'] - 1)
 
+    def test_totals_add_up_as_objdiff_and_bytematch_sum_them(self):
+        # the report's and each category's fuzzy match is the units' weighted by code size
+        def summed(units):
+            code = sum(int(u['measures']['total_code']) for u in units)
+            return sum(u['measures']['fuzzy_match_percent'] * int(u['measures']['total_code']) for u in units) / code
+        r = self.report
+        self.assertAlmostEqual(r['measures']['fuzzy_match_percent'], summed(r['units']), places=3)
+        for c in r['categories']:
+            units = [u for u in r['units'] if c['id'] in u['metadata']['progress_categories']]
+            if any(int(u['measures']['total_code']) for u in units):
+                self.assertAlmostEqual(c['measures']['fuzzy_match_percent'], summed(units), places=3)
+        # a unit's is its functions' weighted by size
+        adv = unit(r, 'ADVENTURE')
+        f = adv['functions']
+        self.assertAlmostEqual(adv['measures']['fuzzy_match_percent'],
+                               sum(x['fuzzy_match_percent'] * int(x['size']) for x in f) / sum(int(x['size']) for x in f),
+                               places=3)
+
     def test_the_rest_is_untouched(self):
         self.assertTrue(unit(self.report, 'AUTO LOAD OBJ')['metadata']['complete'])
         self.assertTrue(unit(self.report, 'MESSAGES')['metadata']['complete'])
